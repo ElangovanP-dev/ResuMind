@@ -57,6 +57,6 @@ public class AuthController {
                     return ResponseEntity.ok(new AuthResponse(token, userResponse));
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new AuthResponse(null, null))); // The frontend will handle token=null or status=401
+                        .body(new AuthResponse(null, null)));
     }
 }

@@ -44,7 +44,7 @@ export default function PublicResults() {
 
   return (
     <div className="min-h-screen p-4 md:p-8">
-      {/* Public Navbar */}
+
       <nav className="max-w-5xl mx-auto flex items-center justify-between mb-8">
         <span className="text-xl font-bold gradient-text">ResuMind</span>
         <Link to="/register" className="text-sm px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold transition-all duration-200">
@@ -53,7 +53,7 @@ export default function PublicResults() {
       </nav>
 
       <div className="max-w-5xl mx-auto space-y-6 fade-in-up">
-        {/* Header + Score */}
+
         <div className="glass-card p-8 flex flex-col md:flex-row items-center gap-8">
           <ScoreGauge score={score} />
           <div>
@@ -68,7 +68,7 @@ export default function PublicResults() {
           </div>
         </div>
 
-        {/* Skills Found & Missing */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="glass-card p-6">
             <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -102,7 +102,7 @@ export default function PublicResults() {
           </div>
         </div>
 
-        {/* Strengths */}
+
         <div className="glass-card p-6">
           <h2 className="text-lg font-semibold text-white mb-4">💪 Strengths</h2>
           <div className="space-y-3">
@@ -115,7 +115,7 @@ export default function PublicResults() {
           </div>
         </div>
 
-        {/* Improvements */}
+
         <div className="glass-card p-6">
           <h2 className="text-lg font-semibold text-white mb-4">🚀 Suggested Improvements</h2>
           <div className="space-y-3">
@@ -128,7 +128,7 @@ export default function PublicResults() {
           </div>
         </div>
 
-        {/* Call to action card */}
+
         <div className="glass-card p-8 flex flex-col items-center justify-center text-center gap-4">
           <h3 className="text-lg font-bold text-white">Created using ResuMind</h3>
           <p className="text-slate-400 text-sm max-w-md">

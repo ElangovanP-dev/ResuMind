@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
 
-const MAX_SIZE = 5 * 1024 * 1024 // 5 MB
+const MAX_SIZE = 5 * 1024 * 1024
 
 export default function Upload() {
   const { user, logout } = useAuth()
@@ -51,7 +51,7 @@ export default function Upload() {
 
   return (
     <div className="min-h-screen p-4 md:p-8">
-      {/* Navbar */}
+
       <nav className="max-w-3xl mx-auto flex items-center justify-between mb-10">
         <span className="text-xl font-bold gradient-text">ResuMind</span>
         <div className="flex items-center gap-4">
@@ -73,7 +73,7 @@ export default function Upload() {
           </p>
         </div>
 
-        {/* Drop zone */}
+
         <div
           className={`glass-card p-10 text-center cursor-pointer transition-all duration-300 ${
             dragging

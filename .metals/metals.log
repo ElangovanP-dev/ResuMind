@@ -2655,3 +2655,5 @@ WARNING: Unmatched cancel notification for request id 20
 2026.06.22 14:48:27 INFO  time: compiled backend in 15s
 Jun 24, 2026 12:17:16 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
 WARNING: Unmatched cancel notification for request id 28
+Jun 24, 2026 12:25:10 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 39

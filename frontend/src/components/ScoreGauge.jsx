@@ -31,14 +31,14 @@ export default function ScoreGauge({ score }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <svg width="180" height="180" viewBox="0 0 180 180">
-        {/* Background track */}
+
         <circle
           cx="90" cy="90" r={radius}
           fill="none"
           stroke="rgba(148,163,184,0.15)"
           strokeWidth="12"
         />
-        {/* Score arc */}
+
         <circle
           ref={circleRef}
           cx="90" cy="90" r={radius}
@@ -51,7 +51,7 @@ export default function ScoreGauge({ score }) {
           transform="rotate(-90 90 90)"
           style={{ filter: `drop-shadow(0 0 8px ${color})` }}
         />
-        {/* Score text */}
+
         <text x="90" y="82" textAnchor="middle" fill="white" fontSize="36" fontWeight="700" fontFamily="Inter">
           {score}
         </text>

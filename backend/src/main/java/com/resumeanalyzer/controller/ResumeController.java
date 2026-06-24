@@ -42,7 +42,6 @@ public class ResumeController {
                     .body(Map.of("message", "Please select a valid PDF file to upload."));
         }
 
-        // Validate content type (allow application/pdf or check filename extension as safety fallback)
         String contentType = file.getContentType();
         String originalFilename = file.getOriginalFilename();
         boolean isPdf = (contentType != null && contentType.equalsIgnoreCase("application/pdf")) ||
@@ -96,7 +95,6 @@ public class ResumeController {
 
         return resumeService.getAnalysisResult(resumeId)
                 .map(result -> {
-                    // Enforce ownership check
                     if (!result.getResume().getUser().getId().equals(userDetails.getUser().getId())) {
                         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                                 .body(Map.of("message", "Access Denied. You do not own this analysis."));

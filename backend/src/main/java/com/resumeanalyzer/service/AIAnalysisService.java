@@ -32,12 +32,10 @@ public class AIAnalysisService {
 
     public AnalysisResponse analyzeResume(String resumeText) {
         if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("YOUR_")) {
-            // Return mock response for easy demo/testing without credentials
             return getMockAnalysis(resumeText);
         }
 
         try {
-            // Google Gemini API endpoint
             String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
 
             HttpHeaders headers = new HttpHeaders();
@@ -55,7 +53,6 @@ public class AIAnalysisService {
                     "Resume text:\n" +
                     resumeText;
 
-            // Build Gemini request body
             Map<String, Object> textPart = new HashMap<>();
             textPart.put("text", prompt);
 
@@ -65,7 +62,6 @@ public class AIAnalysisService {
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("contents", Collections.singletonList(contentParts));
 
-            // Add generation config to ensure JSON output
             Map<String, Object> generationConfig = new HashMap<>();
             generationConfig.put("temperature", 0.7);
             generationConfig.put("maxOutputTokens", 1500);
@@ -77,7 +73,6 @@ public class AIAnalysisService {
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
             JsonNode rootNode = objectMapper.readTree(response.getBody());
 
-            // Extract text from Gemini response: candidates[0].content.parts[0].text
             String responseText = rootNode
                     .path("candidates").get(0)
                     .path("content")
@@ -96,7 +91,6 @@ public class AIAnalysisService {
     private String cleanJsonText(String text) {
         if (text == null) return "{}";
         text = text.trim();
-        // Remove markdown code fences if present (e.g. ```json ... ```)
         if (text.startsWith("```")) {
             int firstNewline = text.indexOf('\n');
             if (firstNewline != -1) {
@@ -119,7 +113,6 @@ public class AIAnalysisService {
 
     private AnalysisResponse getMockAnalysis(String text) {
         AnalysisResponse response = new AnalysisResponse();
-        // Base score off string length for a bit of dynamic variance in demo
         response.ats_score = 65 + (text.length() % 25);
         if (response.ats_score > 100) response.ats_score = 95;
 

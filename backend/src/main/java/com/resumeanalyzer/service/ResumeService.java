@@ -31,7 +31,6 @@ public class ResumeService {
 
     @Transactional
     public AnalysisResult uploadAndAnalyze(MultipartFile file, User user) throws IOException {
-        // 1. Extract text from PDF using Apache PDFBox 3.x
         String extractedText;
         try (PDDocument document = Loader.loadPDF(file.getBytes())) {
             PDFTextStripper stripper = new PDFTextStripper();
@@ -42,17 +41,14 @@ public class ResumeService {
             throw new IllegalArgumentException("Could not extract any text from the PDF file");
         }
 
-        // 2. Save Resume entity
         Resume resume = new Resume();
         resume.setUser(user);
         resume.setFileName(file.getOriginalFilename());
         resume.setExtractedText(extractedText);
         resume = resumeRepository.save(resume);
 
-        // 3. Request Claude analysis
         AIAnalysisService.AnalysisResponse aiResponse = aiAnalysisService.analyzeResume(extractedText);
 
-        // 4. Save AnalysisResult entity
         AnalysisResult result = new AnalysisResult();
         result.setResume(resume);
         result.setAtsScore(aiResponse.ats_score);

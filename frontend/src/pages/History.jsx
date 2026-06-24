@@ -37,7 +37,7 @@ export default function History() {
 
   return (
     <div className="min-h-screen p-4 md:p-8">
-      {/* Navbar */}
+
       <nav className="max-w-5xl mx-auto flex items-center justify-between mb-8">
         <span className="text-xl font-bold gradient-text">ResuMind</span>
         <div className="flex items-center gap-4">

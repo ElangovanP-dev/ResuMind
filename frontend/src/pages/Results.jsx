@@ -61,7 +61,7 @@ export default function Results() {
 
   return (
     <div className="min-h-screen p-4 md:p-8">
-      {/* Navbar */}
+
       <nav className="max-w-5xl mx-auto flex items-center justify-between mb-8">
         <span className="text-xl font-bold gradient-text">ResuMind</span>
         <div className="flex items-center gap-4">
@@ -71,7 +71,7 @@ export default function Results() {
       </nav>
 
       <div className="max-w-5xl mx-auto space-y-6 fade-in-up">
-        {/* Header + Score */}
+
         <div className="glass-card p-8 flex flex-col md:flex-row items-center gap-8">
           <ScoreGauge score={score} />
           <div>
@@ -85,7 +85,7 @@ export default function Results() {
           </div>
         </div>
 
-        {/* Skills Found & Missing */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="glass-card p-6">
             <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -119,7 +119,7 @@ export default function Results() {
           </div>
         </div>
 
-        {/* Strengths */}
+
         <div className="glass-card p-6">
           <h2 className="text-lg font-semibold text-white mb-4">💪 Strengths</h2>
           <div className="space-y-3">
@@ -132,7 +132,7 @@ export default function Results() {
           </div>
         </div>
 
-        {/* Improvements */}
+
         <div className="glass-card p-6">
           <h2 className="text-lg font-semibold text-white mb-4">🚀 Suggested Improvements</h2>
           <div className="space-y-3">
@@ -145,7 +145,7 @@ export default function Results() {
           </div>
         </div>
 
-        {/* Action buttons */}
+
         <div className="flex flex-col sm:flex-row gap-4">
           <button id="upload-another-btn" onClick={() => navigate('/upload')} className="btn-primary flex-1 text-center">
             ↑ Upload Another Resume

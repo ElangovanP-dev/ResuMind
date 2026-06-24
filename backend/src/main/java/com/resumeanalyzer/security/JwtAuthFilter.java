@@ -35,7 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 email = jwtUtil.extractEmail(token);
             } catch (Exception e) {
-                // Parse errors are ignored; let Spring Security reject it if required
+
             }
         }
 
