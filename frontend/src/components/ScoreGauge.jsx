@@ -7,7 +7,7 @@ export default function ScoreGauge({ score }) {
   const offset = circumference - (score / 100) * circumference
 
   const color =
-    score >= 80 ? '#22c55e' :
+    score >= 80 ? '#10b981' :
     score >= 60 ? '#f59e0b' :
     '#ef4444'
 
