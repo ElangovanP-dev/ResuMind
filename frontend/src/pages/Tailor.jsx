@@ -91,12 +91,12 @@ export default function Tailor() {
       <nav className="max-w-7xl mx-auto flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <span className="text-xl font-bold gradient-text cursor-pointer" onClick={() => navigate('/upload')}>ResuMind</span>
-          <span className="text-xs px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono">JD TAILOR</span>
+          <span className="text-xs px-2 py-0.5 rounded bg-blue-600/20 text-blue-700 font-mono">JD TAILOR</span>
         </div>
         <div className="flex items-center gap-4">
-          <Link to="/upload" className="text-slate-400 hover:text-white text-sm transition-colors">Upload</Link>
-          <Link to="/history" className="text-slate-400 hover:text-white text-sm transition-colors">History</Link>
-          <button onClick={logout} className="text-slate-400 hover:text-red-400 text-sm transition-colors">Sign out</button>
+          <Link to="/upload" className="text-slate-600 hover:text-slate-900 text-sm transition-colors">Upload</Link>
+          <Link to="/history" className="text-slate-600 hover:text-slate-900 text-sm transition-colors">History</Link>
+          <button onClick={logout} className="text-slate-600 hover:text-red-600 text-sm transition-colors">Sign out</button>
         </div>
       </nav>
 
@@ -104,8 +104,8 @@ export default function Tailor() {
         {/* Left Input Panel */}
         <div className="lg:col-span-5 glass-card p-6 md:p-8 space-y-6">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-2">JD Tailoring Engine</h2>
-            <p className="text-slate-400 text-sm">
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">JD Tailoring Engine</h2>
+            <p className="text-slate-600 text-sm">
               Paste the job description of your target role and select a resume. Gemini AI will optimize your experience bullets, identify missing keywords, and tailor your profile summary.
             </p>
           </div>
@@ -113,13 +113,13 @@ export default function Tailor() {
           <form onSubmit={handleTailor} className="space-y-5">
             {/* Resume Selection */}
             <div>
-              <label className="block text-slate-300 font-semibold text-sm mb-2">Select Resume</label>
+              <label className="block text-slate-700 font-semibold text-sm mb-2">Select Resume</label>
               {loadingResumes ? (
-                <div className="h-12 bg-slate-800/40 rounded-xl animate-pulse" />
+                <div className="h-12 bg-slate-100/40 rounded-xl animate-pulse" />
               ) : resumes.length === 0 ? (
-                <div className="p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/25 text-center text-sm">
-                  <p className="text-slate-300 mb-2">No resumes uploaded yet.</p>
-                  <Link to="/upload" className="text-indigo-400 font-semibold hover:underline">Upload your first resume ↑</Link>
+                <div className="p-4 rounded-xl bg-blue-600/5 border border-blue-600/25 text-center text-sm">
+                  <p className="text-slate-700 mb-2">No resumes uploaded yet.</p>
+                  <Link to="/upload" className="text-blue-600 font-semibold hover:underline">Upload your first resume ↑</Link>
                 </div>
               ) : (
                 <select
@@ -128,7 +128,7 @@ export default function Tailor() {
                   className="input-field cursor-pointer"
                 >
                   {resumes.map(r => (
-                    <option key={r.id} value={r.id} className="bg-slate-900 text-white">
+                    <option key={r.id} value={r.id} className="bg-slate-50 text-slate-900">
                       {r.fileName} (ATS: {r.atsScore ?? 'N/A'})
                     </option>
                   ))}
@@ -138,7 +138,7 @@ export default function Tailor() {
 
             {/* Job Description Textarea */}
             <div>
-              <label className="block text-slate-300 font-semibold text-sm mb-2">Target Job Description</label>
+              <label className="block text-slate-700 font-semibold text-sm mb-2">Target Job Description</label>
               <textarea
                 value={jobDescription}
                 onChange={e => setJobDescription(e.target.value)}
@@ -150,7 +150,7 @@ export default function Tailor() {
             </div>
 
             {error && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 text-sm text-center">
                 {error}
               </div>
             )}
@@ -177,8 +177,8 @@ export default function Tailor() {
           {loading ? (
             <div className="glass-card p-12 text-center flex flex-col items-center justify-center min-h-[500px]">
               <div className="spinner mb-6" />
-              <h3 className="text-xl font-bold text-white mb-2">Analyzing JD and Optimizing Resume...</h3>
-              <p className="text-slate-400 text-sm max-w-sm">
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Analyzing JD and Optimizing Resume...</h3>
+              <p className="text-slate-600 text-sm max-w-sm">
                 Google Gemini is reviewing requirements, matching keywords, and rewriting work experience bullet points. This takes about 4-6 seconds.
               </p>
             </div>
@@ -188,8 +188,8 @@ export default function Tailor() {
               <div className="glass-card p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
                 <ScoreGauge score={result.matchScore} />
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Job Match: {result.matchScore}%</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Job Match: {result.matchScore}%</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed">
                     Based on keywords and skill alignment, your resume currently has a **{result.matchScore}% match** for this job description. Incorporate the rewritten bullets and missing skills below to raise it.
                   </p>
                 </div>
@@ -199,14 +199,14 @@ export default function Tailor() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Keywords */}
                 <div className="glass-card p-6">
-                  <h4 className="text-sm font-semibold text-red-400 mb-3 flex items-center gap-2">
+                  <h4 className="text-sm font-semibold text-red-600 mb-3 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-red-400" />
                     Missing Keywords
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
                     {result.missingKeywords && result.missingKeywords.length > 0 ? (
                       result.missingKeywords.map((kw, i) => (
-                        <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-red-500/10 text-red-300 border border-red-500/20">
+                        <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-red-500/10 text-red-700 border border-red-500/20">
                           + {kw}
                         </span>
                       ))
@@ -218,14 +218,14 @@ export default function Tailor() {
 
                 {/* Suggested Skills */}
                 <div className="glass-card p-6">
-                  <h4 className="text-sm font-semibold text-green-400 mb-3 flex items-center gap-2">
+                  <h4 className="text-sm font-semibold text-emerald-600 mb-3 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-green-400" />
                     Suggested Skills Section
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
                     {result.suggestedSkills && result.suggestedSkills.length > 0 ? (
                       result.suggestedSkills.map((sk, i) => (
-                        <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-green-500/10 text-green-300 border border-green-500/20">
+                        <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
                           {sk}
                         </span>
                       ))
@@ -240,15 +240,15 @@ export default function Tailor() {
               {result.tailoredSummary && (
                 <div className="glass-card p-6">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-semibold text-white">✨ Tailored Professional Summary</h4>
+                    <h4 className="text-sm font-semibold text-slate-900">✨ Tailored Professional Summary</h4>
                     <button
                       onClick={() => copyToClipboard(result.tailoredSummary, 'summary')}
-                      className="text-xs py-1 px-2.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all"
+                      className="text-xs py-1 px-2.5 rounded bg-slate-100 hover:bg-slate-700 text-slate-700 transition-all"
                     >
                       {copiedSummary ? '✓ Copied' : '📋 Copy'}
                     </button>
                   </div>
-                  <p className="text-slate-300 text-sm leading-relaxed bg-slate-900/50 p-4 rounded-xl border border-slate-800 font-sans italic">
+                  <p className="text-slate-700 text-sm leading-relaxed bg-slate-50/50 p-4 rounded-xl border border-slate-200 font-sans italic">
                     "{result.tailoredSummary}"
                   </p>
                 </div>
@@ -258,8 +258,8 @@ export default function Tailor() {
               {result.rewrittenBullets && result.rewrittenBullets.length > 0 && (
                 <div className="glass-card p-6 space-y-4">
                   <div>
-                    <h4 className="text-base font-bold text-white mb-1">✍️ AI-Rewritten Experience Bullets</h4>
-                    <p className="text-slate-400 text-xs">Click on any bullet to view its original version and compare them.</p>
+                    <h4 className="text-base font-bold text-slate-900 mb-1">✍️ AI-Rewritten Experience Bullets</h4>
+                    <p className="text-slate-600 text-xs">Click on any bullet to view its original version and compare them.</p>
                   </div>
 
                   <div className="space-y-2">
@@ -270,7 +270,7 @@ export default function Tailor() {
                       return (
                         <div
                           key={idx}
-                          className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900/20 hover:border-slate-700/50 transition-colors"
+                          className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/20 hover:border-slate-300/50 transition-colors"
                         >
                           {/* Header row (shows rewritten version) */}
                           <div
@@ -278,10 +278,10 @@ export default function Tailor() {
                             onClick={() => setExpandedBulletIndex(isExpanded ? null : idx)}
                           >
                             <div className="flex gap-2.5 items-start">
-                              <span className="text-xs px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-mono mt-0.5">
+                              <span className="text-xs px-2 py-0.5 rounded bg-blue-600/10 text-blue-700 font-mono mt-0.5">
                                 {idx + 1}
                               </span>
-                              <p className="text-slate-200 text-sm leading-relaxed pr-2">
+                              <p className="text-slate-800 text-sm leading-relaxed pr-2">
                                 {bullet.rewritten}
                               </p>
                             </div>
@@ -289,11 +289,11 @@ export default function Tailor() {
                             <div className="flex gap-2 items-center flex-shrink-0" onClick={e => e.stopPropagation()}>
                               <button
                                 onClick={() => copyToClipboard(bullet.rewritten, 'bullet', idx)}
-                                className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                                className="p-1.5 rounded hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-colors"
                                 title="Copy tailored bullet"
                               >
                                 {isCopied ? (
-                                  <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                   </svg>
                                 ) : (
@@ -305,7 +305,7 @@ export default function Tailor() {
                               
                               <button
                                 onClick={() => setExpandedBulletIndex(isExpanded ? null : idx)}
-                                className="p-1.5 rounded hover:bg-slate-800 text-slate-400 transition-colors"
+                                className="p-1.5 rounded hover:bg-slate-100 text-slate-600 transition-colors"
                               >
                                 <svg
                                   className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -321,9 +321,9 @@ export default function Tailor() {
 
                           {/* Accordion content (shows original version) */}
                           {isExpanded && (
-                            <div className="px-4 pb-4 pt-1 border-t border-slate-900 bg-slate-950/40">
+                            <div className="px-4 pb-4 pt-1 border-t border-slate-900 bg-slate-100/40">
                               <span className="text-xs text-slate-500 font-semibold uppercase block mb-1">Original Bullet</span>
-                              <p className="text-slate-400 text-sm line-through decoration-red-500/50 leading-relaxed font-sans pr-4">
+                              <p className="text-slate-600 text-sm line-through decoration-red-500/50 leading-relaxed font-sans pr-4">
                                 {bullet.original}
                               </p>
                             </div>
@@ -337,14 +337,14 @@ export default function Tailor() {
             </div>
           ) : (
             <div className="glass-card p-12 text-center flex flex-col items-center justify-center min-h-[500px]">
-              <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-16 h-16 rounded-2xl bg-blue-600/10 flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                     d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">No Optimization Run Yet</h3>
-              <p className="text-slate-400 text-sm max-w-xs">
+              <h3 className="text-xl font-bold text-slate-900 mb-2">No Optimization Run Yet</h3>
+              <p className="text-slate-600 text-sm max-w-xs">
                 Select your resume, paste the target Job Description on the left, and click "Tailor My Resume" to generate results.
               </p>
             </div>

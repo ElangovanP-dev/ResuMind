@@ -5,9 +5,9 @@ import { useAuth } from '../context/AuthContext'
 
 function ScoreBadge({ score }) {
   const color =
-    score >= 80 ? 'bg-green-500/20 text-green-400 border-green-500/30' :
-    score >= 60 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
-    'bg-red-500/20 text-red-400 border-red-500/30'
+    score >= 80 ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/30' :
+    score >= 60 ? 'bg-amber-500/20 text-amber-600 border-amber-500/30' :
+    'bg-red-500/20 text-red-600 border-red-500/30'
   return (
     <span className={`text-sm font-bold px-3 py-1 rounded-full border ${color}`}>
       {score}
@@ -52,9 +52,9 @@ export default function History() {
       <nav className="max-w-5xl mx-auto flex items-center justify-between mb-8">
         <span className="text-xl font-bold gradient-text cursor-pointer" onClick={() => navigate('/upload')}>ResuMind</span>
         <div className="flex items-center gap-4">
-          <Link to="/tailor" className="text-slate-400 hover:text-white text-sm transition-colors">JD Tailor</Link>
-          <Link to="/upload" className="text-slate-400 hover:text-white text-sm transition-colors">Upload</Link>
-          <button onClick={logout} className="text-slate-400 hover:text-red-400 text-sm transition-colors">Sign out</button>
+          <Link to="/tailor" className="text-slate-600 hover:text-slate-900 text-sm transition-colors">JD Tailor</Link>
+          <Link to="/upload" className="text-slate-600 hover:text-slate-900 text-sm transition-colors">Upload</Link>
+          <button onClick={logout} className="text-slate-600 hover:text-red-600 text-sm transition-colors">Sign out</button>
         </div>
       </nav>
 
@@ -62,8 +62,8 @@ export default function History() {
         {/* Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white">Your History</h1>
-            <p className="text-slate-400 mt-1 text-sm">Review your past ATS analyses and JD tailoring runs</p>
+            <h1 className="text-3xl font-bold text-slate-900">Your History</h1>
+            <p className="text-slate-600 mt-1 text-sm">Review your past ATS analyses and JD tailoring runs</p>
           </div>
           <div className="flex gap-2">
             <Link to="/upload" className="btn-primary text-sm py-2.5">
@@ -73,27 +73,27 @@ export default function History() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-800 mb-6 gap-6">
+        <div className="flex border-b border-slate-200 mb-6 gap-6">
           <button
             onClick={() => setActiveTab('resumes')}
             className={`pb-3 font-semibold text-sm transition-all relative ${
-              activeTab === 'resumes' ? 'text-indigo-400' : 'text-slate-400 hover:text-white'
+              activeTab === 'resumes' ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             ATS Resume Scores
             {activeTab === 'resumes' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 rounded-full" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
             )}
           </button>
           <button
             onClick={() => setActiveTab('tailoring')}
             className={`pb-3 font-semibold text-sm transition-all relative ${
-              activeTab === 'tailoring' ? 'text-indigo-400' : 'text-slate-400 hover:text-white'
+              activeTab === 'tailoring' ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             ✨ JD Tailored Resumes
             {activeTab === 'tailoring' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500 rounded-full" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
             )}
           </button>
         </div>
@@ -107,7 +107,7 @@ export default function History() {
 
         {/* Error message */}
         {error && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
+          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 text-sm text-center">
             {error}
           </div>
         )}
@@ -117,13 +117,13 @@ export default function History() {
           <>
             {resumes.length === 0 ? (
               <div className="glass-card p-16 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                       d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <p className="text-slate-400 text-lg mb-4">No resumes analyzed yet</p>
+                <p className="text-slate-600 text-lg mb-4">No resumes analyzed yet</p>
                 <Link to="/upload" className="btn-primary inline-block">Upload your first resume</Link>
               </div>
             ) : (
@@ -132,18 +132,18 @@ export default function History() {
                   <button
                     key={item.id}
                     onClick={() => navigate(`/results/${item.id}`)}
-                    className="glass-card p-5 text-left hover:border-indigo-500/50 transition-all duration-200 hover:scale-[1.02] group"
+                    className="glass-card p-5 text-left hover:border-blue-600/50 transition-all duration-200 hover:scale-[1.02] group"
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                        <svg className="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                       </div>
                       <ScoreBadge score={item.atsScore} />
                     </div>
-                    <p className="text-white font-medium text-sm truncate mb-1 group-hover:text-indigo-300 transition-colors">
+                    <p className="text-slate-900 font-medium text-sm truncate mb-1 group-hover:text-blue-700 transition-colors">
                       {item.fileName}
                     </p>
                     <p className="text-slate-500 text-xs">{formatDate(item.uploadedAt)}</p>
@@ -159,13 +159,13 @@ export default function History() {
           <>
             {tailoredResults.length === 0 ? (
               <div className="glass-card p-16 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                       d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
-                <p className="text-slate-400 text-lg mb-4">No resumes tailored to JDs yet</p>
+                <p className="text-slate-600 text-lg mb-4">No resumes tailored to JDs yet</p>
                 <Link to="/tailor" className="btn-primary inline-block">Tailor a resume now</Link>
               </div>
             ) : (
@@ -174,27 +174,27 @@ export default function History() {
                   <button
                     key={item.id}
                     onClick={() => navigate('/tailor', { state: { tailoredResult: item } })}
-                    className="glass-card p-5 text-left hover:border-indigo-500/50 transition-all duration-200 hover:scale-[1.01] group flex flex-col justify-between min-h-[160px]"
+                    className="glass-card p-5 text-left hover:border-blue-600/50 transition-all duration-200 hover:scale-[1.01] group flex flex-col justify-between min-h-[160px]"
                   >
                     <div>
                       <div className="flex items-start justify-between mb-3">
-                        <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center flex-shrink-0">
-                          <svg className="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div className="w-10 h-10 rounded-xl bg-blue-600/20 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                               d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                           </svg>
                         </div>
-                        <span className="text-xs px-2.5 py-1 rounded-full bg-violet-500/20 text-violet-300 font-bold border border-violet-500/30">
+                        <span className="text-xs px-2.5 py-1 rounded-full bg-blue-600/20 text-blue-700 font-bold border border-blue-600/30">
                           {item.matchScore}% Match
                         </span>
                       </div>
-                      <p className="text-slate-400 text-xs mb-2 italic line-clamp-2">
+                      <p className="text-slate-600 text-xs mb-2 italic line-clamp-2">
                         "{item.jobDescriptionText}"
                       </p>
                     </div>
 
-                    <div className="border-t border-slate-800/80 pt-3 mt-2 flex items-center justify-between text-xs text-slate-500">
-                      <span>Resume: <strong className="text-slate-400 font-medium">{item.resume?.fileName}</strong></span>
+                    <div className="border-t border-slate-200/80 pt-3 mt-2 flex items-center justify-between text-xs text-slate-500">
+                      <span>Resume: <strong className="text-slate-600 font-medium">{item.resume?.fileName}</strong></span>
                       <span>{formatDate(item.createdAt)}</span>
                     </div>
                   </button>

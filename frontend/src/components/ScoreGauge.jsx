@@ -52,10 +52,10 @@ export default function ScoreGauge({ score }) {
           style={{ filter: `drop-shadow(0 0 8px ${color})` }}
         />
 
-        <text x="90" y="82" textAnchor="middle" fill="white" fontSize="36" fontWeight="700" fontFamily="Inter">
+        <text x="90" y="82" textAnchor="middle" fill="#1E293B" fontSize="36" fontWeight="700" fontFamily="Inter">
           {score}
         </text>
-        <text x="90" y="102" textAnchor="middle" fill="rgba(148,163,184,0.8)" fontSize="12" fontFamily="Inter">
+        <text x="90" y="102" textAnchor="middle" fill="#64748B" fontSize="12" fontFamily="Inter">
           ATS Score
         </text>
       </svg>

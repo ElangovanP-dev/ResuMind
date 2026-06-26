@@ -4,14 +4,14 @@
 
 :root {
   /* Color Palette */
-  --color-primary: #4F46E5;
-  --color-secondary: #7C3AED;
-  --color-accent: #06B6D4;
+  --color-primary: #2563EB;
+  --color-secondary: #3B82F6;
+  --color-accent: #10B981;
   --color-success: #10B981;
-  --color-background: #0F172A;
-  --color-surface: #1E293B;
-  --color-text-primary: #F8FAFC;
-  --color-text-secondary: #94A3B8;
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #64748B;
 
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
@@ -34,7 +34,7 @@ body {
   position: relative;
   overflow-x: hidden;
   /* Premium radial base gradient */
-  background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 45%, #020617 100%);
+  background: radial-gradient(circle at top left, #ffffff 0%, #f8fafc 45%, #e2e8f0 100%);
 }
 
 /* Background floating gradient blobs */
@@ -54,14 +54,14 @@ body::after {
 }
 
 body::before {
-  background: radial-gradient(circle, var(--color-primary) 0%, rgba(79, 70, 229, 0) 70%);
+  background: radial-gradient(circle, var(--color-primary) 0%, rgba(37, 99, 235, 0) 70%);
   top: -10%;
   left: -5%;
   animation: float-slow-1 25s infinite alternate ease-in-out;
 }
 
 body::after {
-  background: radial-gradient(circle, var(--color-secondary) 0%, rgba(124, 58, 237, 0) 70%);
+  background: radial-gradient(circle, var(--color-secondary) 0%, rgba(59, 130, 246, 0) 70%);
   bottom: -10%;
   right: -5%;
   animation: float-slow-2 30s infinite alternate ease-in-out;
@@ -81,8 +81,8 @@ body::after {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0b0f19; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+::-webkit-scrollbar-track { background: #e2e8f0; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
 
 /* Navigation links underglow on hover */
@@ -107,29 +107,29 @@ nav a:hover::after {
   transform-origin: bottom left;
 }
 nav a:hover {
-  text-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+  text-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
 }
 
 /* Glass card & Glow Border on hover */
 .glass-card {
-  background: rgba(30, 41, 59, 0.55);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
   border-radius: 16px;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-card:hover {
   transform: translateY(-8px);
-  border-color: rgba(6, 182, 212, 0.25);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 
-              0 0 15px 1px rgba(79, 70, 229, 0.1);
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1), 
+              0 0 15px 1px rgba(37, 99, 235, 0.05);
 }
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #818cf8, #c084fc);
+  background: linear-gradient(135deg, #2563EB, #3B82F6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -140,17 +140,17 @@ nav a:hover {
   background: var(--gradient-primary);
   border: none;
   border-radius: 10px;
-  color: var(--color-text-primary);
+  color: #ffffff;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
   position: relative;
   overflow: hidden;
 }
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5),
-              0 0 10px rgba(6, 182, 212, 0.2);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3),
+              0 0 10px rgba(37, 99, 235, 0.1);
 }
 .btn-primary:active:not(:disabled) {
   transform: translateY(0) scale(1);
@@ -163,8 +163,8 @@ nav a:hover {
 /* Input field glow & smooth borders */
 .input-field {
   width: 100%;
-  background: rgba(30, 41, 59, 0.4);
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(203, 213, 225, 0.8);
   color: var(--color-text-primary);
   border-radius: 12px;
   padding: 12px 16px;
@@ -172,10 +172,10 @@ nav a:hover {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .input-field:focus {
-  background: rgba(30, 41, 59, 0.7);
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2), 
-              0 0 10px rgba(79, 70, 229, 0.15);
+  background: #ffffff;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), 
+              0 0 10px rgba(37, 99, 235, 0.1);
 }
 
 /* Spinner */
@@ -183,8 +183,8 @@ nav a:hover {
 .spinner {
   width: 44px;
   height: 44px;
-  border: 3px solid rgba(79, 70, 229, 0.15);
-  border-top-color: var(--color-accent);
+  border: 3px solid rgba(37, 99, 235, 0.15);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
