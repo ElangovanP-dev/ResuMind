@@ -6,6 +6,7 @@ import Upload   from './pages/Upload'
 import Results  from './pages/Results'
 import History  from './pages/History'
 import PublicResults from './pages/PublicResults'
+import Tailor   from './pages/Tailor'
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token')
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/upload"   element={<ProtectedRoute><Upload /></ProtectedRoute>} />
           <Route path="/results/:id" element={<ProtectedRoute><Results /></ProtectedRoute>} />
+          <Route path="/tailor"   element={<ProtectedRoute><Tailor /></ProtectedRoute>} />
           <Route path="/history"  element={<ProtectedRoute><History /></ProtectedRoute>} />
           <Route path="/public/results/:shareToken" element={<PublicResults />} />
         </Routes>

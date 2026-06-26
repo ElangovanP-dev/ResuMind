@@ -131,4 +131,103 @@ public class AIAnalysisService {
         response.feedback_summary = "The resume presents solid backend credentials with strong command of Spring Boot. However, to stand out for full-stack profiles, the candidate should highlight cloud deployment practices and front-end JavaScript frameworks.";
         return response;
     }
+
+    public static class TailorResponse {
+        public int matchScore;
+        public List<String> missingKeywords;
+        public List<Map<String, String>> rewrittenBullets;
+        public List<String> suggestedSkills;
+        public String tailoredSummary;
+    }
+
+    public TailorResponse tailorResume(String resumeText, String jobDescription) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("YOUR_")) {
+            return getMockTailoring(resumeText, jobDescription);
+        }
+
+        try {
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String prompt = "You are an expert resume coach and ATS optimization specialist.\n" +
+                    "Given the resume text and the job description below, return ONLY a valid JSON object (no markdown, no backticks, no wrapping other than the JSON itself) with this exact structure:\n" +
+                    "{\n" +
+                    "  \"matchScore\": <integer 0-100>,\n" +
+                    "  \"missingKeywords\": [\"keyword1\", \"keyword2\", ...],\n" +
+                    "  \"rewrittenBullets\": [\n" +
+                    "    { \"original\": \"...\", \"rewritten\": \"...\" },\n" +
+                    "    ...\n" +
+                    "  ],\n" +
+                    "  \"suggestedSkills\": [\"Skill1\", \"Skill2\", ...],\n" +
+                    "  \"tailoredSummary\": \"A 2-3 sentence professional summary written for this specific JD.\"\n" +
+                    "}\n\n" +
+                    "Resume Text:\n" +
+                    resumeText + "\n\n" +
+                    "Job Description:\n" +
+                    jobDescription;
+
+            Map<String, Object> textPart = new HashMap<>();
+            textPart.put("text", prompt);
+
+            Map<String, Object> contentParts = new HashMap<>();
+            contentParts.put("parts", Collections.singletonList(textPart));
+
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("contents", Collections.singletonList(contentParts));
+
+            Map<String, Object> generationConfig = new HashMap<>();
+            generationConfig.put("temperature", 0.7);
+            generationConfig.put("maxOutputTokens", 2000);
+            requestBody.put("generationConfig", generationConfig);
+
+            String jsonRequest = objectMapper.writeValueAsString(requestBody);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+
+            String responseText = rootNode
+                    .path("candidates").get(0)
+                    .path("content")
+                    .path("parts").get(0)
+                    .path("text").asText();
+
+            String cleanedJson = cleanJsonText(responseText);
+            return objectMapper.readValue(cleanedJson, TailorResponse.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getMockTailoring(resumeText, jobDescription);
+        }
+    }
+
+    private TailorResponse getMockTailoring(String resumeText, String jobDescription) {
+        TailorResponse response = new TailorResponse();
+        response.matchScore = 75;
+        response.missingKeywords = Arrays.asList("Docker", "Kubernetes", "AWS ECS", "CI/CD");
+        
+        List<Map<String, String>> bullets = new ArrayList<>();
+        Map<String, String> b1 = new HashMap<>();
+        b1.put("original", "Developed backend services using Java and Spring Boot.");
+        b1.put("rewritten", "Engineered scalable and robust Java backend services leveraging Spring Boot, adhering to clean architecture and modern software design principles.");
+        bullets.add(b1);
+
+        Map<String, String> b2 = new HashMap<>();
+        b2.put("original", "Maintained database systems and wrote SQL scripts.");
+        b2.put("rewritten", "Optimized relational database schemas and authored high-performance SQL queries in MySQL to resolve critical throughput issues.");
+        bullets.add(b2);
+
+        Map<String, String> b3 = new HashMap<>();
+        b3.put("original", "Participated in agile ceremonies.");
+        b3.put("rewritten", "Collaborated within cross-functional agile teams to deliver features iteratively, participating in daily standups, sprints, and code reviews.");
+        bullets.add(b3);
+
+        response.rewrittenBullets = bullets;
+        response.suggestedSkills = Arrays.asList("Docker containerization", "AWS Cloud Services", "CI/CD Pipeline integration", "REST APIs design patterns");
+        response.tailoredSummary = "Experienced Software Engineer with a strong background in developing Java backend services using Spring Boot and relational database design. Eager to bring containerized deployment experience and agile methodologies to your development team.";
+        
+        return response;
+    }
 }

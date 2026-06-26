@@ -55,6 +55,7 @@ export default function Upload() {
       <nav className="max-w-3xl mx-auto flex items-center justify-between mb-10">
         <span className="text-xl font-bold gradient-text">ResuMind</span>
         <div className="flex items-center gap-4">
+          <Link to="/tailor" className="text-slate-400 hover:text-white text-sm transition-colors">JD Tailor</Link>
           <Link to="/history" className="text-slate-400 hover:text-white text-sm transition-colors">History</Link>
           <button onClick={logout}
             className="text-slate-400 hover:text-red-400 text-sm transition-colors">

@@ -65,6 +65,7 @@ export default function Results() {
       <nav className="max-w-5xl mx-auto flex items-center justify-between mb-8">
         <span className="text-xl font-bold gradient-text">ResuMind</span>
         <div className="flex items-center gap-4">
+          <Link to="/tailor" className="text-slate-400 hover:text-white text-sm transition-colors">JD Tailor</Link>
           <Link to="/history" className="text-slate-400 hover:text-white text-sm transition-colors">History</Link>
           <button onClick={logout} className="text-slate-400 hover:text-red-400 text-sm transition-colors">Sign out</button>
         </div>
@@ -148,7 +149,13 @@ export default function Results() {
 
         <div className="flex flex-col sm:flex-row gap-4">
           <button id="upload-another-btn" onClick={() => navigate('/upload')} className="btn-primary flex-1 text-center">
-            ↑ Upload Another Resume
+            ↑ Upload Another
+          </button>
+          <button
+            onClick={() => navigate('/tailor', { state: { resumeId: id } })}
+            className="flex-1 text-center py-3 px-6 rounded-xl border border-indigo-500 bg-indigo-600/10 text-indigo-300 hover:bg-indigo-600/20 transition-all duration-200 font-semibold"
+          >
+            ✨ Tailor for a Job
           </button>
           <button onClick={handleShare} disabled={!data?.shareToken} className="flex-1 text-center py-3 px-6 rounded-xl border border-violet-500 bg-violet-600/10 text-violet-300 hover:bg-violet-600/20 transition-all duration-200 font-semibold disabled:opacity-50">
             {copied ? '✓ Link Copied!' : '🔗 Share Analysis'}
