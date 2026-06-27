@@ -149,7 +149,7 @@ export default function Upload() {
           id="analyze-btn"
           onClick={handleAnalyze}
           disabled={!file || loading}
-          className="btn-primary w-full mt-6 text-lg"
+          className="btn-primary w-full py-3.5 mt-6 text-lg font-bold shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200"
         >
           {loading ? 'Analyzing…' : '✨ Analyze Resume'}
         </button>

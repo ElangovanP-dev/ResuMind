@@ -9,13 +9,13 @@ import PublicResults from './pages/PublicResults'
 import Tailor   from './pages/Tailor'
 
 function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('token')
+  const { token } = useAuth()
   if (!token) return <Navigate to="/login" replace />
   return children
 }
 
 function PublicRoute({ children }) {
-  const token = localStorage.getItem('token')
+  const { token } = useAuth()
   if (token) return <Navigate to="/upload" replace />
   return children
 }
