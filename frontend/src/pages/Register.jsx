@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
@@ -31,9 +31,52 @@ export default function Register() {
     }
   }
 
-  const handleGoogleSignUp = () => {
-    alert('Google OAuth registration integration would redirect to the Google OAuth sign-up prompt. (Feature mock-up)')
+  const handleGoogleResponse = async (response) => {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await api.post('/api/auth/google', { idToken: response.credential })
+      if (!res.data.token) {
+        setError('Google login failed.')
+        setLoading(false)
+        return
+      }
+      login(res.data.token, res.data.user)
+      navigate('/upload')
+    } catch (err) {
+      setError(err.response?.data?.message || 'Google authentication failed.')
+    } finally {
+      setLoading(false)
+    }
   }
+
+  useEffect(() => {
+    const initializeGoogle = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: "683526019565-dcrp41n0gupn2ocd35b1uafv6g0q6mhe.apps.googleusercontent.com",
+          callback: handleGoogleResponse
+        })
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-button-div"),
+          { theme: "outline", size: "large", width: "384", text: "continue_with" }
+        )
+      }
+    }
+
+    initializeGoogle()
+
+    const script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]')
+    if (script) {
+      script.addEventListener('load', initializeGoogle)
+    }
+
+    return () => {
+      if (script) {
+        script.removeEventListener('load', initializeGoogle)
+      }
+    }
+  }, [])
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -56,31 +99,7 @@ export default function Register() {
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={handleGoogleSignUp}
-          className="w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold transition-all duration-200 shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] mb-6"
-        >
-          <svg className="w-5 h-5" viewBox="0 0 24 24">
-            <path
-              fill="#EA4335"
-              d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.67 1.62 14.99 1 12 1 7.35 1 3.39 3.65 1.5 7.5l3.92 3.04C6.35 7.64 8.94 5.04 12 5.04z"
-            />
-            <path
-              fill="#4285F4"
-              d="M23.49 12.27c0-.81-.07-1.59-.2-2.34H12v4.54h6.48c-.28 1.48-1.12 2.73-2.38 3.58l3.7 2.87c2.16-2 3.69-4.95 3.69-8.65z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.42 14.54c-.24-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29L1.5 6.92c-.8 1.6-1.25 3.4-1.25 5.33s.45 3.73 1.25 5.33l3.92-3.04z"
-            />
-            <path
-              fill="#34A853"
-              d="M12 23c3.24 0 5.97-1.07 7.96-2.92l-3.7-2.87c-1.03.69-2.35 1.1-4.26 1.1-3.06 0-5.65-2.6-6.58-5.5L1.5 15.85C3.39 20.35 7.35 23 12 23z"
-            />
-          </svg>
-          Continue with Google
-        </button>
+        <div id="google-button-div" className="w-full flex justify-center mb-6 min-h-[46px]"></div>
 
         <div className="relative flex py-2 items-center mb-6">
           <div className="flex-grow border-t border-slate-200"></div>
