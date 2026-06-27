@@ -54,7 +54,7 @@ export default function Register() {
     const initializeGoogle = () => {
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id: "683526019565-dcrp41n0gupn2ocd35b1uafv6g0q6mhe.apps.googleusercontent.com",
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "683526019565-dcrp41n0gupn2ocd35b1uafv6g0q6mhe.apps.googleusercontent.com",
           callback: handleGoogleResponse
         })
         window.google.accounts.id.renderButton(
