@@ -78,7 +78,9 @@ export default function PublicResults() {
             </h2>
             <div className="flex flex-wrap gap-2">
               {skills.map((s, i) => (
-                <span key={i} className="text-sm px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/25">
+                <span key={i} 
+                  className="text-sm px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/25 animate-stagger-item"
+                  style={{ animationDelay: `${i * 0.05}s` }}>
                   {s}
                 </span>
               ))}
@@ -93,7 +95,9 @@ export default function PublicResults() {
             </h2>
             <div className="flex flex-wrap gap-2">
               {missing.map((m, i) => (
-                <span key={i} className="text-sm px-3 py-1 rounded-full bg-red-500/15 text-red-700 border border-red-500/25">
+                <span key={i} 
+                  className="text-sm px-3 py-1 rounded-full bg-red-500/15 text-red-700 border border-red-500/25 animate-stagger-item"
+                  style={{ animationDelay: `${i * 0.05}s` }}>
                   {m}
                 </span>
               ))}
@@ -107,7 +111,9 @@ export default function PublicResults() {
           <h2 className="text-lg font-semibold text-slate-900 mb-4">💪 Strengths</h2>
           <div className="space-y-3">
             {strengths.map((s, i) => (
-              <div key={i} className="flex gap-3 p-4 rounded-xl bg-emerald-500/5 border-l-4 border-emerald-500">
+              <div key={i} 
+                className="flex gap-3 p-4 rounded-xl bg-emerald-500/5 border-l-4 border-emerald-500 animate-stagger-item"
+                style={{ animationDelay: `${i * 0.1}s` }}>
                 <span className="text-emerald-600 font-bold text-sm mt-0.5">{i + 1}</span>
                 <p className="text-slate-700 text-sm leading-relaxed">{s}</p>
               </div>
@@ -120,7 +126,9 @@ export default function PublicResults() {
           <h2 className="text-lg font-semibold text-slate-900 mb-4">🚀 Suggested Improvements</h2>
           <div className="space-y-3">
             {improvements.map((imp, i) => (
-              <div key={i} className="flex gap-3 p-4 rounded-xl bg-amber-500/5 border-l-4 border-amber-500">
+              <div key={i} 
+                className="flex gap-3 p-4 rounded-xl bg-amber-500/5 border-l-4 border-amber-500 animate-stagger-item"
+                style={{ animationDelay: `${i * 0.1}s` }}>
                 <span className="text-amber-600 font-bold text-sm mt-0.5">{i + 1}</span>
                 <p className="text-slate-700 text-sm leading-relaxed">{imp}</p>
               </div>

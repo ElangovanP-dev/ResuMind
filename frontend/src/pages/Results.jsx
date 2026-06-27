@@ -6,8 +6,17 @@ import { useAuth } from '../context/AuthContext'
 
 function formatDate(dateStr) {
   if (!dateStr) return ''
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  const hasTimezone = dateStr.includes('Z') || dateStr.match(/[+-]\d{2}:?\d{2}$/)
+  const utcDateStr = hasTimezone ? dateStr : `${dateStr}Z`
+  const d = new Date(utcDateStr)
+  const finalDate = isNaN(d.getTime()) ? new Date(dateStr) : d
+  return finalDate.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  })
 }
 
 export default function Results() {
@@ -114,7 +123,9 @@ export default function Results() {
             </h2>
             <div className="flex flex-wrap gap-2">
               {skills.map((s, i) => (
-                <span key={i} className="text-sm px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/25">
+                <span key={i} 
+                  className="text-sm px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/25 animate-stagger-item"
+                  style={{ animationDelay: `${i * 0.05}s` }}>
                   {s}
                 </span>
               ))}
@@ -129,7 +140,9 @@ export default function Results() {
             </h2>
             <div className="flex flex-wrap gap-2">
               {missing.map((m, i) => (
-                <span key={i} className="text-sm px-3 py-1 rounded-full bg-red-500/15 text-red-700 border border-red-500/25">
+                <span key={i} 
+                  className="text-sm px-3 py-1 rounded-full bg-red-500/15 text-red-700 border border-red-500/25 animate-stagger-item"
+                  style={{ animationDelay: `${i * 0.05}s` }}>
                   {m}
                 </span>
               ))}
@@ -143,7 +156,9 @@ export default function Results() {
           <h2 className="text-lg font-semibold text-slate-900 mb-4">💪 Strengths</h2>
           <div className="space-y-3">
             {strengths.map((s, i) => (
-              <div key={i} className="flex gap-3 p-4 rounded-xl bg-emerald-500/5 border-l-4 border-emerald-500">
+              <div key={i} 
+                className="flex gap-3 p-4 rounded-xl bg-emerald-500/5 border-l-4 border-emerald-500 animate-stagger-item"
+                style={{ animationDelay: `${i * 0.1}s` }}>
                 <span className="text-emerald-600 font-bold text-sm mt-0.5">{i + 1}</span>
                 <p className="text-slate-700 text-sm leading-relaxed">{s}</p>
               </div>
@@ -156,7 +171,9 @@ export default function Results() {
           <h2 className="text-lg font-semibold text-slate-900 mb-4">🚀 Suggested Improvements</h2>
           <div className="space-y-3">
             {improvements.map((imp, i) => (
-              <div key={i} className="flex gap-3 p-4 rounded-xl bg-amber-500/5 border-l-4 border-amber-500">
+              <div key={i} 
+                className="flex gap-3 p-4 rounded-xl bg-amber-500/5 border-l-4 border-amber-500 animate-stagger-item"
+                style={{ animationDelay: `${i * 0.1}s` }}>
                 <span className="text-amber-600 font-bold text-sm mt-0.5">{i + 1}</span>
                 <p className="text-slate-700 text-sm leading-relaxed">{imp}</p>
               </div>
@@ -166,20 +183,20 @@ export default function Results() {
 
 
         <div className="flex flex-col sm:flex-row gap-4">
-          <button id="upload-another-btn" onClick={() => navigate('/upload')} className="btn-primary flex-1 text-center">
+          <button id="upload-another-btn" onClick={() => navigate('/upload')} className="btn-primary flex-1 text-center py-3.5 text-base shadow-md">
             ↑ Upload Another
           </button>
           <button
             onClick={() => navigate('/tailor', { state: { resumeId: id } })}
-            className="flex-1 text-center py-3 px-6 rounded-xl border border-blue-600 bg-indigo-600/10 text-blue-700 hover:bg-indigo-600/20 transition-all duration-200 font-semibold"
+            className="flex-1 text-center py-3.5 px-6 rounded-xl border border-blue-600 bg-indigo-600/10 text-blue-700 hover:bg-indigo-600/20 transition-all duration-200 font-semibold text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0"
           >
             ✨ Tailor for a Job
           </button>
-          <button onClick={handleShare} disabled={!data?.shareToken} className="flex-1 text-center py-3 px-6 rounded-xl border border-blue-600 bg-blue-600/10 text-blue-700 hover:bg-blue-600/20 transition-all duration-200 font-semibold disabled:opacity-50">
+          <button onClick={handleShare} disabled={!data?.shareToken} className="flex-1 text-center py-3.5 px-6 rounded-xl border border-blue-600 bg-blue-600/10 text-blue-700 hover:bg-blue-600/20 transition-all duration-200 font-semibold disabled:opacity-50 text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0">
             {copied ? '✓ Link Copied!' : '🔗 Share Analysis'}
           </button>
           <Link to="/history"
-            className="flex-1 text-center py-3 px-6 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all duration-200 font-semibold">
+            className="flex-1 text-center py-3.5 px-6 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all duration-200 font-semibold text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0">
             View History
           </Link>
         </div>
