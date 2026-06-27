@@ -4,6 +4,12 @@ import ScoreGauge from '../components/ScoreGauge'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
 export default function Results() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -75,8 +81,20 @@ export default function Results() {
 
         <div className="glass-card p-8 flex flex-col md:flex-row items-center gap-8">
           <ScoreGauge score={score} />
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Resume Analysis Complete</h1>
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-slate-900 mb-1">Resume Analysis Complete</h1>
+            {data?.resume?.fileName && (
+              <p className="text-slate-500 text-sm mb-2 flex items-center gap-1.5">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                {data.resume.fileName}
+                {data?.analyzedAt && (
+                  <span className="text-slate-400">· {formatDate(data.analyzedAt)}</span>
+                )}
+              </p>
+            )}
             <p className="text-slate-600 leading-relaxed max-w-xl">{feedback}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {score >= 80 && <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-600 border border-emerald-500/30">🎯 ATS Optimised</span>}

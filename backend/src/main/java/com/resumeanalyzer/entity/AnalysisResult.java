@@ -17,6 +17,7 @@ public class AnalysisResult {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id", nullable = false, unique = true)
+    @JsonIgnoreProperties({"extractedText", "user", "hibernateLazyInitializer", "handler"})
     private Resume resume;
 
     @Column(name = "ats_score", nullable = false)

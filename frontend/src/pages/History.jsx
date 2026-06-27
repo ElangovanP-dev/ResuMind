@@ -4,13 +4,15 @@ import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 
 function ScoreBadge({ score }) {
+  if (!score && score !== 0) return null
   const color =
     score >= 80 ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/30' :
     score >= 60 ? 'bg-amber-500/20 text-amber-600 border-amber-500/30' :
-    'bg-red-500/20 text-red-600 border-red-500/30'
+    score > 0   ? 'bg-red-500/20 text-red-600 border-red-500/30' :
+                  'bg-slate-100 text-slate-500 border-slate-300'
   return (
     <span className={`text-sm font-bold px-3 py-1 rounded-full border ${color}`}>
-      {score}
+      {score > 0 ? score : 'N/A'}
     </span>
   )
 }
@@ -188,8 +190,10 @@ export default function History() {
                           {item.matchScore}% Match
                         </span>
                       </div>
-                      <p className="text-slate-600 text-xs mb-2 italic line-clamp-2">
-                        "{item.jobDescriptionText}"
+                      <p className="text-slate-500 text-xs mb-2 leading-relaxed line-clamp-2">
+                        {item.jobDescriptionText
+                          ? item.jobDescriptionText.substring(0, 120) + (item.jobDescriptionText.length > 120 ? '…' : '')
+                          : 'No description available'}
                       </p>
                     </div>
 

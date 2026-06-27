@@ -67,15 +67,7 @@ public class ResumeService {
 
     @Transactional
     public Optional<AnalysisResult> getAnalysisResult(Long resumeId) {
-        Optional<AnalysisResult> resultOpt = analysisResultRepository.findByResumeId(resumeId);
-        if (resultOpt.isPresent()) {
-            AnalysisResult result = resultOpt.get();
-            if (result.getShareToken() == null) {
-                result.setShareToken(java.util.UUID.randomUUID().toString());
-                analysisResultRepository.save(result);
-            }
-        }
-        return resultOpt;
+        return analysisResultRepository.findByResumeId(resumeId);
     }
 
     public Optional<AnalysisResult> getAnalysisByShareToken(String shareToken) {

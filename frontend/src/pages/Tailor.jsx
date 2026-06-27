@@ -190,7 +190,9 @@ export default function Tailor() {
                 <div>
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">Job Match: {result.matchScore}%</h3>
                   <p className="text-slate-600 text-sm leading-relaxed">
-                    Based on keywords and skill alignment, your resume currently has a **{result.matchScore}% match** for this job description. Incorporate the rewritten bullets and missing skills below to raise it.
+                    Based on keywords and skill alignment, your resume currently has a{' '}
+                    <strong className="text-slate-800">{result.matchScore}% match</strong>{' '}
+                    for this job description. Incorporate the rewritten bullets and missing skills below to raise it.
                   </p>
                 </div>
               </div>
