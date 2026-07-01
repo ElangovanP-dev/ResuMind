@@ -23,18 +23,12 @@ function PublicRoute({ children }) {
   return children
 }
 
-function LandingRoute() {
-  const { token } = useAuth()
-  if (token) return <Navigate to="/upload" replace />
-  return <Landing />
-}
-
 function AppRoutes() {
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<LandingRoute />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/login"    element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
         <Route path="/upload"   element={<ProtectedRoute><Upload /></ProtectedRoute>} />
