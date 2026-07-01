@@ -154,10 +154,10 @@ export default function Register() {
         )}
 
         {/* Google Sign-In — responsive container */}
-        <div ref={googleBtnRef} className="w-full flex justify-center mb-6 min-h-[44px]"
-             style={{ maxWidth: '100%', overflow: 'hidden' }}>
+        <div className="w-full flex justify-center mb-6 min-h-[44px] relative"
+             style={{ maxWidth: '100%' }}>
           {!googleReady && !googleFailed && (
-            <div className="flex items-center justify-center gap-2 text-slate-400 text-sm py-2">
+            <div className="absolute inset-0 flex items-center justify-center gap-2 text-slate-400 text-sm py-2">
               <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -165,6 +165,8 @@ export default function Register() {
               Loading Google Sign-In…
             </div>
           )}
+          <div ref={googleBtnRef} className="w-full flex justify-center"
+               style={{ visibility: googleReady ? 'visible' : 'hidden', overflow: 'hidden' }} />
         </div>
 
         {googleFailed && (
