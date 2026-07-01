@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
+import Navbar   from './components/Navbar'
 import Landing  from './pages/Landing'
 import Login    from './pages/Login'
 import Register from './pages/Register'
@@ -27,22 +29,32 @@ function LandingRoute() {
   return <Landing />
 }
 
-export default function App() {
+function AppRoutes() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingRoute />} />
-          <Route path="/login"    element={<PublicRoute><Login /></PublicRoute>} />
-          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-          <Route path="/upload"   element={<ProtectedRoute><Upload /></ProtectedRoute>} />
-          <Route path="/results/:id" element={<ProtectedRoute><Results /></ProtectedRoute>} />
-          <Route path="/tailor"   element={<ProtectedRoute><Tailor /></ProtectedRoute>} />
-          <Route path="/history"  element={<ProtectedRoute><History /></ProtectedRoute>} />
-          <Route path="/public/results/:shareToken" element={<PublicResults />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<LandingRoute />} />
+        <Route path="/login"    element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        <Route path="/upload"   element={<ProtectedRoute><Upload /></ProtectedRoute>} />
+        <Route path="/results/:id" element={<ProtectedRoute><Results /></ProtectedRoute>} />
+        <Route path="/tailor"   element={<ProtectedRoute><Tailor /></ProtectedRoute>} />
+        <Route path="/history"  element={<ProtectedRoute><History /></ProtectedRoute>} />
+        <Route path="/public/results/:shareToken" element={<PublicResults />} />
+      </Routes>
+    </>
   )
 }
 
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
+  )
+}

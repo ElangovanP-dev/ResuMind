@@ -43,15 +43,7 @@ export default function PublicResults() {
   const fileName = data?.resume?.fileName ?? 'Resume'
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-
-      <nav className="max-w-5xl mx-auto flex items-center justify-between mb-8">
-        <span className="text-xl font-bold gradient-text">ResuMind</span>
-        <Link to="/register" className="text-sm px-4 py-2 rounded-xl bg-blue-600 hover:bg-violet-700 text-slate-900 font-semibold transition-all duration-200">
-          ✨ Analyze Your Resume
-        </Link>
-      </nav>
-
+    <div className="min-h-screen pt-24 p-4 md:p-8">
       <div className="max-w-5xl mx-auto space-y-6 fade-in-up">
 
         <div className="glass-card p-8 flex flex-col md:flex-row items-center gap-8">

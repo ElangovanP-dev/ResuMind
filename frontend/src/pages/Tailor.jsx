@@ -86,20 +86,7 @@ export default function Tailor() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      {/* Navigation */}
-      <nav className="max-w-7xl mx-auto flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <span className="text-xl font-bold gradient-text cursor-pointer" onClick={() => navigate('/upload')}>ResuMind</span>
-          <span className="text-xs px-2 py-0.5 rounded bg-blue-600/20 text-blue-700 font-mono">JD TAILOR</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link to="/upload" className="text-slate-600 hover:text-slate-900 text-sm transition-colors">Upload</Link>
-          <Link to="/history" className="text-slate-600 hover:text-slate-900 text-sm transition-colors">History</Link>
-          <button onClick={logout} className="text-slate-600 hover:text-red-600 text-sm transition-colors">Sign out</button>
-        </div>
-      </nav>
-
+    <div className="min-h-screen pt-24 p-4 md:p-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start fade-in-up">
         {/* Left Input Panel */}
         <div className="lg:col-span-5 glass-card p-6 md:p-8 space-y-6">

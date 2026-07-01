@@ -53,7 +53,7 @@ export default function Results() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         <div className="spinner" />
-        <p className="text-slate-600">Loading your results…</p>
+        <p style={{ color: 'var(--text-secondary)' }}>Loading your results…</p>
       </div>
     </div>
   )
@@ -61,7 +61,7 @@ export default function Results() {
   if (error) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="glass-card p-8 text-center">
-        <p className="text-red-600 mb-4">{error}</p>
+        <p className="text-red-500 mb-4">{error}</p>
         <button onClick={() => navigate('/upload')} className="btn-primary">Go Back</button>
       </div>
     </div>
@@ -75,23 +75,14 @@ export default function Results() {
   const feedback = data?.feedback ?? ''
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-
-      <nav className="max-w-5xl mx-auto flex items-center justify-between mb-8">
-        <span className="text-xl font-bold gradient-text">ResuMind</span>
-        <div className="flex items-center gap-4">
-          <Link to="/tailor" className="text-slate-600 hover:text-slate-900 text-sm transition-colors">JD Tailor</Link>
-          <Link to="/history" className="text-slate-600 hover:text-slate-900 text-sm transition-colors">History</Link>
-          <button onClick={logout} className="text-slate-600 hover:text-red-600 text-sm transition-colors">Sign out</button>
-        </div>
-      </nav>
+    <div className="min-h-screen pt-24 p-4 md:p-8">
 
       <div className="max-w-5xl mx-auto space-y-6 fade-in-up">
 
         <div className="glass-card p-8 flex flex-col md:flex-row items-center gap-8">
           <ScoreGauge score={score} />
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-slate-900 mb-1">Resume Analysis Complete</h1>
+            <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Resume <span className="gold-text">Analysis Complete</span></h1>
             {data?.resume?.fileName && (
               <p className="text-slate-500 text-sm mb-2 flex items-center gap-1.5">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

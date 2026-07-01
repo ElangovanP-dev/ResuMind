@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../services/api'
 
@@ -54,18 +54,21 @@ function Counter({ target, suffix = '', duration = 2000 }) {
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="faq-item bg-white/80 backdrop-blur-sm">
+    <div className="faq-item">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between p-5 text-left font-semibold text-slate-800 hover:text-indigo-600 transition-colors"
+        className="w-full flex items-center justify-between p-5 text-left font-semibold text-themed-primary hover:text-violet-500 transition-colors"
+        style={{ color: open ? 'var(--violet-500)' : 'var(--text-primary)' }}
       >
         <span className="pr-4">{q}</span>
-        <svg className={`faq-chevron w-5 h-5 flex-shrink-0 text-slate-400 ${open ? 'open' : ''}`}
+        <svg className={`faq-chevron w-5 h-5 flex-shrink-0 ${open ? 'open' : ''}`}
+          style={{ color: 'var(--text-secondary)' }}
           fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      <div className={`faq-answer text-slate-600 text-sm leading-relaxed ${open ? 'open' : ''}`}>
+      <div className={`faq-answer text-sm leading-relaxed ${open ? 'open' : ''}`}
+        style={{ color: 'var(--text-secondary)' }}>
         {a}
       </div>
     </div>
@@ -79,12 +82,14 @@ function SectionHeader({ badge, title, subtitle }) {
     <div ref={ref} className="reveal-on-scroll text-center max-w-2xl mx-auto mb-16">
       {badge && (
         <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4"
-          style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(59,130,246,0.1))', color: '#6366f1' }}>
+          style={{ background: 'rgba(139,92,246,0.1)', color: 'var(--violet-500)' }}>
           {badge}
         </span>
       )}
-      <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">{title}</h2>
-      {subtitle && <p className="text-slate-600 text-lg">{subtitle}</p>}
+      <h2 className="text-3xl md:text-4xl font-extrabold mb-4" style={{ color: 'var(--text-primary)' }}>
+        {title}
+      </h2>
+      {subtitle && <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>{subtitle}</p>}
     </div>
   )
 }
@@ -97,63 +102,63 @@ function HeroMockup() {
 
   return (
     <div className="hero-mockup relative">
-      <div className="gradient-border rounded-2xl shadow-2xl" style={{ background: 'rgba(255,255,255,0.95)' }}>
+      <div className="gradient-border rounded-2xl shadow-2xl">
         <div className="shimmer-overlay rounded-2xl" />
         <div className="p-6 md:p-8 relative z-[1]" style={{ minWidth: 280 }}>
           {/* Header */}
           <div className="flex items-center gap-2 mb-6">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}>
+              style={{ background: 'linear-gradient(135deg,#7c3aed,#a855f7)' }}>
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <span className="text-sm font-bold gradient-text">ResuMind</span>
+            <span className="text-sm font-bold gold-text">ResuMind</span>
           </div>
 
           {/* Score gauge */}
           <div className="flex items-center gap-6 mb-6">
             <div className="relative pulse-glow rounded-full">
               <svg width="96" height="96" viewBox="0 0 96 96" className="-rotate-90">
-                <circle cx="48" cy="48" r="40" stroke="#e2e8f0" strokeWidth="6" fill="none" />
+                <circle cx="48" cy="48" r="40" stroke="var(--border-color)" strokeWidth="6" fill="none" />
                 <circle cx="48" cy="48" r="40" stroke="url(#scoreGrad)" strokeWidth="6" fill="none"
                   strokeLinecap="round" strokeDasharray={circumference}
                   className="score-ring-animated"
                   style={{ '--target-offset': offset }} />
                 <defs>
                   <linearGradient id="scoreGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#10b981" />
-                    <stop offset="100%" stopColor="#6366f1" />
+                    <stop offset="0%" stopColor="#7c3aed" />
+                    <stop offset="100%" stopColor="#f59e0b" />
                   </linearGradient>
                 </defs>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-extrabold text-slate-900">{score}</span>
-                <span className="text-[10px] text-slate-500 font-medium">/100</span>
+                <span className="text-2xl font-extrabold" style={{ color: 'var(--text-primary)' }}>{score}</span>
+                <span className="text-[10px] font-medium" style={{ color: 'var(--text-secondary)' }}>/100</span>
               </div>
             </div>
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Resume Score</p>
-              <p className="text-sm font-bold text-emerald-600">Excellent</p>
+              <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>Resume Score</p>
+              <p className="text-sm font-bold gold-text">Excellent</p>
             </div>
           </div>
 
           {/* Mini checks */}
           <div className="space-y-2.5">
             {[
-              { label: 'ATS Parse Rate', value: 98, color: '#10b981' },
-              { label: 'Skills Match', value: 85, color: '#6366f1' },
-              { label: 'Content Quality', value: 91, color: '#3b82f6' },
-              { label: 'Formatting', value: 95, color: '#8b5cf6' },
+              { label: 'ATS Parse Rate', value: 98, color: '#7c3aed' },
+              { label: 'Skills Match', value: 85, color: '#a855f7' },
+              { label: 'Content Quality', value: 91, color: '#f59e0b' },
+              { label: 'Formatting', value: 95, color: '#c4b5fd' },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-3">
-                <span className="text-xs text-slate-600 w-28 truncate">{item.label}</span>
-                <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                <span className="text-xs w-28 truncate" style={{ color: 'var(--text-secondary)' }}>{item.label}</span>
+                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'var(--border-color)' }}>
                   <div className="h-full rounded-full transition-all duration-1000"
                     style={{ width: `${item.value}%`, background: item.color }} />
                 </div>
-                <span className="text-xs font-bold text-slate-700 w-8 text-right">{item.value}%</span>
+                <span className="text-xs font-bold w-8 text-right" style={{ color: 'var(--text-primary)' }}>{item.value}%</span>
               </div>
             ))}
           </div>
@@ -165,14 +170,6 @@ function HeroMockup() {
 
 /* ═══════════════════════ LANDING PAGE ═══════════════════════ */
 export default function Landing() {
-  const [navScrolled, setNavScrolled] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setNavScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   /* refs for flip-in cards */
   const howRef1 = useRef(null)
   const howRef2 = useRef(null)
@@ -197,7 +194,7 @@ export default function Landing() {
       ),
       title: 'ATS Compatibility',
       desc: 'Deep analysis against reverse-engineered ATS platforms like Greenhouse, Lever & Workday.',
-      color: '#10b981'
+      color: '#7c3aed'
     },
     {
       icon: (
@@ -208,7 +205,7 @@ export default function Landing() {
       ),
       title: 'AI-Powered Insights',
       desc: 'Gemini AI analyzes your resume content, writing quality, and quantifiable impact.',
-      color: '#6366f1'
+      color: '#a855f7'
     },
     {
       icon: (
@@ -219,7 +216,7 @@ export default function Landing() {
       ),
       title: 'JD Tailoring',
       desc: 'Paste any job description and get precise skill-match analysis with keyword suggestions.',
-      color: '#3b82f6'
+      color: '#f59e0b'
     },
     {
       icon: (
@@ -230,7 +227,7 @@ export default function Landing() {
       ),
       title: 'Score & Benchmarks',
       desc: 'Get a 0-100 ATS score with category breakdowns: formatting, skills, content & impact.',
-      color: '#8b5cf6'
+      color: '#c4b5fd'
     }
   ]
 
@@ -246,40 +243,14 @@ export default function Landing() {
   return (
     <div className="min-h-screen overflow-x-hidden">
 
-      {/* ━━━ NAVBAR ━━━ */}
-      <nav className={`landing-nav ${navScrolled ? 'scrolled' : ''}`}>
-        <div className="max-w-6xl mx-auto px-4 md:px-8 flex items-center justify-between h-16">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}>
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <span className="text-xl font-extrabold gradient-text">ResuMind</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Features</a>
-            <a href="#how-it-works" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">How It Works</a>
-            <a href="#faq" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">FAQ</a>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link to="/login"
-              className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors px-4 py-2">
-              Sign In
-            </Link>
-            <Link to="/register"
-              className="text-sm font-bold text-white px-5 py-2.5 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg"
-              style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)' }}>
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </nav>
-
       {/* ━━━ HERO ━━━ */}
-      <section className="landing-section pt-32 md:pt-40 pb-20 relative">
+      <section className="landing-section pt-28 md:pt-36 pb-20 relative"
+        style={{
+          backgroundImage: 'url(/hero-bg.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundBlendMode: 'overlay',
+        }}>
         <div className="parallax-blob parallax-blob-1" style={{ top: '-10%', left: '-8%' }} />
         <div className="parallax-blob parallax-blob-2" style={{ bottom: '5%', right: '-5%' }} />
 
@@ -287,14 +258,16 @@ export default function Landing() {
           {/* Left — Text */}
           <div className="flex-1 text-center lg:text-left">
             <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6"
-              style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(59,130,246,0.1))', color: '#6366f1' }}>
+              style={{ background: 'rgba(139,92,246,0.12)', color: 'var(--violet-500)' }}>
               AI Resume Analyzer
             </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6"
+              style={{ color: 'var(--text-primary)' }}>
               Is your resume<br />
-              <span className="gradient-text">good enough?</span>
+              <span className="gold-text">good enough?</span>
             </h1>
-            <p className="text-lg md:text-xl text-slate-600 mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-lg md:text-xl mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed"
+              style={{ color: 'var(--text-secondary)' }}>
               A free AI-powered resume checker that analyzes ATS compatibility, content quality, and skills — giving you actionable tips to land more interviews.
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
@@ -302,7 +275,8 @@ export default function Landing() {
                 className="btn-primary px-8 py-4 text-lg font-bold rounded-2xl inline-flex items-center gap-2 shadow-xl">
                 <span>✨</span> Get Your Score — Free
               </Link>
-              <a href="#how-it-works" className="text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors inline-flex items-center gap-1">
+              <a href="#how-it-works" className="text-sm font-semibold inline-flex items-center gap-1 transition-colors"
+                style={{ color: 'var(--text-secondary)' }}>
                 See how it works
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -319,7 +293,7 @@ export default function Landing() {
       </section>
 
       {/* ━━━ STATS ━━━ */}
-      <section className="py-12 border-y border-slate-200/60 bg-white/40 backdrop-blur-sm">
+      <section className="py-12 border-y" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-surface)' }}>
         <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center px-4">
           {[
             { value: 10000, suffix: '+', label: 'Resumes Analyzed' },
@@ -328,10 +302,10 @@ export default function Landing() {
             { value: 4.8, suffix: '★', label: 'User Rating' },
           ].map((stat) => (
             <div key={stat.label}>
-              <p className="text-3xl md:text-4xl font-extrabold gradient-text mb-1">
+              <p className="text-3xl md:text-4xl font-extrabold gold-text mb-1">
                 <Counter target={stat.value} suffix={stat.suffix} />
               </p>
-              <p className="text-sm text-slate-500 font-medium">{stat.label}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{stat.label}</p>
             </div>
           ))}
         </div>
@@ -353,7 +327,7 @@ export default function Landing() {
               title: 'Upload Your Resume',
               desc: 'Drop your PDF resume into our secure uploader. We support files up to 5MB.',
               icon: (
-                <svg className="w-8 h-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-8 h-8" style={{ color: 'var(--violet-500)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
@@ -366,7 +340,7 @@ export default function Landing() {
               title: 'AI Analyzes Everything',
               desc: 'Gemini AI scans your content for ATS compatibility, skills, formatting, and impact.',
               icon: (
-                <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-8 h-8" style={{ color: 'var(--gold-500)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                     d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -379,7 +353,7 @@ export default function Landing() {
               title: 'Get Actionable Results',
               desc: 'Receive your ATS score, category breakdowns, and specific tips to improve each section.',
               icon: (
-                <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-8 h-8" style={{ color: '#10b981' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -390,22 +364,22 @@ export default function Landing() {
             <div key={item.step} ref={item.ref}
               className={`flip-in ${item.stagger} glass-card p-8 text-center relative group`}>
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-extrabold text-white"
-                style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)' }}>
+                style={{ background: 'linear-gradient(135deg,#7c3aed,#a855f7)' }}>
                 STEP {item.step}
               </div>
-              <div className="w-16 h-16 mx-auto mb-5 mt-3 rounded-2xl bg-slate-50 flex items-center justify-center
-                              group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 mx-auto mb-5 mt-3 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                style={{ background: 'var(--bg-surface)' }}>
                 {item.icon}
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">{item.desc}</p>
+              <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{item.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ━━━ FEATURES ━━━ */}
-      <section id="features" className="landing-section bg-gradient-to-b from-white/0 to-indigo-50/30">
+      <section id="features" className="landing-section">
         <SectionHeader
           badge="Features"
           title="Everything you need to land interviews"
@@ -419,12 +393,12 @@ export default function Landing() {
               <div key={feat.title} ref={ref}
                 className={`reveal-on-scroll stagger-${i + 1} card-3d glass-card p-7 flex gap-5 items-start`}>
                 <div className="w-14 h-14 rounded-2xl flex-shrink-0 flex items-center justify-center"
-                  style={{ background: `${feat.color}15`, color: feat.color }}>
+                  style={{ background: `${feat.color}18`, color: feat.color }}>
                   {feat.icon}
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-1.5">{feat.title}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{feat.desc}</p>
+                  <h3 className="text-lg font-bold mb-1.5" style={{ color: 'var(--text-primary)' }}>{feat.title}</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{feat.desc}</p>
                 </div>
               </div>
             )
@@ -447,13 +421,13 @@ export default function Landing() {
               num: '1',
               title: 'ATS Parse Rate',
               desc: 'Like an ATS, we analyze and interpret your resume\'s content and structure. We check against signals from hundreds of ATS platforms including Greenhouse, Lever, and Workday. If we can understand your skills, experience, and sections — so can the ATS.',
-              gradient: 'linear-gradient(135deg, #10b981, #059669)',
+              gradient: 'linear-gradient(135deg, #7c3aed, #a855f7)',
             },
             {
               num: '2',
               title: 'Content Quality',
               desc: 'Recruiters look beyond what ATS checks. We evaluate your quantifiable achievements, writing clarity, and impact statements. The AI identifies ambiguous claims, missing context, and suggests improvements to make your resume stand out to human reviewers.',
-              gradient: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+              gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
             }
           ].map((tier) => {
             const ref = useReveal()
@@ -465,8 +439,8 @@ export default function Landing() {
                   style={{ background: tier.gradient }}>
                   {tier.num}
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">{tier.title}</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{tier.desc}</p>
+                <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{tier.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{tier.desc}</p>
               </div>
             )
           })}
@@ -474,7 +448,7 @@ export default function Landing() {
       </section>
 
       {/* ━━━ FAQ ━━━ */}
-      <section id="faq" className="landing-section bg-gradient-to-b from-indigo-50/20 to-white/0">
+      <section id="faq" className="landing-section">
         <SectionHeader
           badge="FAQ"
           title="Frequently asked questions"
@@ -491,7 +465,7 @@ export default function Landing() {
       {/* ━━━ CTA ━━━ */}
       <section className="landing-section relative overflow-hidden">
         <div className="absolute inset-0 z-0"
-          style={{ background: 'linear-gradient(135deg, #6366f1 0%, #3b82f6 50%, #10b981 100%)' }} />
+          style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #f59e0b 100%)' }} />
         <div className="parallax-blob" style={{ width: 400, height: 400, top: '-20%', right: '-10%', background: 'rgba(255,255,255,0.1)', filter: 'blur(60px)', opacity: 0.3 }} />
 
         <div className="max-w-3xl mx-auto text-center relative z-[1]">
@@ -503,33 +477,31 @@ export default function Landing() {
           </p>
           <Link to="/register"
             className="inline-flex items-center gap-2 px-10 py-4 rounded-2xl text-lg font-bold transition-all hover:-translate-y-1 hover:shadow-2xl"
-            style={{ background: 'white', color: '#6366f1' }}>
+            style={{ background: 'white', color: '#7c3aed' }}>
             <span>🚀</span> Get Started — It's Free
           </Link>
         </div>
       </section>
 
       {/* ━━━ FOOTER ━━━ */}
-      <footer className="bg-slate-900 text-slate-400 py-16 px-4">
+      <footer className="py-16 px-4" style={{ background: '#0c0815', color: '#a78bfa' }}>
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-10 mb-12">
-            {/* Brand */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }}>
+                  style={{ background: 'linear-gradient(135deg,#7c3aed,#a855f7)' }}>
                   <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <span className="text-xl font-extrabold text-white">ResuMind</span>
+                <span className="text-xl font-extrabold gold-text">ResuMind</span>
               </div>
-              <p className="text-sm leading-relaxed max-w-sm">
+              <p className="text-sm leading-relaxed max-w-sm" style={{ color: '#c4b5fd' }}>
                 AI-powered resume analyzer that helps you craft the perfect resume, pass ATS screening, and land more interviews.
               </p>
             </div>
-            {/* Links */}
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Product</h4>
               <ul className="space-y-2 text-sm">
@@ -546,12 +518,11 @@ export default function Landing() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-slate-800 pt-8 text-center text-xs">
+          <div className="pt-8 text-center text-xs" style={{ borderTop: '1px solid rgba(139,92,246,0.2)' }}>
             <p>© {new Date().getFullYear()} ResuMind. Made with ❤️ for job seekers everywhere.</p>
           </div>
         </div>
       </footer>
-
     </div>
   )
 }

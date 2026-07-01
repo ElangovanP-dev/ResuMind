@@ -129,25 +129,25 @@ export default function Login() {
   }, [handleGoogleResponse, googleReady])
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 pt-24">
       <div className="glass-card w-full max-w-md p-8 fade-in-up">
 
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4"
-               style={{background:'linear-gradient(135deg,#6366f1,#8b5cf6)'}}>
-            <svg className="w-8 h-8 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               style={{background:'linear-gradient(135deg,#7c3aed,#a855f7)'}}>
+            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold gradient-text">ResuMind</h1>
-          <p className="text-slate-600 mt-1 text-sm">AI-Powered Resume Analyzer</p>
+          <h1 className="text-3xl font-bold gold-text">ResuMind</h1>
+          <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>AI-Powered Resume Analyzer</p>
         </div>
 
-        <h2 className="text-xl font-semibold text-slate-900 mb-6">Welcome back</h2>
+        <h2 className="text-xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Welcome back</h2>
 
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 text-sm">
+          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm">
             {error}
           </div>
         )}
@@ -156,7 +156,7 @@ export default function Login() {
         <div className="w-full flex justify-center mb-6 min-h-[44px] relative"
              style={{ maxWidth: '100%' }}>
           {!googleReady && !googleFailed && (
-            <div className="absolute inset-0 flex items-center justify-center gap-2 text-slate-400 text-sm py-2">
+            <div className="absolute inset-0 flex items-center justify-center gap-2 text-sm py-2" style={{ color: 'var(--text-secondary)' }}>
               <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -169,27 +169,27 @@ export default function Login() {
         </div>
 
         {googleFailed && (
-          <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 text-sm text-center">
+          <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 text-sm text-center">
             Google Sign-In is unavailable. Please sign in with email below.
           </div>
         )}
 
         <div className="relative flex py-2 items-center mb-6">
-          <div className="flex-grow border-t border-slate-200"></div>
-          <span className="flex-shrink mx-4 text-slate-400 text-xs uppercase tracking-wider">or sign in with email</span>
-          <div className="flex-grow border-t border-slate-200"></div>
+          <div className="flex-grow border-t" style={{ borderColor: 'var(--border-color)' }}></div>
+          <span className="flex-shrink mx-4 text-xs uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>or sign in with email</span>
+          <div className="flex-grow border-t" style={{ borderColor: 'var(--border-color)' }}></div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-slate-600 text-sm mb-1.5">Email address</label>
+            <label className="block text-sm mb-1.5" style={{ color: 'var(--text-secondary)' }}>Email address</label>
             <input id="login-email" type="email" required placeholder="you@example.com"
               className="input-field"
               value={form.email}
               onChange={e => setForm({ ...form, email: e.target.value })} />
           </div>
           <div>
-            <label className="block text-slate-600 text-sm mb-1.5">Password</label>
+            <label className="block text-sm mb-1.5" style={{ color: 'var(--text-secondary)' }}>Password</label>
             <div className="relative">
               <input id="login-password" type={showPassword ? 'text' : 'password'} required placeholder="••••••••"
                 className="input-field pr-12"
@@ -198,7 +198,8 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors p-1"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 focus:outline-none transition-colors p-1"
+                style={{ color: 'var(--text-tertiary)' }}
                 title={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? (
@@ -219,9 +220,9 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="text-center text-slate-600 text-sm mt-6">
+        <p className="text-center text-sm mt-6" style={{ color: 'var(--text-secondary)' }}>
           Don't have an account?{' '}
-          <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+          <Link to="/register" className="font-medium transition-colors hover:opacity-80" style={{ color: 'var(--violet-500)' }}>
             Create one
           </Link>
         </p>

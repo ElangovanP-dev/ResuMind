@@ -49,23 +49,14 @@ export default function History() {
   }, [activeTab])
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-
-      <nav className="max-w-5xl mx-auto flex items-center justify-between mb-8">
-        <span className="text-xl font-bold gradient-text cursor-pointer" onClick={() => navigate('/upload')}>ResuMind</span>
-        <div className="flex items-center gap-4">
-          <Link to="/tailor" className="text-slate-600 hover:text-slate-900 text-sm transition-colors">JD Tailor</Link>
-          <Link to="/upload" className="text-slate-600 hover:text-slate-900 text-sm transition-colors">Upload</Link>
-          <button onClick={logout} className="text-slate-600 hover:text-red-600 text-sm transition-colors">Sign out</button>
-        </div>
-      </nav>
+    <div className="min-h-screen pt-24 p-4 md:p-8">
 
       <div className="max-w-5xl mx-auto fade-in-up">
         {/* Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Your History</h1>
-            <p className="text-slate-600 mt-1 text-sm">Review your past ATS analyses and JD tailoring runs</p>
+            <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>Your <span className="gold-text">History</span></h1>
+            <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Review your past ATS analyses and JD tailoring runs</p>
           </div>
           <div className="flex gap-2">
             <Link to="/upload" className="btn-primary text-sm py-2.5">
@@ -75,27 +66,25 @@ export default function History() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-200 mb-6 gap-6">
+        <div className="flex mb-6 gap-6" style={{ borderBottom: '1px solid var(--border-color)' }}>
           <button
             onClick={() => setActiveTab('resumes')}
-            className={`pb-3 font-semibold text-sm transition-all relative ${
-              activeTab === 'resumes' ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900'
-            }`}
+            className={`pb-3 font-semibold text-sm transition-all relative`}
+            style={{ color: activeTab === 'resumes' ? 'var(--violet-500)' : 'var(--text-secondary)' }}
           >
             ATS Resume Scores
             {activeTab === 'resumes' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full" style={{ background: 'var(--violet-500)' }} />
             )}
           </button>
           <button
             onClick={() => setActiveTab('tailoring')}
-            className={`pb-3 font-semibold text-sm transition-all relative ${
-              activeTab === 'tailoring' ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900'
-            }`}
+            className={`pb-3 font-semibold text-sm transition-all relative`}
+            style={{ color: activeTab === 'tailoring' ? 'var(--violet-500)' : 'var(--text-secondary)' }}
           >
             ✨ JD Tailored Resumes
             {activeTab === 'tailoring' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full" style={{ background: 'var(--violet-500)' }} />
             )}
           </button>
         </div>
