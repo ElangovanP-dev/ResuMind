@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
+import api from '../services/api'
+
+// Wake up the Render backend immediately when the site loads
+api.get('/api/auth/ping').catch(() => {})
 
 /* ───── Scroll-reveal hook ───── */
 function useReveal(threshold = 0.15) {
