@@ -84,18 +84,18 @@ export default function Results() {
           <div className="flex-1">
             <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Resume <span className="gold-text">Analysis Complete</span></h1>
             {data?.resume?.fileName && (
-              <p className="text-slate-500 text-sm mb-2 flex items-center gap-1.5">
+              <p className="text-sm mb-2 flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 {data.resume.fileName}
                 {data?.analyzedAt && (
-                  <span className="text-slate-400">· {formatDate(data.analyzedAt)}</span>
+                  <span style={{ color: 'var(--text-tertiary)' }}>· {formatDate(data.analyzedAt)}</span>
                 )}
               </p>
             )}
-            <p className="text-slate-600 leading-relaxed max-w-xl">{feedback}</p>
+            <p className="leading-relaxed max-w-xl text-sm" style={{ color: 'var(--text-secondary)' }}>{feedback}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {score >= 80 && <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-600 border border-emerald-500/30">🎯 ATS Optimised</span>}
               {score >= 60 && score < 80 && <span className="text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-600 border border-amber-500/30">⚡ Room to Improve</span>}
@@ -107,10 +107,10 @@ export default function Results() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="glass-card p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
               <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
               Skills Found
-              <span className="ml-auto text-xs text-slate-500">{skills.length} skills</span>
+              <span className="ml-auto text-xs" style={{ color: 'var(--text-secondary)' }}>{skills.length} skills</span>
             </h2>
             <div className="flex flex-wrap gap-2">
               {skills.map((s, i) => (
@@ -120,14 +120,14 @@ export default function Results() {
                   {s}
                 </span>
               ))}
-              {skills.length === 0 && <p className="text-slate-500 text-sm">No skills detected</p>}
+              {skills.length === 0 && <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>No skills detected</p>}
             </div>
           </div>
           <div className="glass-card p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
               <span className="w-2 h-2 rounded-full bg-red-400 inline-block" />
               Missing Keywords
-              <span className="ml-auto text-xs text-slate-500">{missing.length} keywords</span>
+              <span className="ml-auto text-xs" style={{ color: 'var(--text-secondary)' }}>{missing.length} keywords</span>
             </h2>
             <div className="flex flex-wrap gap-2">
               {missing.map((m, i) => (
@@ -137,21 +137,21 @@ export default function Results() {
                   {m}
                 </span>
               ))}
-              {missing.length === 0 && <p className="text-slate-500 text-sm">Great! No missing keywords</p>}
+              {missing.length === 0 && <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Great! No missing keywords</p>}
             </div>
           </div>
         </div>
 
 
         <div className="glass-card p-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">💪 Strengths</h2>
+          <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>💪 Strengths</h2>
           <div className="space-y-3">
             {strengths.map((s, i) => (
               <div key={i} 
                 className="flex gap-3 p-4 rounded-xl bg-emerald-500/5 border-l-4 border-emerald-500 animate-stagger-item"
                 style={{ animationDelay: `${i * 0.1}s` }}>
                 <span className="text-emerald-600 font-bold text-sm mt-0.5">{i + 1}</span>
-                <p className="text-slate-700 text-sm leading-relaxed">{s}</p>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{s}</p>
               </div>
             ))}
           </div>
@@ -159,14 +159,14 @@ export default function Results() {
 
 
         <div className="glass-card p-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">🚀 Suggested Improvements</h2>
+          <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>🚀 Suggested Improvements</h2>
           <div className="space-y-3">
             {improvements.map((imp, i) => (
               <div key={i} 
                 className="flex gap-3 p-4 rounded-xl bg-amber-500/5 border-l-4 border-amber-500 animate-stagger-item"
                 style={{ animationDelay: `${i * 0.1}s` }}>
                 <span className="text-amber-600 font-bold text-sm mt-0.5">{i + 1}</span>
-                <p className="text-slate-700 text-sm leading-relaxed">{imp}</p>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{imp}</p>
               </div>
             ))}
           </div>
@@ -179,15 +179,34 @@ export default function Results() {
           </button>
           <button
             onClick={() => navigate('/tailor', { state: { resumeId: id } })}
-            className="flex-1 text-center py-3.5 px-6 rounded-xl border border-blue-600 bg-indigo-600/10 text-blue-700 hover:bg-indigo-600/20 transition-all duration-200 font-semibold text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0"
+            className="flex-1 text-center py-3.5 px-6 rounded-xl border font-semibold text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+            style={{
+              borderColor: 'var(--violet-500)',
+              background: 'rgba(124, 58, 237, 0.1)',
+              color: 'var(--text-primary)'
+            }}
           >
             ✨ Tailor for a Job
           </button>
-          <button onClick={handleShare} disabled={!data?.shareToken} className="flex-1 text-center py-3.5 px-6 rounded-xl border border-blue-600 bg-blue-600/10 text-blue-700 hover:bg-blue-600/20 transition-all duration-200 font-semibold disabled:opacity-50 text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0">
+          <button 
+            onClick={handleShare} 
+            disabled={!data?.shareToken} 
+            className="flex-1 text-center py-3.5 px-6 rounded-xl border font-semibold disabled:opacity-50 text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+            style={{
+              borderColor: 'var(--violet-500)',
+              background: 'rgba(124, 58, 237, 0.1)',
+              color: 'var(--text-primary)'
+            }}
+          >
             {copied ? '✓ Link Copied!' : '🔗 Share Analysis'}
           </button>
           <Link to="/history"
-            className="flex-1 text-center py-3.5 px-6 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all duration-200 font-semibold text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0">
+            className="flex-1 text-center py-3.5 px-6 rounded-xl border font-semibold text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center transition-all duration-200"
+            style={{
+              borderColor: 'var(--border-color)',
+              color: 'var(--text-primary)'
+            }}
+          >
             View History
           </Link>
         </div>
