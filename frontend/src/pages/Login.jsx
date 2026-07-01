@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
@@ -9,7 +9,29 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [loadingMsg, setLoadingMsg] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [googleReady, setGoogleReady] = useState(false)
+  const [googleFailed, setGoogleFailed] = useState(false)
+  const googleBtnRef = useRef(null)
+  const serverWarmRef = useRef(false)
+
+  // Warm up the Render server on mount (while user types credentials)
+  useEffect(() => {
+    if (!serverWarmRef.current) {
+      serverWarmRef.current = true
+      api.get('/api/auth/ping').catch(() => {})
+    }
+  }, [])
+
+  // Show contextual loading messages for slow connections
+  useEffect(() => {
+    if (!loading) { setLoadingMsg(''); return }
+    setLoadingMsg('Signing in…')
+    const t1 = setTimeout(() => setLoadingMsg('Connecting to server…'), 3000)
+    const t2 = setTimeout(() => setLoadingMsg('Server is waking up, please wait…'), 8000)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [loading])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -27,7 +49,7 @@ export default function Login() {
     }
   }
 
-  const handleGoogleResponse = async (response) => {
+  const handleGoogleResponse = useCallback(async (response) => {
     setLoading(true)
     setError('')
     try {
@@ -44,35 +66,67 @@ export default function Login() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [login, navigate])
 
+  // Initialize Google Sign-In with responsive width
   useEffect(() => {
-    const initializeGoogle = () => {
-      if (window.google) {
+    const renderGoogleButton = () => {
+      const container = googleBtnRef.current
+      if (!window.google || !container) return false
+
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+      if (!clientId) {
+        setGoogleFailed(true)
+        return false
+      }
+
+      try {
         window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "683526019565-dcrp41n0gupn2ocd35b1uafv6g0q6mhe.apps.googleusercontent.com",
+          client_id: clientId,
           callback: handleGoogleResponse
         })
-        window.google.accounts.id.renderButton(
-          document.getElementById("google-button-div"),
-          { theme: "outline", size: "large", width: "384", text: "continue_with" }
-        )
+
+        // Use container's actual width for responsive sizing
+        const containerWidth = Math.min(container.offsetWidth, 400)
+        container.innerHTML = '' // Clear before re-render
+        window.google.accounts.id.renderButton(container, {
+          theme: 'outline',
+          size: 'large',
+          width: containerWidth,
+          text: 'continue_with'
+        })
+        setGoogleReady(true)
+        return true
+      } catch {
+        setGoogleFailed(true)
+        return false
       }
     }
 
-    initializeGoogle()
+    // Poll for Google SDK availability (slow mobile networks)
+    let attempts = 0
+    const maxAttempts = 20
+    const interval = setInterval(() => {
+      attempts++
+      if (renderGoogleButton() || attempts >= maxAttempts) {
+        clearInterval(interval)
+        if (attempts >= maxAttempts && !googleReady) {
+          setGoogleFailed(true)
+        }
+      }
+    }, 500)
 
-    const script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]')
-    if (script) {
-      script.addEventListener('load', initializeGoogle)
-    }
+    // Re-render on resize for responsive width
+    const resizeObserver = new ResizeObserver(() => {
+      if (googleReady && window.google) renderGoogleButton()
+    })
+    if (googleBtnRef.current) resizeObserver.observe(googleBtnRef.current)
 
     return () => {
-      if (script) {
-        script.removeEventListener('load', initializeGoogle)
-      }
+      clearInterval(interval)
+      resizeObserver.disconnect()
     }
-  }, [])
+  }, [handleGoogleResponse, googleReady])
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -98,7 +152,25 @@ export default function Login() {
           </div>
         )}
 
-        <div id="google-button-div" className="w-full flex justify-center mb-6 min-h-[46px]"></div>
+        {/* Google Sign-In — responsive container */}
+        <div ref={googleBtnRef} className="w-full flex justify-center mb-6 min-h-[44px]"
+             style={{ maxWidth: '100%', overflow: 'hidden' }}>
+          {!googleReady && !googleFailed && (
+            <div className="flex items-center justify-center gap-2 text-slate-400 text-sm py-2">
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Loading Google Sign-In…
+            </div>
+          )}
+        </div>
+
+        {googleFailed && (
+          <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 text-sm text-center">
+            Google Sign-In is unavailable. Please sign in with email below.
+          </div>
+        )}
 
         <div className="relative flex py-2 items-center mb-6">
           <div className="flex-grow border-t border-slate-200"></div>
@@ -141,7 +213,7 @@ export default function Login() {
             </div>
           </div>
           <button id="login-submit" type="submit" disabled={loading} className="btn-primary w-full py-3.5 mt-4 text-base tracking-wide shadow-md">
-            {loading ? 'Signing in…' : 'Sign in'}
+            {loading ? loadingMsg : 'Sign in'}
           </button>
         </form>
 

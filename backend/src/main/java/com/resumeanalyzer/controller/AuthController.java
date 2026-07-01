@@ -66,6 +66,11 @@ public class AuthController {
                         .body(new AuthResponse(null, null)));
     }
 
+    @GetMapping("/ping")
+    public ResponseEntity<Map<String, String>> ping() {
+        return ResponseEntity.ok(Map.of("status", "ok"));
+    }
+
     @PostMapping("/google")
     public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> request) {
         String idToken = request.get("idToken");
