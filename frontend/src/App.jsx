@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import Landing  from './pages/Landing'
 import Login    from './pages/Login'
 import Register from './pages/Register'
 import Upload   from './pages/Upload'
@@ -20,12 +21,18 @@ function PublicRoute({ children }) {
   return children
 }
 
+function LandingRoute() {
+  const { token } = useAuth()
+  if (token) return <Navigate to="/upload" replace />
+  return <Landing />
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/upload" replace />} />
+          <Route path="/" element={<LandingRoute />} />
           <Route path="/login"    element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/upload"   element={<ProtectedRoute><Upload /></ProtectedRoute>} />
@@ -38,3 +45,4 @@ export default function App() {
     </AuthProvider>
   )
 }
+
