@@ -56,7 +56,7 @@ export default function Results() {
   useEffect(() => {
     setLoading(true)
     setError('')
-    api.get(`/api/resume/analysis/${id}`)
+    api.get(`/api/resume/${id}/analysis`)
       .then(res => setData(res.data))
       .catch(() => setError('Failed to load analysis results.'))
       .finally(() => setLoading(false))
