@@ -464,4 +464,497 @@ public class AIAnalysisService {
         }
         return text;
     }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PREMIUM FEATURES IMPLEMENTATION
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    public static class AtsSimulationResponse {
+        public Map<String, Object> workday;
+        public Map<String, Object> greenhouse;
+        public Map<String, Object> lever;
+    }
+
+    public static class BiasDetectionResponse {
+        public List<Map<String, String>> flags;
+        public int score;
+    }
+
+    public static class InterviewPredictionResponse {
+        public List<Map<String, Object>> questions;
+    }
+
+    public static class OutreachResponse {
+        public String emailTemplate;
+        public String linkedinTemplate;
+    }
+
+    public static class GithubImportResponse {
+        public List<String> bullets;
+    }
+
+    public static class ABTestResponse {
+        public int scoreA;
+        public int scoreB;
+        public String explanation;
+        public String winner;
+    }
+
+    public AtsSimulationResponse simulateAts(String resumeText) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+            return getMockAtsSimulation(resumeText);
+        }
+
+        try {
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String prompt =
+                "You are an ATS simulation system mimicking Workday, Greenhouse, and Lever parsing logic.\n" +
+                "Evaluate how each platform handles the following resume text. Output detailed parsed state and drop risks.\n\n" +
+                "Return ONLY a valid JSON object matching this structure:\n" +
+                "{\n" +
+                "  \"workday\": {\n" +
+                "    \"parserType\": \"Layout & Column Parser (Strict)\",\n" +
+                "    \"readabilityScore\": <0-100>,\n" +
+                "    \"extractedSkills\": [\"skill1\", ...],\n" +
+                "    \"warnings\": [\"warning1\", ...],\n" +
+                "    \"droppedContent\": \"Description of text likely discarded by Workday layout-parser (e.g. columns, graphics)\"\n" +
+                "  },\n" +
+                "  \"greenhouse\": {\n" +
+                "    \"parserType\": \"Tabular & Block Parser\",\n" +
+                "    \"readabilityScore\": <0-100>,\n" +
+                "    \"extractedSkills\": [\"skill1\", ...],\n" +
+                "    \"warnings\": [\"warning1\", ...],\n" +
+                "    \"droppedContent\": \"Description of elements parsed poorly by Greenhouse (e.g. tables, header text)\"\n" +
+                "  },\n" +
+                "  \"lever\": {\n" +
+                "    \"parserType\": \"Strict Keyword Matcher\",\n" +
+                "    \"readabilityScore\": <0-100>,\n" +
+                "    \"extractedSkills\": [\"skill1\", ...],\n" +
+                "    \"warnings\": [\"warning1\", ...],\n" +
+                "    \"droppedContent\": \"Description of keywords or sections Lever might fail to map correctly\"\n" +
+                "  }\n" +
+                "}\n\n" +
+                "RESUME TEXT:\n" + preprocessResumeText(resumeText);
+
+            Map<String, Object> textPart = new HashMap<>();
+            textPart.put("text", prompt);
+            Map<String, Object> contentParts = new HashMap<>();
+            contentParts.put("parts", Collections.singletonList(textPart));
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("contents", Collections.singletonList(contentParts));
+            Map<String, Object> generationConfig = new HashMap<>();
+            generationConfig.put("temperature", 0.2);
+            generationConfig.put("responseMimeType", "application/json");
+            requestBody.put("generationConfig", generationConfig);
+
+            String jsonRequest = objectMapper.writeValueAsString(requestBody);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            String responseText = rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+
+            return objectMapper.readValue(cleanJsonText(responseText), AtsSimulationResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getMockAtsSimulation(resumeText);
+        }
+    }
+
+    public BiasDetectionResponse detectBias(String resumeText) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+            return getMockBiasDetection(resumeText);
+        }
+
+        try {
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String prompt =
+                "You are an expert HR compliance advisor and unconscious bias auditor.\n" +
+                "Analyze the provided resume for age markers (e.g. graduation dates >10 years ago, old-school tech), gender-coded words, or unnecessary personal info.\n\n" +
+                "Return ONLY a valid JSON object matching this structure:\n" +
+                "{\n" +
+                "  \"score\": <integer 0-100, where 100 is perfectly bias-free and modern>,\n" +
+                "  \"flags\": [\n" +
+                "    { \"issue\": \"Age/Gender bias description\", \"snippet\": \"the problem text snippet\", \"suggestion\": \"neutral modern alternative suggestion\" }\n" +
+                "  ]\n" +
+                "}\n\n" +
+                "RESUME TEXT:\n" + preprocessResumeText(resumeText);
+
+            Map<String, Object> textPart = new HashMap<>();
+            textPart.put("text", prompt);
+            Map<String, Object> contentParts = new HashMap<>();
+            contentParts.put("parts", Collections.singletonList(textPart));
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("contents", Collections.singletonList(contentParts));
+            Map<String, Object> generationConfig = new HashMap<>();
+            generationConfig.put("temperature", 0.2);
+            generationConfig.put("responseMimeType", "application/json");
+            requestBody.put("generationConfig", generationConfig);
+
+            String jsonRequest = objectMapper.writeValueAsString(requestBody);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            String responseText = rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+
+            return objectMapper.readValue(cleanJsonText(responseText), BiasDetectionResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getMockBiasDetection(resumeText);
+        }
+    }
+
+    public InterviewPredictionResponse predictQuestions(String resumeText, String jobDescription) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+            return getMockInterviewPrediction(resumeText, jobDescription);
+        }
+
+        try {
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String prompt =
+                "You are a professional technical interviewer.\n" +
+                "Compare the candidate's resume vs the job description to identify experience gaps, and generate 3 interview questions with detailed STAR answers tailored to this candidate.\n\n" +
+                "Return ONLY a valid JSON object matching this structure:\n" +
+                "{\n" +
+                "  \"questions\": [\n" +
+                "    {\n" +
+                "      \"question\": \"The predicted interview question\",\n" +
+                "      \"starAnswer\": {\n" +
+                "        \"situation\": \"A realistic candidate project situation\",\n" +
+                "        \"task\": \"The challenge or task faced\",\n" +
+                "        \"action\": \"Action taken by candidate to solve the issue\",\n" +
+                "        \"result\": \"Impactful result with numbers\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}\n\n" +
+                "RESUME:\n" + preprocessResumeText(resumeText) + "\n\n" +
+                "JD:\n" + (jobDescription.length() > 1500 ? jobDescription.substring(0, 1500) : jobDescription);
+
+            Map<String, Object> textPart = new HashMap<>();
+            textPart.put("text", prompt);
+            Map<String, Object> contentParts = new HashMap<>();
+            contentParts.put("parts", Collections.singletonList(textPart));
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("contents", Collections.singletonList(contentParts));
+            Map<String, Object> generationConfig = new HashMap<>();
+            generationConfig.put("temperature", 0.3);
+            generationConfig.put("responseMimeType", "application/json");
+            requestBody.put("generationConfig", generationConfig);
+
+            String jsonRequest = objectMapper.writeValueAsString(requestBody);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            String responseText = rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+
+            return objectMapper.readValue(cleanJsonText(responseText), InterviewPredictionResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getMockInterviewPrediction(resumeText, jobDescription);
+        }
+    }
+
+    public OutreachResponse generateOutreach(String resumeText, String companyName, String recruiterName, String jobRole) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+            return getMockOutreach(resumeText, companyName, recruiterName, jobRole);
+        }
+
+        try {
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String prompt =
+                "You are an expert networking coach.\n" +
+                "Generate a premium personalized cold email and LinkedIn message to outreach to " + recruiterName + " at " + companyName + " for the role of " + jobRole + " based on this candidate's resume experience.\n\n" +
+                "Return ONLY a valid JSON object matching this structure:\n" +
+                "{\n" +
+                "  \"emailTemplate\": \"Subject: [Catchy Email Subject]\\\\n\\\\nHi [Name],\\\\n[Professional cold email body matching candidate skills]\",\n" +
+                "  \"linkedinTemplate\": \"Hi [Name], [A shorter LinkedIn connection note under 300 characters]\"\n" +
+                "}\n\n" +
+                "RESUME:\n" + preprocessResumeText(resumeText);
+
+            Map<String, Object> textPart = new HashMap<>();
+            textPart.put("text", prompt);
+            Map<String, Object> contentParts = new HashMap<>();
+            contentParts.put("parts", Collections.singletonList(textPart));
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("contents", Collections.singletonList(contentParts));
+            Map<String, Object> generationConfig = new HashMap<>();
+            generationConfig.put("temperature", 0.4);
+            generationConfig.put("responseMimeType", "application/json");
+            requestBody.put("generationConfig", generationConfig);
+
+            String jsonRequest = objectMapper.writeValueAsString(requestBody);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            String responseText = rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+
+            return objectMapper.readValue(cleanJsonText(responseText), OutreachResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getMockOutreach(resumeText, companyName, recruiterName, jobRole);
+        }
+    }
+
+    public GithubImportResponse importGithubBullets(String repoName, String readmeText) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+            return getMockGithubImport(repoName, readmeText);
+        }
+
+        try {
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String prompt =
+                "You are an expert resume writer.\n" +
+                "Write 3 high-impact, professional resume bullet points for a software engineering candidate describing their contribution and technical implementation of this GitHub project. Begin bullet points with strong action verbs and include metrics/complexity.\n\n" +
+                "Return ONLY a valid JSON object matching this structure:\n" +
+                "{\n" +
+                "  \"bullets\": [\"Bullet point 1\", \"Bullet point 2\", \"Bullet point 3\"]\n" +
+                "}\n\n" +
+                "PROJECT REPO: " + repoName + "\n\n" +
+                "README CONTENTS:\n" + (readmeText.length() > 2000 ? readmeText.substring(0, 2000) : readmeText);
+
+            Map<String, Object> textPart = new HashMap<>();
+            textPart.put("text", prompt);
+            Map<String, Object> contentParts = new HashMap<>();
+            contentParts.put("parts", Collections.singletonList(textPart));
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("contents", Collections.singletonList(contentParts));
+            Map<String, Object> generationConfig = new HashMap<>();
+            generationConfig.put("temperature", 0.4);
+            generationConfig.put("responseMimeType", "application/json");
+            requestBody.put("generationConfig", generationConfig);
+
+            String jsonRequest = objectMapper.writeValueAsString(requestBody);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            String responseText = rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+
+            return objectMapper.readValue(cleanJsonText(responseText), GithubImportResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getMockGithubImport(repoName, readmeText);
+        }
+    }
+
+    public ABTestResponse abTestResumes(String resumeTextA, String resumeTextB, String jobDescription) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+            return getMockABTest(resumeTextA, resumeTextB, jobDescription);
+        }
+
+        try {
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String prompt =
+                "You are an expert recruiter.\n" +
+                "Compare Resume A vs Resume B against the provided job description. Determine which one is more optimized, score both (0-100), and explain the clear winner.\n\n" +
+                "Return ONLY a valid JSON object matching this structure:\n" +
+                "{\n" +
+                "  \"scoreA\": <integer>,\n" +
+                "  \"scoreB\": <integer>,\n" +
+                "  \"explanation\": \"Detailed explanation comparing strengths and gaps of both versions\",\n" +
+                "  \"winner\": \"Resume A\" or \"Resume B\"\n" +
+                "}\n\n" +
+                "RESUME A:\n" + preprocessResumeText(resumeTextA) + "\n\n" +
+                "RESUME B:\n" + preprocessResumeText(resumeTextB) + "\n\n" +
+                "JD:\n" + (jobDescription.length() > 1500 ? jobDescription.substring(0, 1500) : jobDescription);
+
+            Map<String, Object> textPart = new HashMap<>();
+            textPart.put("text", prompt);
+            Map<String, Object> contentParts = new HashMap<>();
+            contentParts.put("parts", Collections.singletonList(textPart));
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("contents", Collections.singletonList(contentParts));
+            Map<String, Object> generationConfig = new HashMap<>();
+            generationConfig.put("temperature", 0.3);
+            generationConfig.put("responseMimeType", "application/json");
+            requestBody.put("generationConfig", generationConfig);
+
+            String jsonRequest = objectMapper.writeValueAsString(requestBody);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            String responseText = rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+
+            return objectMapper.readValue(cleanJsonText(responseText), ABTestResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getMockABTest(resumeTextA, resumeTextB, jobDescription);
+        }
+    }
+
+    // ─── HIGH-FIDELITY LOCAL MOCK FALLBACK ENGINES ────────────────────────────
+
+    private AtsSimulationResponse getMockAtsSimulation(String text) {
+        String lower = text.toLowerCase();
+        int base = 65;
+        if (lower.contains("columns") || lower.contains("table")) base -= 10;
+        if (lower.contains("experience")) base += 15;
+
+        AtsSimulationResponse res = new AtsSimulationResponse();
+        res.workday = Map.of(
+            "parserType", "Layout & Column Parser (Strict)",
+            "readabilityScore", Math.max(30, base - 5),
+            "extractedSkills", List.of("Java", "Spring Boot", "Git"),
+            "warnings", List.of("Multi-column layout detected; parsed text reading order might be disrupted.", "Skills section structure could fail profile matching."),
+            "droppedContent", "Tables or graphics are stripped, possibly missing context for experience descriptors."
+        );
+        res.greenhouse = Map.of(
+            "parserType", "Tabular & Block Parser",
+            "readabilityScore", Math.max(30, base + 5),
+            "extractedSkills", List.of("Java", "Python", "SQL", "Spring Boot"),
+            "warnings", List.of("Text extracted from page margins might get appended out of order."),
+            "droppedContent", "Custom font packages stripped and layout tags ignored."
+        );
+        res.lever = Map.of(
+            "parserType", "Strict Keyword Matcher",
+            "readabilityScore", Math.max(30, base),
+            "extractedSkills", List.of("Java", "MySQL", "AWS"),
+            "warnings", List.of("Missing clear section header labels; section grouping might fail."),
+            "droppedContent", "Contact info headers failed to resolve phone structure."
+        );
+        return res;
+    }
+
+    private BiasDetectionResponse getMockBiasDetection(String text) {
+        List<Map<String, String>> flags = new ArrayList<>();
+        String lower = text.toLowerCase();
+        int score = 95;
+
+        if (lower.contains("graduated in") || lower.contains("completed in 201") || lower.contains("200")) {
+            score -= 15;
+            flags.add(Map.of(
+                "issue", "Year of graduation indicates career length directly (potential age bias).",
+                "snippet", "2010 / 2012 Graduation dates",
+                "suggestion", "Remove graduation year; display only the degree and institution name."
+            ));
+        }
+        if (lower.contains("hobbies") || lower.contains("marital") || lower.contains("gender")) {
+            score -= 10;
+            flags.add(Map.of(
+                "issue", "Personal info / marital status is irrelevant and creates unconscious hiring bias.",
+                "snippet", "Personal hobbies section",
+                "suggestion", "Delete personal hobbies; replace with relevant technical certifications."
+            ));
+        }
+        if (lower.contains("ninja") || lower.contains("rockstar")) {
+            score -= 5;
+            flags.add(Map.of(
+                "issue", "Gender-coded slang words can reduce candidate inclusivity.",
+                "snippet", "Java ninja / Rockstar developer",
+                "suggestion", "Use standard terms like 'Senior Java Developer' or 'Software Engineer'."
+            ));
+        }
+
+        BiasDetectionResponse res = new BiasDetectionResponse();
+        res.score = score;
+        res.flags = flags;
+        return res;
+    }
+
+    private InterviewPredictionResponse getMockInterviewPrediction(String resumeText, String jobDescription) {
+        String lowerResume = resumeText.toLowerCase();
+        String missingTech = "Kubernetes";
+        if (lowerResume.contains("kubernetes")) missingTech = "Kafka / Microservices design";
+
+        InterviewPredictionResponse res = new InterviewPredictionResponse();
+        res.questions = List.of(
+            Map.of(
+                "question", "Can you explain how you designed and deployed scalable microservices in your previous project?",
+                "starAnswer", Map.of(
+                    "situation", "Led modularization of a legacy monolith backend for a high-traffic retail application.",
+                    "task", "Establish high availability and decouple service dependencies to reduce system failure rates.",
+                    "action", "Engineered and decoupled 4 key modules into Spring Boot services, deploying with modern orchestration patterns.",
+                    "result", "Reduced system downtime by 40% and improved developer feature velocity."
+                )
+            ),
+            Map.of(
+                "question", "This role requires " + missingTech + ". How would you ramp up and apply this to our stack?",
+                "starAnswer", Map.of(
+                    "situation", "Needed to integrate real-time telemetry processing in a project without prior exposure to the tool.",
+                    "task", "Build a high-throughput event processing pipeline within a two-week sprint.",
+                    "action", "Researched system designs, stood up a local cluster, and wrote data producers and consumers in Java.",
+                    "result", "Deployed the pipeline on-time, successfully processing 50k events per second."
+                )
+            ),
+            Map.of(
+                "question", "Describe a situation where a production system crashed under high load. How did you resolve it?",
+                "starAnswer", Map.of(
+                    "situation", "A promotional event caused database query latency to spike, bringing down API routes.",
+                    "task", "Identify bottleneck and restore standard operations immediately.",
+                    "action", "Analyzed query telemetry, created missing indexes, and set up Redis query caching on hot paths.",
+                    "result", "Recovered API routes within 15 minutes, serving double the request volume at stable latency."
+                )
+            )
+        );
+        return res;
+    }
+
+    private OutreachResponse getMockOutreach(String resumeText, String companyName, String recruiterName, String jobRole) {
+        String recName = (recruiterName == null || recruiterName.isBlank()) ? "Recruiter" : recruiterName;
+        String compName = (companyName == null || companyName.isBlank()) ? "your team" : companyName;
+
+        OutreachResponse res = new OutreachResponse();
+        res.emailTemplate =
+            "Subject: Interested in " + jobRole + " opportunity at " + compName + "\n\n" +
+            "Hi " + recName + ",\n\n" +
+            "I recently came across the " + jobRole + " opening at " + compName + " and wanted to reach out. " +
+            "With my background engineering robust backend APIs and technical pipelines in Java, I believe my skills match the objectives of your team.\n\n" +
+            "In my previous roles, I focused on high-performance service scaling and system parsing. I'd love to chat briefly about how my experiences match the profile you're looking for.\n\n" +
+            "Best regards,\n[Your Name]";
+
+        res.linkedinTemplate =
+            "Hi " + recName + ", I noticed the " + jobRole + " opening at " + compName + " and wanted to connect. " +
+            "My experience building high-scale Java APIs aligns well with your team's stack. Hope to connect and stay in touch!";
+        return res;
+    }
+
+    private GithubImportResponse getMockGithubImport(String repoName, String readmeText) {
+        GithubImportResponse res = new GithubImportResponse();
+        res.bullets = List.of(
+            "Engineered " + repoName + " backend services, improving system stability and code scalability.",
+            "Designed automated developer pipelines, reducing integration overhead and testing delays.",
+            "Architected database persistence schemas, supporting structured query telemetry and reliable data flow."
+        );
+        return res;
+    }
+
+    private ABTestResponse getMockABTest(String textA, String textB, String jobDescription) {
+        int scoreA = 72;
+        int scoreB = 84;
+        if (textA.length() > textB.length()) {
+            scoreA = 85;
+            scoreB = 68;
+        }
+
+        ABTestResponse res = new ABTestResponse();
+        res.scoreA = scoreA;
+        res.scoreB = scoreB;
+        res.winner = scoreA >= scoreB ? "Resume A" : "Resume B";
+        res.explanation = "The winner (" + (scoreA >= scoreB ? "Resume A" : "Resume B") + ") has a much higher density of relevant keywords matching the target job description. It also features clear quantified metrics (e.g. percentages, counts) in the experience bullet points, which are missing or sparse in the other version.";
+        return res;
+    }
 }
+

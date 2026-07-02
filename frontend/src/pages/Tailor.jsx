@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import ScoreGauge from '../components/ScoreGauge'
+import InterviewPredictor from '../components/InterviewPredictor'
+import OutreachGenerator from '../components/OutreachGenerator'
 import api from '../services/api'
 import { Link } from 'react-router-dom'
 
@@ -23,6 +25,9 @@ export default function Tailor() {
   const [copiedSummary, setCopiedSummary] = useState(false)
   const [copiedBulletIndex, setCopiedBulletIndex] = useState(null)
   const [expandedBulletIndex, setExpandedBulletIndex] = useState(null)
+
+  // Sub-tabs state inside Results panel: 'report', 'interview', 'outreach'
+  const [activeSubTab, setActiveSubTab] = useState('report')
 
   // Fetch user's resumes on mount
   useEffect(() => {
@@ -62,6 +67,7 @@ export default function Tailor() {
         jobDescription: jobDescription.trim()
       })
       setResult(res.data)
+      setActiveSubTab('report') // reset to report tab on run
     } catch (err) {
       setError(err.response?.data?.message || 'Tailoring failed. Please try again.')
     } finally {
@@ -91,8 +97,8 @@ export default function Tailor() {
         {/* Left Input Panel */}
         <div className="lg:col-span-5 glass-card p-6 md:p-8 space-y-6">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">JD Tailoring Engine</h2>
-            <p className="text-slate-600 text-sm">
+            <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>JD Tailoring <span className="gold-text">Engine</span></h2>
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               Paste the job description of your target role and select a resume. Gemini AI will optimize your experience bullets, identify missing keywords, and tailor your profile summary.
             </p>
           </div>
@@ -100,13 +106,13 @@ export default function Tailor() {
           <form onSubmit={handleTailor} className="space-y-5">
             {/* Resume Selection */}
             <div>
-              <label className="block text-slate-700 font-semibold text-sm mb-2">Select Resume</label>
+              <label className="block font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Select Resume</label>
               {loadingResumes ? (
                 <div className="h-12 bg-slate-100/40 rounded-xl animate-pulse" />
               ) : resumes.length === 0 ? (
-                <div className="p-4 rounded-xl bg-blue-600/5 border border-blue-600/25 text-center text-sm">
-                  <p className="text-slate-700 mb-2">No resumes uploaded yet.</p>
-                  <Link to="/upload" className="text-blue-600 font-semibold hover:underline">Upload your first resume ↑</Link>
+                <div className="p-4 rounded-xl bg-violet-600/5 border border-themed text-center text-sm">
+                  <p className="mb-2" style={{ color: 'var(--text-secondary)' }}>No resumes uploaded yet.</p>
+                  <Link to="/upload" className="font-semibold hover:underline" style={{ color: 'var(--violet-500)' }}>Upload your first resume ↑</Link>
                 </div>
               ) : (
                 <select
@@ -115,7 +121,7 @@ export default function Tailor() {
                   className="input-field cursor-pointer"
                 >
                   {resumes.map(r => (
-                    <option key={r.id} value={r.id} className="bg-slate-50 text-slate-900">
+                    <option key={r.id} value={r.id} className="bg-themed text-themed-primary">
                       {r.fileName} (ATS: {r.atsScore ?? 'N/A'})
                     </option>
                   ))}
@@ -125,7 +131,7 @@ export default function Tailor() {
 
             {/* Job Description Textarea */}
             <div>
-              <label className="block text-slate-700 font-semibold text-sm mb-2">Target Job Description</label>
+              <label className="block font-semibold text-xs uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Target Job Description</label>
               <textarea
                 value={jobDescription}
                 onChange={e => setJobDescription(e.target.value)}
@@ -137,7 +143,7 @@ export default function Tailor() {
             </div>
 
             {error && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 text-sm text-center">
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm text-center">
                 {error}
               </div>
             )}
@@ -164,176 +170,214 @@ export default function Tailor() {
           {loading ? (
             <div className="glass-card p-12 text-center flex flex-col items-center justify-center min-h-[500px]">
               <div className="spinner mb-6" />
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Analyzing JD and Optimizing Resume...</h3>
-              <p className="text-slate-600 text-sm max-w-sm">
+              <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Analyzing JD and Optimizing Resume...</h3>
+              <p className="text-xs max-w-sm" style={{ color: 'var(--text-secondary)' }}>
                 Google Gemini is reviewing requirements, matching keywords, and rewriting work experience bullet points. This takes about 4-6 seconds.
               </p>
             </div>
           ) : result ? (
             <div className="space-y-6 fade-in-up">
-              {/* Score card */}
-              <div className="glass-card p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
-                <ScoreGauge score={result.matchScore} />
-                <div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Job Match: {result.matchScore}%</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">
-                    Based on keywords and skill alignment, your resume currently has a{' '}
-                    <strong className="text-slate-800">{result.matchScore}% match</strong>{' '}
-                    for this job description. Incorporate the rewritten bullets and missing skills below to raise it.
-                  </p>
-                </div>
+              
+              {/* Output Sub-Tabs */}
+              <div className="flex border-b border-themed pb-2.5 gap-2">
+                {[
+                  { id: 'report', name: '📋 Tailoring Report' },
+                  { id: 'interview', name: '🎯 Interview Prep' },
+                  { id: 'outreach', name: '✉️ Recruiter Outreach' }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveSubTab(tab.id)}
+                    className={`px-4 py-2 text-xs md:text-sm font-semibold rounded-xl transition-all duration-200 ${
+                      activeSubTab === tab.id
+                        ? 'bg-violet-600/20 text-violet-500 border border-violet-500/30'
+                        : 'text-themed-secondary hover:text-violet-400 border border-transparent'
+                    }`}
+                  >
+                    {tab.name}
+                  </button>
+                ))}
               </div>
 
-              {/* Missing Keywords & Suggested Skills */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Keywords */}
-                <div className="glass-card p-6">
-                  <h4 className="text-sm font-semibold text-red-600 mb-3 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-red-400" />
-                    Missing Keywords
-                  </h4>
-                  <div className="flex flex-wrap gap-1.5">
-                    {result.missingKeywords && result.missingKeywords.length > 0 ? (
-                      result.missingKeywords.map((kw, i) => (
-                        <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-red-500/10 text-red-700 border border-red-500/20">
-                          + {kw}
-                        </span>
-                      ))
-                    ) : (
-                      <p className="text-slate-500 text-xs">No missing keywords identified!</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Suggested Skills */}
-                <div className="glass-card p-6">
-                  <h4 className="text-sm font-semibold text-emerald-600 mb-3 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-green-400" />
-                    Suggested Skills Section
-                  </h4>
-                  <div className="flex flex-wrap gap-1.5">
-                    {result.suggestedSkills && result.suggestedSkills.length > 0 ? (
-                      result.suggestedSkills.map((sk, i) => (
-                        <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
-                          {sk}
-                        </span>
-                      ))
-                    ) : (
-                      <p className="text-slate-500 text-xs">No extra skills suggested.</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Professional Summary */}
-              {result.tailoredSummary && (
-                <div className="glass-card p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-semibold text-slate-900">✨ Tailored Professional Summary</h4>
-                    <button
-                      onClick={() => copyToClipboard(result.tailoredSummary, 'summary')}
-                      className="text-xs py-1 px-2.5 rounded bg-slate-100 hover:bg-slate-700 text-slate-700 transition-all"
-                    >
-                      {copiedSummary ? '✓ Copied' : '📋 Copy'}
-                    </button>
-                  </div>
-                  <p className="text-slate-700 text-sm leading-relaxed bg-slate-50/50 p-4 rounded-xl border border-slate-200 font-sans italic">
-                    "{result.tailoredSummary}"
-                  </p>
-                </div>
-              )}
-
-              {/* Rewritten Bullet Points */}
-              {result.rewrittenBullets && result.rewrittenBullets.length > 0 && (
-                <div className="glass-card p-6 space-y-4">
-                  <div>
-                    <h4 className="text-base font-bold text-slate-900 mb-1">✍️ AI-Rewritten Experience Bullets</h4>
-                    <p className="text-slate-600 text-xs">Click on any bullet to view its original version and compare them.</p>
+              {/* Tab Contents */}
+              {activeSubTab === 'report' && (
+                <div className="space-y-6">
+                  {/* Score card */}
+                  <div className="glass-card p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 border-themed">
+                    <ScoreGauge score={result.matchScore} />
+                    <div>
+                      <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Job Match: {result.matchScore}%</h3>
+                      <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                        Based on keywords and skill alignment, your resume currently has a{' '}
+                        <strong>{result.matchScore}% match</strong> for this job description. Incorporate the rewritten bullets and missing skills below to raise it.
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    {result.rewrittenBullets.map((bullet, idx) => {
-                      const isExpanded = expandedBulletIndex === idx
-                      const isCopied = copiedBulletIndex === idx
+                  {/* Missing Keywords & Suggested Skills */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Keywords */}
+                    <div className="glass-card p-6">
+                      <h4 className="text-sm font-semibold text-red-500 mb-3 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-red-400" />
+                        Missing Keywords
+                      </h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {result.missingKeywords && result.missingKeywords.length > 0 ? (
+                          result.missingKeywords.map((kw, i) => (
+                            <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">
+                              + {kw}
+                            </span>
+                          ))
+                        ) : (
+                          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>No missing keywords identified!</p>
+                        )}
+                      </div>
+                    </div>
 
-                      return (
-                        <div
-                          key={idx}
-                          className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/20 hover:border-slate-300/50 transition-colors"
+                    {/* Suggested Skills */}
+                    <div className="glass-card p-6">
+                      <h4 className="text-sm font-semibold text-emerald-500 mb-3 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-green-400" />
+                        Suggested Skills Section
+                      </h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {result.suggestedSkills && result.suggestedSkills.length > 0 ? (
+                          result.suggestedSkills.map((sk, i) => (
+                            <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                              {sk}
+                            </span>
+                          ))
+                        ) : (
+                          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>No extra skills suggested.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Professional Summary */}
+                  {result.tailoredSummary && (
+                    <div className="glass-card p-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-semibold animate-pulse" style={{ color: 'var(--text-primary)' }}>✨ Tailored Professional Summary</h4>
+                        <button
+                          onClick={() => copyToClipboard(result.tailoredSummary, 'summary')}
+                          className="text-xs px-3 py-1.5 rounded-xl border border-themed font-semibold hover:bg-violet-500/10 transition-all duration-200"
+                          style={{ color: 'var(--text-primary)' }}
                         >
-                          {/* Header row (shows rewritten version) */}
-                          <div
-                            className="p-4 flex gap-3 cursor-pointer items-start justify-between"
-                            onClick={() => setExpandedBulletIndex(isExpanded ? null : idx)}
-                          >
-                            <div className="flex gap-2.5 items-start">
-                              <span className="text-xs px-2 py-0.5 rounded bg-blue-600/10 text-blue-700 font-mono mt-0.5">
-                                {idx + 1}
-                              </span>
-                              <p className="text-slate-800 text-sm leading-relaxed pr-2">
-                                {bullet.rewritten}
-                              </p>
-                            </div>
-                            
-                            <div className="flex gap-2 items-center flex-shrink-0" onClick={e => e.stopPropagation()}>
-                              <button
-                                onClick={() => copyToClipboard(bullet.rewritten, 'bullet', idx)}
-                                className="p-1.5 rounded hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-colors"
-                                title="Copy tailored bullet"
-                              >
-                                {isCopied ? (
-                                  <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                ) : (
-                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                  </svg>
-                                )}
-                              </button>
-                              
-                              <button
-                                onClick={() => setExpandedBulletIndex(isExpanded ? null : idx)}
-                                className="p-1.5 rounded hover:bg-slate-100 text-slate-600 transition-colors"
-                              >
-                                <svg
-                                  className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
+                          {copiedSummary ? '✓ Copied' : '📋 Copy'}
+                        </button>
+                      </div>
+                      <p className="text-sm leading-relaxed p-4 rounded-xl border border-themed font-sans italic" style={{ color: 'var(--text-secondary)', background: 'var(--bg-page)' }}>
+                        "{result.tailoredSummary}"
+                      </p>
+                    </div>
+                  )}
 
-                          {/* Accordion content (shows original version) */}
-                          {isExpanded && (
-                            <div className="px-4 pb-4 pt-1 border-t border-slate-900 bg-slate-100/40">
-                              <span className="text-xs text-slate-500 font-semibold uppercase block mb-1">Original Bullet</span>
-                              <p className="text-slate-600 text-sm line-through decoration-red-500/50 leading-relaxed font-sans pr-4">
-                                {bullet.original}
-                              </p>
+                  {/* Rewritten Bullet Points */}
+                  {result.rewrittenBullets && result.rewrittenBullets.length > 0 && (
+                    <div className="glass-card p-6 space-y-4">
+                      <div>
+                        <h4 className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>✍️ AI-Rewritten Experience Bullets</h4>
+                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Click on any bullet to view its original version and compare them.</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        {result.rewrittenBullets.map((bullet, idx) => {
+                          const isExpanded = expandedBulletIndex === idx
+                          const isCopied = copiedBulletIndex === idx
+
+                          return (
+                            <div
+                              key={idx}
+                              className="border rounded-xl overflow-hidden transition-colors border-themed bg-themed-surface/20"
+                            >
+                              {/* Header row (shows rewritten version) */}
+                              <div
+                                className="p-4 flex gap-3 cursor-pointer items-start justify-between"
+                                onClick={() => setExpandedBulletIndex(isExpanded ? null : idx)}
+                              >
+                                <div className="flex gap-2.5 items-start">
+                                  <span className="text-xs px-2 py-0.5 rounded font-mono mt-0.5" style={{ background: 'rgba(124, 58, 237, 0.15)', color: 'var(--violet-400)' }}>
+                                    {idx + 1}
+                                  </span>
+                                  <p className="text-sm leading-relaxed pr-2" style={{ color: 'var(--text-primary)' }}>
+                                    {bullet.rewritten}
+                                  </p>
+                                </div>
+                                
+                                <div className="flex gap-2 items-center flex-shrink-0" onClick={e => e.stopPropagation()}>
+                                  <button
+                                    onClick={() => copyToClipboard(bullet.rewritten, 'bullet', idx)}
+                                    className="p-1.5 rounded hover:bg-violet-500/10 transition-colors"
+                                    style={{ color: 'var(--text-secondary)' }}
+                                    title="Copy tailored bullet"
+                                  >
+                                    {isCopied ? (
+                                      <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                      </svg>
+                                    ) : (
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                      </svg>
+                                    )}
+                                  </button>
+                                  
+                                  <button
+                                    onClick={() => setExpandedBulletIndex(isExpanded ? null : idx)}
+                                    className="p-1.5 rounded hover:bg-violet-500/10 transition-colors"
+                                    style={{ color: 'var(--text-secondary)' }}
+                                  >
+                                    <svg
+                                      className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Accordion content (shows original version) */}
+                              {isExpanded && (
+                                <div className="px-4 pb-4 pt-1 border-t border-themed bg-themed-surface/40">
+                                  <span className="text-[10px] font-bold uppercase block mb-1" style={{ color: 'var(--text-tertiary)' }}>Original Bullet</span>
+                                  <p className="text-sm line-through decoration-red-500/50 leading-relaxed font-sans pr-4" style={{ color: 'var(--text-secondary)' }}>
+                                    {bullet.original}
+                                  </p>
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
+
+              {activeSubTab === 'interview' && (
+                <InterviewPredictor resumeId={selectedResumeId} jobDescription={jobDescription} />
+              )}
+
+              {activeSubTab === 'outreach' && (
+                <OutreachGenerator resumeId={selectedResumeId} />
+              )}
+
             </div>
           ) : (
-            <div className="glass-card p-12 text-center flex flex-col items-center justify-center min-h-[500px]">
-              <div className="w-16 h-16 rounded-2xl bg-blue-600/10 flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="glass-card p-12 text-center flex flex-col items-center justify-center min-h-[500px] border-dashed border-2 border-themed">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'var(--border-color)' }}>
+                <svg className="w-8 h-8" style={{ color: 'var(--text-secondary)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                     d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">No Optimization Run Yet</h3>
-              <p className="text-slate-600 text-sm max-w-xs">
+              <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>No Optimization Run Yet</h3>
+              <p className="text-xs max-w-xs" style={{ color: 'var(--text-secondary)' }}>
                 Select your resume, paste the target Job Description on the left, and click "Tailor My Resume" to generate results.
               </p>
             </div>

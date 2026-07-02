@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import GithubImport from '../components/GithubImport'
 import api from '../services/api'
 
 const MAX_SIZE = 5 * 1024 * 1024
@@ -13,6 +14,10 @@ export default function Upload() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const inputRef = useRef(null)
+
+  // Github Import State
+  const [isGithubOpen, setIsGithubOpen] = useState(false)
+  const [importedBullets, setImportedBullets] = useState([])
 
   const validateAndSet = (f) => {
     if (!f) return
@@ -146,6 +151,40 @@ export default function Upload() {
         >
           {loading ? 'Analyzing…' : '✨ Analyze Resume'}
         </button>
+
+        {/* GitHub Project Bullet Helper Section */}
+        <div className="mt-12 glass-card p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-themed">
+          <div className="text-center sm:text-left">
+            <h4 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>🛠️ Build high-impact project bullets from GitHub</h4>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Connect a repository and auto-write optimized resume-ready bullets.</p>
+          </div>
+          <button
+            onClick={() => setIsGithubOpen(true)}
+            className="px-5 py-2.5 rounded-xl border border-themed text-xs font-semibold hover:bg-violet-500/10 transition-all duration-200"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            🐈 Import from GitHub
+          </button>
+        </div>
+
+        {importedBullets.length > 0 && (
+          <div className="mt-6 glass-card p-6 border-l-4 border-violet-500 space-y-4">
+            <h4 className="font-extrabold text-sm gold-text">Generated GitHub Resume Bullets</h4>
+            <div className="space-y-3">
+              {importedBullets.map((b, idx) => (
+                <div key={idx} className="p-3 rounded-lg text-xs" style={{ background: 'var(--bg-page)', color: 'var(--text-primary)' }}>
+                  {b}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <GithubImport
+          isOpen={isGithubOpen}
+          onClose={() => setIsGithubOpen(false)}
+          onImport={(bullets) => setImportedBullets(bullets)}
+        />
       </div>
     </div>
   )

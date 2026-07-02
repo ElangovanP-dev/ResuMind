@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import ScoreGauge from '../components/ScoreGauge'
+import RadarChart from '../components/RadarChart'
+import ATSComparison from '../components/ATSComparison'
+import DnaCard from '../components/DnaCard'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 
@@ -28,6 +31,14 @@ export default function Results() {
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
 
+  // Tabs: 'report', 'simulator', 'radar', 'bias', 'dna'
+  const [activeTab, setActiveTab] = useState('report')
+
+  // Bias Detector state
+  const [biasData, setBiasData] = useState(null)
+  const [loadingBias, setLoadingBias] = useState(false)
+  const [biasError, setBiasError] = useState('')
+
   const handleShare = () => {
     if (data?.shareToken) {
       const shareUrl = `${window.location.origin}/public/results/${data.shareToken}`
@@ -43,11 +54,25 @@ export default function Results() {
   }
 
   useEffect(() => {
-    api.get(`/api/resume/${id}/analysis`)
+    setLoading(true)
+    setError('')
+    api.get(`/api/resume/analysis/${id}`)
       .then(res => setData(res.data))
-      .catch(() => setError('Could not load analysis. Please try again.'))
+      .catch(() => setError('Failed to load analysis results.'))
       .finally(() => setLoading(false))
   }, [id])
+
+  // Fetch bias data when tab becomes active
+  useEffect(() => {
+    if (activeTab === 'bias' && !biasData && !loadingBias) {
+      setLoadingBias(true)
+      setBiasError('')
+      api.post('/api/premium/bias-detect', { resumeId: id })
+        .then(res => setBiasData(res.data))
+        .catch(() => setBiasError('Failed to run Bias compliance scan.'))
+        .finally(() => setLoadingBias(false))
+    }
+  }, [activeTab, id, biasData, loadingBias])
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -74,11 +99,20 @@ export default function Results() {
   const improvements = data?.improvements ?? []
   const feedback = data?.feedback ?? ''
 
+  const tabs = [
+    { id: 'report', name: '📋 Score Report' },
+    { id: 'simulator', name: '☁️ ATS Simulator' },
+    { id: 'radar', name: '🎯 Skills Radar' },
+    { id: 'bias', name: '🛡️ Bias Detector' },
+    { id: 'dna', name: '🧬 Resume DNA' }
+  ]
+
   return (
     <div className="min-h-screen pt-24 p-4 md:p-8">
 
       <div className="max-w-5xl mx-auto space-y-6 fade-in-up">
 
+        {/* Score & Summary Card */}
         <div className="glass-card p-8 flex flex-col md:flex-row items-center gap-8">
           <ScoreGauge score={score} />
           <div className="flex-1">
@@ -104,76 +138,172 @@ export default function Results() {
           </div>
         </div>
 
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="glass-card p-6">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
-              Skills Found
-              <span className="ml-auto text-xs" style={{ color: 'var(--text-secondary)' }}>{skills.length} skills</span>
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {skills.map((s, i) => (
-                <span key={i} 
-                  className="text-sm px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/25 animate-stagger-item"
-                  style={{ animationDelay: `${i * 0.05}s` }}>
-                  {s}
-                </span>
-              ))}
-              {skills.length === 0 && <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>No skills detected</p>}
-            </div>
-          </div>
-          <div className="glass-card p-6">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <span className="w-2 h-2 rounded-full bg-red-400 inline-block" />
-              Missing Keywords
-              <span className="ml-auto text-xs" style={{ color: 'var(--text-secondary)' }}>{missing.length} keywords</span>
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {missing.map((m, i) => (
-                <span key={i} 
-                  className="text-sm px-3 py-1 rounded-full bg-red-500/15 text-red-700 border border-red-500/25 animate-stagger-item"
-                  style={{ animationDelay: `${i * 0.05}s` }}>
-                  {m}
-                </span>
-              ))}
-              {missing.length === 0 && <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Great! No missing keywords</p>}
-            </div>
-          </div>
+        {/* Tab Selection */}
+        <div className="flex flex-wrap gap-2 border-b border-themed pb-3 mb-6">
+          {tabs.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`px-4 py-2 text-xs md:text-sm font-semibold rounded-xl transition-all duration-200 ${
+                activeTab === t.id
+                  ? 'bg-violet-600/20 text-violet-500 border border-violet-500/30'
+                  : 'text-themed-secondary hover:text-violet-400 border border-transparent'
+              }`}
+            >
+              {t.name}
+            </button>
+          ))}
         </div>
 
+        {/* Tab Body */}
+        <div className="space-y-6">
 
-        <div className="glass-card p-6">
-          <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>💪 Strengths</h2>
-          <div className="space-y-3">
-            {strengths.map((s, i) => (
-              <div key={i} 
-                className="flex gap-3 p-4 rounded-xl bg-emerald-500/5 border-l-4 border-emerald-500 animate-stagger-item"
-                style={{ animationDelay: `${i * 0.1}s` }}>
-                <span className="text-emerald-600 font-bold text-sm mt-0.5">{i + 1}</span>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{s}</p>
+          {/* 📋 SCORE REPORT */}
+          {activeTab === 'report' && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="glass-card p-6">
+                  <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                    <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
+                    Skills Found
+                    <span className="ml-auto text-xs" style={{ color: 'var(--text-secondary)' }}>{skills.length} skills</span>
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {skills.map((s, i) => (
+                      <span key={i} 
+                        className="text-sm px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/25 animate-stagger-item"
+                        style={{ animationDelay: `${i * 0.05}s` }}>
+                        {s}
+                      </span>
+                    ))}
+                    {skills.length === 0 && <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>No skills detected</p>}
+                  </div>
+                </div>
+                <div className="glass-card p-6">
+                  <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                    <span className="w-2 h-2 rounded-full bg-red-400 inline-block" />
+                    Missing Keywords
+                    <span className="ml-auto text-xs" style={{ color: 'var(--text-secondary)' }}>{missing.length} keywords</span>
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {missing.map((m, i) => (
+                      <span key={i} 
+                        className="text-sm px-3 py-1 rounded-full bg-red-500/15 text-red-700 border border-red-500/25 animate-stagger-item"
+                        style={{ animationDelay: `${i * 0.05}s` }}>
+                        {m}
+                      </span>
+                    ))}
+                    {missing.length === 0 && <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Great! No missing keywords</p>}
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
 
-
-        <div className="glass-card p-6">
-          <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>🚀 Suggested Improvements</h2>
-          <div className="space-y-3">
-            {improvements.map((imp, i) => (
-              <div key={i} 
-                className="flex gap-3 p-4 rounded-xl bg-amber-500/5 border-l-4 border-amber-500 animate-stagger-item"
-                style={{ animationDelay: `${i * 0.1}s` }}>
-                <span className="text-amber-600 font-bold text-sm mt-0.5">{i + 1}</span>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{imp}</p>
+              <div className="glass-card p-6">
+                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>💪 Strengths</h2>
+                <div className="space-y-3">
+                  {strengths.map((s, i) => (
+                    <div key={i} 
+                      className="flex gap-3 p-4 rounded-xl bg-emerald-500/5 border-l-4 border-emerald-500 animate-stagger-item"
+                      style={{ animationDelay: `${i * 0.1}s` }}>
+                      <span className="text-emerald-600 font-bold text-sm mt-0.5">{i + 1}</span>
+                      <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{s}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
+
+              <div className="glass-card p-6">
+                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>🚀 Suggested Improvements</h2>
+                <div className="space-y-3">
+                  {improvements.map((imp, i) => (
+                    <div key={i} 
+                      className="flex gap-3 p-4 rounded-xl bg-amber-500/5 border-l-4 border-amber-500 animate-stagger-item"
+                      style={{ animationDelay: `${i * 0.1}s` }}>
+                      <span className="text-amber-600 font-bold text-sm mt-0.5">{i + 1}</span>
+                      <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{imp}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ☁️ ATS SIMULATOR */}
+          {activeTab === 'simulator' && (
+            <ATSComparison resumeId={id} />
+          )}
+
+          {/* 🎯 SKILLS RADAR */}
+          {activeTab === 'radar' && (
+            <div className="flex justify-center max-w-xl mx-auto">
+              <div className="w-full">
+                <RadarChart skillsFound={skills} requiredSkills={missing} />
+              </div>
+            </div>
+          )}
+
+          {/* 🛡️ BIAS DETECTOR */}
+          {activeTab === 'bias' && (
+            <div className="space-y-6">
+              {loadingBias ? (
+                <div className="flex flex-col items-center justify-center p-12 gap-3 text-center">
+                  <div className="spinner" />
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>Scanning compliance & bias markers...</p>
+                </div>
+              ) : biasError ? (
+                <div className="p-6 text-center text-red-500 text-sm font-medium">{biasError}</div>
+              ) : biasData ? (
+                <div className="space-y-6">
+                  {/* Bias Score Card */}
+                  <div className="glass-card p-6 flex flex-col md:flex-row items-center gap-6 border-themed">
+                    <div className="text-4xl md:text-5xl font-extrabold text-violet-500">{biasData.score}/100</div>
+                    <div>
+                      <h4 className="font-bold text-base" style={{ color: 'var(--text-primary)' }}>Bias-free Integrity Index</h4>
+                      <p className="text-xs leading-relaxed mt-1" style={{ color: 'var(--text-secondary)' }}>
+                        This index scores compliance with modern hiring practices. A higher score means your resume is free from age indicators, gender-coded words, and unnecessary personal disclosures.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Flagged issues */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Compliance Flags & Suggestions:</h4>
+                    {biasData.flags?.length === 0 ? (
+                      <div className="p-8 text-center rounded-2xl border border-emerald-500/30 bg-emerald-500/5 text-emerald-500 text-sm font-semibold">
+                        🎉 Perfect! No bias markers or outdated details detected in your resume.
+                      </div>
+                    ) : (
+                      biasData.flags?.map((f, idx) => (
+                        <div key={idx} className="glass-card p-5 border-l-4 border-amber-500 space-y-2">
+                          <h5 className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{f.issue}</h5>
+                          <div className="p-3 rounded-lg text-xs font-mono" style={{ background: 'var(--bg-page)', color: 'var(--text-secondary)' }}>
+                            <strong>Snippet:</strong> "{f.snippet}"
+                          </div>
+                          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                            <strong>Suggested Alternative:</strong> <span className="text-emerald-500 font-semibold">{f.suggestion}</span>
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          )}
+
+          {/* 🧬 RESUME DNA */}
+          {activeTab === 'dna' && (
+            <div className="flex justify-center max-w-xl mx-auto">
+              <div className="w-full">
+                <DnaCard score={score} skills={skills} fileName={data?.resume?.fileName || 'Resume'} />
+              </div>
+            </div>
+          )}
+
         </div>
 
-
-        <div className="flex flex-col sm:flex-row gap-4">
+        {/* Footer actions */}
+        <div className="flex flex-col sm:flex-row gap-4 pt-6">
           <button id="upload-another-btn" onClick={() => navigate('/upload')} className="btn-primary flex-1 text-center py-3.5 text-base shadow-md">
             ↑ Upload Another
           </button>

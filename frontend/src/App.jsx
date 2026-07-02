@@ -10,6 +10,7 @@ import Results  from './pages/Results'
 import History  from './pages/History'
 import PublicResults from './pages/PublicResults'
 import Tailor   from './pages/Tailor'
+import ABTesting from './pages/ABTesting'
 
 function ProtectedRoute({ children }) {
   const { token } = useAuth()
@@ -35,6 +36,7 @@ function AppRoutes() {
         <Route path="/results/:id" element={<ProtectedRoute><Results /></ProtectedRoute>} />
         <Route path="/tailor"   element={<ProtectedRoute><Tailor /></ProtectedRoute>} />
         <Route path="/history"  element={<ProtectedRoute><History /></ProtectedRoute>} />
+        <Route path="/ab-test"  element={<ProtectedRoute><ABTesting /></ProtectedRoute>} />
         <Route path="/public/results/:shareToken" element={<PublicResults />} />
       </Routes>
     </>

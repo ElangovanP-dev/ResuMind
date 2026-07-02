@@ -42,6 +42,7 @@ export default function Navbar() {
             <>
               <NavLink to="/upload" current={location.pathname}>Upload</NavLink>
               <NavLink to="/tailor" current={location.pathname}>JD Tailor</NavLink>
+              <NavLink to="/ab-test" current={location.pathname}>A/B Test</NavLink>
               <NavLink to="/history" current={location.pathname}>History</NavLink>
             </>
           ) : isLanding ? (
@@ -117,6 +118,7 @@ export default function Navbar() {
             <>
               <MobileLink to="/upload" onClick={() => setMobileMenuOpen(false)}>Upload Resume</MobileLink>
               <MobileLink to="/tailor" onClick={() => setMobileMenuOpen(false)}>JD Tailor</MobileLink>
+              <MobileLink to="/ab-test" onClick={() => setMobileMenuOpen(false)}>A/B Test</MobileLink>
               <MobileLink to="/history" onClick={() => setMobileMenuOpen(false)}>History</MobileLink>
             </>
           ) : isLanding ? (
