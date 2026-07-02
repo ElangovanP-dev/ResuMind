@@ -38,6 +38,7 @@ export default function Navbar() {
 
         {/* ── Desktop Nav Links ── */}
         <div className="hidden md:flex items-center gap-7">
+          <NavLink to="/" current={location.pathname}>Home</NavLink>
           {token ? (
             <>
               <NavLink to="/upload" current={location.pathname}>Upload</NavLink>
@@ -78,17 +79,19 @@ export default function Navbar() {
           {/* Auth Buttons */}
           {token ? (
             <button onClick={logout}
-              className="text-sm font-semibold nav-link-themed hover:text-red-400 transition-colors px-3 py-2">
+              className="text-xs md:text-sm font-bold px-4 py-2.5 md:px-5 md:py-2.5 rounded-xl text-[#1e1b4b] transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-md shadow-amber-500/10 hover:shadow-amber-500/25 active:scale-[0.98]"
+              style={{ background: 'linear-gradient(135deg, #fcd34d, #f59e0b)' }}>
               Sign Out
             </button>
           ) : (
             <>
               <Link to="/login"
-                className="hidden sm:block text-sm font-semibold nav-link-themed px-4 py-2 transition-colors">
+                className="hidden sm:block text-xs md:text-sm font-bold px-4 py-2.5 md:px-5 md:py-2.5 rounded-xl text-[#1e1b4b] transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-md shadow-amber-500/10 hover:shadow-amber-500/25 active:scale-[0.98] mr-1"
+                style={{ background: 'linear-gradient(135deg, #fcd34d, #f59e0b)' }}>
                 Sign In
               </Link>
               <Link to="/register"
-                className="text-sm font-bold text-white px-5 py-2.5 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-500/25"
+                className="text-xs md:text-sm font-bold text-white px-4 py-2.5 md:px-5 md:py-2.5 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-500/25 active:scale-[0.98]"
                 style={{ background: 'linear-gradient(135deg,#7c3aed,#a855f7)' }}>
                 Get Started
               </Link>
@@ -114,6 +117,7 @@ export default function Navbar() {
       {/* ── Mobile Menu ── */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-themed px-4 py-4 space-y-2 mobile-menu-bg">
+          <MobileLink to="/" onClick={() => setMobileMenuOpen(false)}>Home</MobileLink>
           {token ? (
             <>
               <MobileLink to="/upload" onClick={() => setMobileMenuOpen(false)}>Upload Resume</MobileLink>
