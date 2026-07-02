@@ -65,6 +65,10 @@ public class ResumeService {
         return resumeRepository.findByUserIdOrderByUploadedAtDesc(userId);
     }
 
+    public List<java.util.Map<String, Object>> getHistoryOptimized(Long userId) {
+        return resumeRepository.findHistoryByUserId(userId);
+    }
+
     @Transactional
     public Optional<AnalysisResult> getAnalysisResult(Long resumeId) {
         return analysisResultRepository.findByResumeId(resumeId);

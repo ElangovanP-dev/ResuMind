@@ -71,21 +71,11 @@ public class ResumeController {
 
     @GetMapping("/history")
     public ResponseEntity<?> getHistory(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<Resume> historyList = resumeService.getHistory(userDetails.getUser().getId());
-        List<Map<String, Object>> response = historyList.stream().map(resume -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", resume.getId());
-            map.put("fileName", resume.getFileName());
-            map.put("uploadedAt", resume.getUploadedAt());
-
-            Integer score = resumeService.getAnalysisResult(resume.getId())
-                    .map(AnalysisResult::getAtsScore)
-                    .orElse(0);
-            map.put("atsScore", score);
-            return map;
-        }).toList();
-
-        return ResponseEntity.ok(response);
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Session expired. Please log in again."));
+        }
+        return ResponseEntity.ok(resumeService.getHistoryOptimized(userDetails.getUser().getId()));
     }
 
     @GetMapping("/{id}/analysis")
