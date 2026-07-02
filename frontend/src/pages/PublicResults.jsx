@@ -43,7 +43,7 @@ export default function PublicResults() {
   const fileName = data?.resume?.fileName ?? 'Resume'
 
   return (
-    <div className="min-h-screen pt-24 p-4 md:p-8">
+    <div className="min-h-screen pt-24 px-4 pb-4 md:px-8 md:pb-8">
       <div className="max-w-5xl mx-auto space-y-6 fade-in-up">
 
         <div className="glass-card p-8 flex flex-col md:flex-row items-center gap-8">

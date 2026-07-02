@@ -58,7 +58,7 @@ export default function History() {
   }, [activeTab])
 
   return (
-    <div className="min-h-screen pt-24 p-4 md:p-8">
+    <div className="min-h-screen pt-24 px-4 pb-4 md:px-8 md:pb-8">
 
       <div className="max-w-5xl mx-auto fade-in-up">
         {/* Title */}
@@ -68,8 +68,8 @@ export default function History() {
             <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Review your past ATS analyses and JD tailoring runs</p>
           </div>
           <div className="flex gap-2">
-            <Link to="/upload" className="btn-primary text-sm py-2.5">
-              + New Analysis
+            <Link to="/upload" className="btn-primary px-6 py-3 text-sm font-bold shadow-md flex items-center gap-2 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200">
+              ✨ Analyze Resume
             </Link>
           </div>
         </div>

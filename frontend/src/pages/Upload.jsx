@@ -55,7 +55,7 @@ export default function Upload() {
   }
 
   return (
-    <div className="min-h-screen pt-24 p-4 md:p-8">
+    <div className="min-h-screen pt-24 px-4 pb-4 md:px-8 md:pb-8">
       <div className="max-w-3xl mx-auto fade-in-up">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>

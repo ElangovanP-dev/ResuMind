@@ -68,7 +68,7 @@ export default function ABTesting() {
   const selectedResumeB = resumes.find(r => r.id.toString() === resumeIdB.toString())
 
   return (
-    <div className="min-h-screen pt-24 p-4 md:p-8">
+    <div className="min-h-screen pt-24 px-4 pb-4 md:px-8 md:pb-8">
       <div className="max-w-7xl mx-auto space-y-6 fade-in-up">
         
         {/* Title */}
