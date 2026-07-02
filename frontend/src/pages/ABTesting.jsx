@@ -169,11 +169,13 @@ export default function ABTesting() {
               ) : result ? (
                 <div className="space-y-6">
                   {/* Side-by-Side Scores */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Resume A */}
                     <div className="glass-card p-6 flex flex-col items-center text-center relative border-themed">
-                      <span className="absolute top-3 left-3 text-xs font-extrabold px-2.5 py-0.5 rounded-full" style={{ background: 'rgba(124, 58, 237, 0.1)', color: 'var(--violet-400)' }}>VERSION A</span>
-                      <ScoreGauge score={result.scoreA} />
+                      <span className="absolute top-3 left-3 text-[10px] md:text-xs font-extrabold px-2 py-0.5 rounded-full" style={{ background: 'rgba(124, 58, 237, 0.1)', color: 'var(--violet-400)' }}>VERSION A</span>
+                      <div className="mt-4 md:mt-2">
+                        <ScoreGauge score={result.scoreA} />
+                      </div>
                       <p className="text-xs font-semibold mt-3 text-ellipsis overflow-hidden max-w-full" style={{ color: 'var(--text-secondary)' }}>
                         {selectedResumeA?.fileName}
                       </p>
@@ -181,8 +183,10 @@ export default function ABTesting() {
 
                     {/* Resume B */}
                     <div className="glass-card p-6 flex flex-col items-center text-center relative border-themed">
-                      <span className="absolute top-3 left-3 text-xs font-extrabold px-2.5 py-0.5 rounded-full" style={{ background: 'rgba(124, 58, 237, 0.1)', color: 'var(--violet-400)' }}>VERSION B</span>
-                      <ScoreGauge score={result.scoreB} />
+                      <span className="absolute top-3 left-3 text-[10px] md:text-xs font-extrabold px-2 py-0.5 rounded-full" style={{ background: 'rgba(124, 58, 237, 0.1)', color: 'var(--violet-400)' }}>VERSION B</span>
+                      <div className="mt-4 md:mt-2">
+                        <ScoreGauge score={result.scoreB} />
+                      </div>
                       <p className="text-xs font-semibold mt-3 text-ellipsis overflow-hidden max-w-full" style={{ color: 'var(--text-secondary)' }}>
                         {selectedResumeB?.fileName}
                       </p>

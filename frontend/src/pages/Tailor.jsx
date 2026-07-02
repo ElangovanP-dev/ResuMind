@@ -179,7 +179,7 @@ export default function Tailor() {
             <div className="space-y-6 fade-in-up">
               
               {/* Output Sub-Tabs */}
-              <div className="flex border-b border-themed pb-2.5 gap-2">
+              <div className="flex flex-wrap border-b border-themed pb-2.5 gap-2 overflow-x-auto">
                 {[
                   { id: 'report', name: '📋 Tailoring Report' },
                   { id: 'interview', name: '🎯 Interview Prep' },
@@ -188,7 +188,7 @@ export default function Tailor() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveSubTab(tab.id)}
-                    className={`px-4 py-2 text-xs md:text-sm font-semibold rounded-xl transition-all duration-200 ${
+                    className={`px-4 py-2 text-xs md:text-sm font-semibold rounded-xl transition-all duration-200 whitespace-nowrap ${
                       activeSubTab === tab.id
                         ? 'bg-violet-600/20 text-violet-500 border border-violet-500/30'
                         : 'text-themed-secondary hover:text-violet-400 border border-transparent'

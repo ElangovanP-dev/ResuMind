@@ -139,12 +139,12 @@ export default function Results() {
         </div>
 
         {/* Tab Selection */}
-        <div className="flex flex-wrap gap-2 border-b border-themed pb-3 mb-6">
+        <div className="flex flex-wrap gap-2 border-b border-themed pb-3 mb-6 overflow-x-auto">
           {tabs.map(t => (
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
-              className={`px-4 py-2 text-xs md:text-sm font-semibold rounded-xl transition-all duration-200 ${
+              className={`px-4 py-2 text-xs md:text-sm font-semibold rounded-xl transition-all duration-200 whitespace-nowrap ${
                 activeTab === t.id
                   ? 'bg-violet-600/20 text-violet-500 border border-violet-500/30'
                   : 'text-themed-secondary hover:text-violet-400 border border-transparent'
@@ -303,13 +303,13 @@ export default function Results() {
         </div>
 
         {/* Footer actions */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-6">
-          <button id="upload-another-btn" onClick={() => navigate('/upload')} className="btn-primary flex-1 text-center py-3.5 text-base shadow-md">
-            ↑ Upload Another
+        <div className="flex flex-wrap gap-4 pt-6">
+          <button id="upload-another-btn" onClick={() => navigate('/upload')} className="btn-primary flex-1 min-w-[200px] text-center py-3.5 text-base shadow-lg">
+            ✨ + New Analysis
           </button>
           <button
             onClick={() => navigate('/tailor', { state: { resumeId: id } })}
-            className="flex-1 text-center py-3.5 px-6 rounded-xl border font-semibold text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+            className="flex-1 min-w-[150px] text-center py-3.5 px-6 rounded-xl border font-semibold text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
             style={{
               borderColor: 'var(--violet-500)',
               background: 'rgba(124, 58, 237, 0.1)',
@@ -321,7 +321,7 @@ export default function Results() {
           <button 
             onClick={handleShare} 
             disabled={!data?.shareToken} 
-            className="flex-1 text-center py-3.5 px-6 rounded-xl border font-semibold disabled:opacity-50 text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+            className="flex-1 min-w-[150px] text-center py-3.5 px-6 rounded-xl border font-semibold disabled:opacity-50 text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
             style={{
               borderColor: 'var(--violet-500)',
               background: 'rgba(124, 58, 237, 0.1)',
@@ -331,7 +331,7 @@ export default function Results() {
             {copied ? '✓ Link Copied!' : '🔗 Share Analysis'}
           </button>
           <Link to="/history"
-            className="flex-1 text-center py-3.5 px-6 rounded-xl border font-semibold text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center transition-all duration-200"
+            className="flex-1 min-w-[150px] text-center py-3.5 px-6 rounded-xl border font-semibold text-base shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center transition-all duration-200"
             style={{
               borderColor: 'var(--border-color)',
               color: 'var(--text-primary)'
