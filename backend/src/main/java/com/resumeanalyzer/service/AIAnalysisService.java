@@ -956,5 +956,69 @@ public class AIAnalysisService {
         res.explanation = "The winner (" + (scoreA >= scoreB ? "Resume A" : "Resume B") + ") has a much higher density of relevant keywords matching the target job description. It also features clear quantified metrics (e.g. percentages, counts) in the experience bullet points, which are missing or sparse in the other version.";
         return res;
     }
+
+    public static class CourseRecommendationResponse {
+        public List<String> missingSkills;
+        public List<Map<String, String>> recommendedCourses;
+    }
+
+    public CourseRecommendationResponse recommendCourses(String resumeText, String jobDescription) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+            return getMockCourseRecommendations(resumeText, jobDescription);
+        }
+
+        try {
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String prompt =
+                "Act as an expert career advisor. Analyze the provided resume against the requirements of this specific job description.\n" +
+                "Identify the key skills that are present in the job description but missing from the resume, and suggest relevant resources or courses the user can take to acquire those skills.\n\n" +
+                "Return ONLY a valid JSON object matching this structure:\n" +
+                "{\n" +
+                "  \"missingSkills\": [\"skill1\", \"skill2\"],\n" +
+                "  \"recommendedCourses\": [\n" +
+                "    { \"skill\": \"skill name\", \"courseName\": \"Name of the course\", \"platform\": \"e.g., Coursera, Udemy, YouTube\", \"reason\": \"Why this helps\" }\n" +
+                "  ]\n" +
+                "}\n\n" +
+                "RESUME:\n" + preprocessResumeText(resumeText) + "\n\n" +
+                "JD:\n" + (jobDescription.length() > 1500 ? jobDescription.substring(0, 1500) : jobDescription);
+
+            Map<String, Object> textPart = new HashMap<>();
+            textPart.put("text", prompt);
+            Map<String, Object> contentParts = new HashMap<>();
+            contentParts.put("parts", Collections.singletonList(textPart));
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("contents", Collections.singletonList(contentParts));
+            Map<String, Object> generationConfig = new HashMap<>();
+            generationConfig.put("temperature", 0.3);
+            generationConfig.put("responseMimeType", "application/json");
+            requestBody.put("generationConfig", generationConfig);
+
+            String jsonRequest = objectMapper.writeValueAsString(requestBody);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            String responseText = rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+
+            return objectMapper.readValue(cleanJsonText(responseText), CourseRecommendationResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getMockCourseRecommendations(resumeText, jobDescription);
+        }
+    }
+
+    private CourseRecommendationResponse getMockCourseRecommendations(String resumeText, String jobDescription) {
+        CourseRecommendationResponse res = new CourseRecommendationResponse();
+        res.missingSkills = List.of("Docker", "AWS Cloud", "GraphQL");
+        res.recommendedCourses = List.of(
+            Map.of("skill", "Docker", "courseName", "Docker for Absolute Beginners", "platform", "Udemy", "reason", "Provides hands-on lab exercises for containerization basics."),
+            Map.of("skill", "AWS Cloud", "courseName", "AWS Certified Solutions Architect", "platform", "Coursera", "reason", "Industry standard certification for cloud deployment."),
+            Map.of("skill", "GraphQL", "courseName", "GraphQL with React", "platform", "YouTube", "reason", "Free comprehensive crash course on modern API querying.")
+        );
+        return res;
+    }
 }
 

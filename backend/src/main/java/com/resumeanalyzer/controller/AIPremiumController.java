@@ -167,4 +167,29 @@ public class AIPremiumController {
             return ResponseEntity.badRequest().body(Map.of("message", "Invalid resumeId format."));
         }
     }
+
+    @PostMapping("/skill-gap-advisor")
+    public ResponseEntity<?> recommendCourses(
+            @RequestBody Map<String, Object> request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Unauthorized."));
+        }
+        Object resumeIdObj = request.get("resumeId");
+        String jobDescription = (String) request.get("jobDescription");
+        if (resumeIdObj == null || jobDescription == null || jobDescription.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Missing resumeId or jobDescription."));
+        }
+        try {
+            Long resumeId = Long.parseLong(resumeIdObj.toString());
+            Resume resume = resumeRepository.findById(resumeId).orElse(null);
+            if (resume == null || !resume.getUser().getId().equals(userDetails.getUser().getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Access denied."));
+            }
+            AIAnalysisService.CourseRecommendationResponse result = aiAnalysisService.recommendCourses(resume.getExtractedText(), jobDescription);
+            return ResponseEntity.ok(result);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid resumeId format."));
+        }
+    }
 }

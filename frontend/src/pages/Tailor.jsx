@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import ScoreGauge from '../components/ScoreGauge'
 import InterviewPredictor from '../components/InterviewPredictor'
 import OutreachGenerator from '../components/OutreachGenerator'
+import SkillGapAdvisor from '../components/SkillGapAdvisor'
 import api from '../services/api'
 import { Link } from 'react-router-dom'
 
@@ -183,7 +184,8 @@ export default function Tailor() {
                 {[
                   { id: 'report', name: '📋 Tailoring Report' },
                   { id: 'interview', name: '🎯 Interview Prep' },
-                  { id: 'outreach', name: '✉️ Recruiter Outreach' }
+                  { id: 'outreach', name: '✉️ Recruiter Outreach' },
+                  { id: 'courses', name: '🎓 Skill Gap & Courses' }
                 ].map(tab => (
                   <button
                     key={tab.id}
@@ -365,6 +367,10 @@ export default function Tailor() {
 
               {activeSubTab === 'outreach' && (
                 <OutreachGenerator resumeId={selectedResumeId} />
+              )}
+
+              {activeSubTab === 'courses' && (
+                <SkillGapAdvisor resumeId={selectedResumeId} jobDescription={jobDescription} />
               )}
 
             </div>
