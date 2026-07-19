@@ -58,14 +58,38 @@ public class ResumeController {
         }
 
         try {
-            log.info("Processing resume upload: {} for user: {}", originalFilename, userDetails.getUsername());
+            log.info("Processing resume upload: {} ({}KB) for user: {}",
+                    originalFilename, file.getSize() / 1024, userDetails.getUsername());
             AnalysisResult result = resumeService.uploadAndAnalyze(file, userDetails.getUser());
-            log.info("Analysis complete. ATS score: {}", result.getAtsScore());
-            return ResponseEntity.ok(result);
+            log.info("Analysis complete. resumeId={}, atsScore={}", result.getResume().getId(), result.getAtsScore());
+
+            // Build a clean response map to avoid any serialization issues
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", result.getId());
+            response.put("atsScore", result.getAtsScore());
+            response.put("skillsFound", result.getSkillsFound());
+            response.put("missingKeywords", result.getMissingKeywords());
+            response.put("strengths", result.getStrengths());
+            response.put("improvements", result.getImprovements());
+            response.put("feedback", result.getFeedback());
+            response.put("analyzedAt", result.getAnalyzedAt());
+            response.put("shareToken", result.getShareToken());
+
+            Map<String, Object> resumeMap = new HashMap<>();
+            resumeMap.put("id", result.getResume().getId());
+            resumeMap.put("fileName", result.getResume().getFileName());
+            resumeMap.put("uploadedAt", result.getResume().getUploadedAt());
+            response.put("resume", resumeMap);
+
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            log.warn("Resume validation failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             log.error("Resume upload/analysis failed: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Resume parsing and analysis failed: " + e.getMessage()));
+                    .body(Map.of("message", "Resume analysis failed. Please try again."));
         }
     }
 
@@ -75,7 +99,13 @@ public class ResumeController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Session expired. Please log in again."));
         }
-        return ResponseEntity.ok(resumeService.getHistoryOptimized(userDetails.getUser().getId()));
+        try {
+            return ResponseEntity.ok(resumeService.getHistoryOptimized(userDetails.getUser().getId()));
+        } catch (Exception e) {
+            log.error("Failed to load history for user {}: {}", userDetails.getUsername(), e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to load history. Please try again."));
+        }
     }
 
     @GetMapping("/{id}/analysis")
@@ -83,8 +113,14 @@ public class ResumeController {
             @PathVariable("id") Long resumeId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Session expired. Please log in again."));
+        }
+
         return resumeService.getAnalysisResult(resumeId)
                 .map(result -> {
+                    // Check ownership — resume.user is @JsonIgnore but loaded via EAGER join
                     if (!result.getResume().getUser().getId().equals(userDetails.getUser().getId())) {
                         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                                 .body(Map.of("message", "Access Denied. You do not own this analysis."));

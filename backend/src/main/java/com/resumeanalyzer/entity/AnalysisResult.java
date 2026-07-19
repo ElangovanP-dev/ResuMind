@@ -15,7 +15,7 @@ public class AnalysisResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "resume_id", nullable = false, unique = true)
     @JsonIgnoreProperties({"extractedText", "user", "hibernateLazyInitializer", "handler"})
     private Resume resume;

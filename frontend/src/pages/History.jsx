@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
@@ -23,6 +23,9 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
+const MAX_RETRIES = 3
+const RETRY_DELAYS = [2000, 5000, 10000] // exponential backoff: 2s, 5s, 10s
+
 export default function History() {
   const { logout } = useAuth()
   const navigate = useNavigate()
@@ -32,30 +35,88 @@ export default function History() {
   const [loading, setLoading] = useState(true)
   const [loadingMsg, setLoadingMsg] = useState('')
   const [error, setError] = useState('')
+  const [retryCount, setRetryCount] = useState(0)
+  const abortControllerRef = useRef(null)
 
+  // Progressive loading messages
   useEffect(() => {
     if (!loading) { setLoadingMsg(''); return }
     setLoadingMsg('Loading history…')
     const t1 = setTimeout(() => setLoadingMsg('Connecting to server…'), 3000)
-    const t2 = setTimeout(() => setLoadingMsg('Waking up database server, please wait…'), 8000)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
+    const t2 = setTimeout(() => setLoadingMsg('Server is waking up (free hosting), please wait…'), 8000)
+    const t3 = setTimeout(() => setLoadingMsg('Almost there — establishing database connection…'), 20000)
+    const t4 = setTimeout(() => setLoadingMsg('Still working on it… free hosting can take up to 60 seconds on first load.'), 35000)
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4) }
   }, [loading])
 
-  useEffect(() => {
+  // Fetch data with automatic retry
+  const fetchData = useCallback(async (tab, attempt = 0) => {
+    // Cancel any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+
     setLoading(true)
     setError('')
-    if (activeTab === 'resumes') {
-      api.get('/api/resume/history')
-        .then(res => setResumes(res.data))
-        .catch(() => setError('Failed to load resume history.'))
-        .finally(() => setLoading(false))
-    } else {
-      api.get('/api/tailor/history')
-        .then(res => setTailoredResults(res.data))
-        .catch(() => setError('Failed to load tailoring history.'))
-        .finally(() => setLoading(false))
+    setRetryCount(attempt)
+
+    // Warm up server on first attempt (wakes Render from cold start)
+    if (attempt === 0) {
+      try {
+        await api.get('/api/auth/ping', { timeout: 60000 }).catch(() => {})
+      } catch {
+        // Ignore — just a wake-up call
+      }
     }
-  }, [activeTab])
+
+    const endpoint = tab === 'resumes' ? '/api/resume/history' : '/api/tailor/history'
+
+    try {
+      const res = await api.get(endpoint, { signal: controller.signal })
+      if (tab === 'resumes') {
+        setResumes(res.data)
+      } else {
+        setTailoredResults(res.data)
+      }
+      setLoading(false)
+      setRetryCount(0)
+    } catch (err) {
+      // Don't handle aborted requests
+      if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') return
+
+      // Auto-retry on timeout or network error
+      if (attempt < MAX_RETRIES - 1 && (err.isTimeout || err.isNetworkError || !err.response)) {
+        const delay = RETRY_DELAYS[attempt] || 5000
+        setLoadingMsg(`Connection failed — retrying automatically in ${delay / 1000}s… (attempt ${attempt + 2}/${MAX_RETRIES})`)
+        setTimeout(() => fetchData(tab, attempt + 1), delay)
+        return
+      }
+
+      // Final failure — show error with retry button
+      const errorMsg = err.isTimeout
+        ? 'Server is taking too long to respond. It may still be waking up — tap Retry below.'
+        : err.isNetworkError
+        ? 'Unable to reach the server. Check your connection and tap Retry.'
+        : tab === 'resumes'
+        ? 'Failed to load resume history.'
+        : 'Failed to load tailoring history.'
+      setError(errorMsg)
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchData(activeTab)
+    return () => {
+      if (abortControllerRef.current) abortControllerRef.current.abort()
+    }
+  }, [activeTab, fetchData])
+
+  const handleRetry = () => {
+    fetchData(activeTab)
+  }
 
   return (
     <div className="min-h-screen pt-24 px-4 pb-4 md:px-8 md:pb-8">
@@ -102,14 +163,27 @@ export default function History() {
         {loading && (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <div className="spinner" />
-            <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{loadingMsg}</p>
+            <p className="text-sm font-medium text-center px-4" style={{ color: 'var(--text-secondary)' }}>{loadingMsg}</p>
+            {retryCount > 0 && (
+              <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                Retry attempt {retryCount + 1} of {MAX_RETRIES}
+              </p>
+            )}
           </div>
         )}
 
-        {/* Error message */}
+        {/* Error message with retry button */}
         {error && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm text-center">
-            {error}
+          <div className="flex flex-col items-center gap-4">
+            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm text-center w-full">
+              {error}
+            </div>
+            <button
+              onClick={handleRetry}
+              className="btn-primary px-8 py-3 text-sm font-bold shadow-md flex items-center gap-2 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200"
+            >
+              🔄 Retry
+            </button>
           </div>
         )}
 

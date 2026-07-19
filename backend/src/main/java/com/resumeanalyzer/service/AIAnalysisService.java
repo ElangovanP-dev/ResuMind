@@ -25,8 +25,8 @@ public class AIAnalysisService {
 
     public AIAnalysisService() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(15000);  // 15 seconds connect timeout
-        factory.setReadTimeout(25000);     // 25 seconds read timeout
+        factory.setConnectTimeout(20000);  // 20 seconds connect timeout
+        factory.setReadTimeout(45000);     // 45 seconds read timeout
         this.restTemplate = new RestTemplate(factory);
     }
 

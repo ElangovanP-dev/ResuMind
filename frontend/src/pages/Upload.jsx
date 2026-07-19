@@ -1,10 +1,12 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import GithubImport from '../components/GithubImport'
 import api from '../services/api'
 
 const MAX_SIZE = 5 * 1024 * 1024
+const ANALYSIS_TIMEOUT_MS = 120000 // 120 seconds max for analysis
+const MAX_RETRIES = 2 // auto-retry once on failure
 
 export default function Upload() {
   const { user } = useAuth()
@@ -13,11 +15,44 @@ export default function Upload() {
   const [dragging, setDragging] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [loadingMsg, setLoadingMsg] = useState('')
+  const [retryCount, setRetryCount] = useState(0)
   const inputRef = useRef(null)
+  const abortControllerRef = useRef(null)
+  const timeoutRef = useRef(null)
 
   // Github Import State
   const [isGithubOpen, setIsGithubOpen] = useState(false)
   const [importedBullets, setImportedBullets] = useState([])
+
+  // Progressive loading messages during analysis
+  useEffect(() => {
+    if (!loading) {
+      setLoadingMsg('')
+      return
+    }
+    setLoadingMsg('Analyzing your resume…')
+    const t1 = setTimeout(() => setLoadingMsg('Connecting to server…'), 3000)
+    const t2 = setTimeout(() => setLoadingMsg('Server is waking up (free hosting), please wait…'), 8000)
+    const t3 = setTimeout(() => setLoadingMsg('AI is analyzing your resume… almost ready!'), 20000)
+    const t4 = setTimeout(() => setLoadingMsg('Still processing — complex resumes take a bit longer…'), 40000)
+    const t5 = setTimeout(() => setLoadingMsg('Hang tight! Free hosting can be slow on first use. Almost done…'), 60000)
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+      clearTimeout(t3)
+      clearTimeout(t4)
+      clearTimeout(t5)
+    }
+  }, [loading])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) abortControllerRef.current.abort()
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [])
 
   const validateAndSet = (f) => {
     if (!f) return
@@ -36,22 +71,100 @@ export default function Upload() {
   const onDragOver = (e) => { e.preventDefault(); setDragging(true) }
   const onDragLeave = () => setDragging(false)
 
-  const handleAnalyze = async () => {
+  const handleCancel = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    setLoading(false)
+    setError('')
+    setLoadingMsg('')
+    setRetryCount(0)
+  }
+
+  // Warm up the server before sending the actual file (wakes up Render from cold start)
+  const warmUpServer = async () => {
+    try {
+      await api.get('/api/auth/ping', { timeout: 60000 }).catch(() => {})
+    } catch {
+      // Ignore — this is just a wake-up call
+    }
+  }
+
+  const handleAnalyze = async (attempt = 0) => {
     if (!file) return
     setLoading(true)
     setError('')
+    setRetryCount(attempt)
+
+    // On first attempt, try to warm up the server
+    if (attempt === 0) {
+      setLoadingMsg('Waking up server…')
+      await warmUpServer()
+    }
+
+    // Create abort controller for this request
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+
+    // Set a safety timeout
+    timeoutRef.current = setTimeout(() => {
+      controller.abort()
+      // Auto-retry on timeout
+      if (attempt < MAX_RETRIES - 1) {
+        setLoadingMsg(`Request timed out — retrying automatically… (attempt ${attempt + 2}/${MAX_RETRIES})`)
+        setTimeout(() => handleAnalyze(attempt + 1), 2000)
+        return
+      }
+      setLoading(false)
+      setError('Analysis timed out. The server may be experiencing heavy load — please tap "Retry" below.')
+    }, ANALYSIS_TIMEOUT_MS)
+
     const formData = new FormData()
     formData.append('file', file)
     try {
       const res = await api.post('/api/resume/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: ANALYSIS_TIMEOUT_MS,
+        signal: controller.signal,
       })
+      clearTimeout(timeoutRef.current)
       navigate(`/results/${res.data.resume.id}`)
     } catch (err) {
-      setError(err.response?.data?.message || 'Analysis failed. Please try again.')
-    } finally {
+      clearTimeout(timeoutRef.current)
+      // Don't show error if user cancelled
+      if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') return
+
+      // Auto-retry on timeout or network error (once)
+      if (attempt < MAX_RETRIES - 1 && (err.isTimeout || err.isNetworkError || !err.response)) {
+        setLoadingMsg(`Connection failed — retrying automatically… (attempt ${attempt + 2}/${MAX_RETRIES})`)
+        setTimeout(() => handleAnalyze(attempt + 1), 3000)
+        return
+      }
+
+      // Show detailed error
+      let errorMsg
+      if (err.isTimeout) {
+        errorMsg = 'The server took too long to respond. It may be waking up from sleep — please tap "Retry".'
+      } else if (err.isNetworkError) {
+        errorMsg = 'Unable to reach the server. Please check your internet connection and try again.'
+      } else if (err.response?.status === 401) {
+        errorMsg = 'Your session has expired. Please log in again.'
+      } else if (err.response?.status === 413) {
+        errorMsg = 'File is too large. Please upload a PDF smaller than 5 MB.'
+      } else {
+        errorMsg = err.response?.data?.message || 'Analysis failed. Please try again.'
+      }
+      setError(errorMsg)
       setLoading(false)
     }
+  }
+
+  const handleRetry = () => {
+    setError('')
+    handleAnalyze(0)
   }
 
   return (
@@ -97,8 +210,20 @@ export default function Upload() {
           {loading ? (
             <div className="flex flex-col items-center gap-4 py-4">
               <div className="spinner" />
-              <p className="font-semibold text-lg" style={{ color: 'var(--violet-500)' }}>Analyzing your resume…</p>
-              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>This may take a few seconds</p>
+              <p className="font-semibold text-lg" style={{ color: 'var(--violet-500)' }}>{loadingMsg}</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>This may take up to a minute on free hosting</p>
+              {retryCount > 0 && (
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                  Auto-retry attempt {retryCount + 1} of {MAX_RETRIES}
+                </p>
+              )}
+              <button
+                onClick={(e) => { e.stopPropagation(); handleCancel() }}
+                className="mt-2 text-xs px-4 py-2 rounded-lg border transition-all hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500"
+                style={{ borderColor: 'var(--border-color)', color: 'var(--text-secondary)' }}
+              >
+                ✕ Cancel
+              </button>
             </div>
           ) : file ? (
             <div className="flex flex-col items-center gap-3">
@@ -138,19 +263,29 @@ export default function Upload() {
         </div>
 
         {error && (
-          <div className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm text-center">
-            {error}
+          <div className="mt-4 flex flex-col items-center gap-3">
+            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm text-center w-full">
+              {error}
+            </div>
+            <button
+              onClick={handleRetry}
+              className="btn-primary px-8 py-3 text-sm font-bold shadow-md flex items-center gap-2 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200"
+            >
+              🔄 Retry Analysis
+            </button>
           </div>
         )}
 
-        <button
-          id="analyze-btn"
-          onClick={handleAnalyze}
-          disabled={!file || loading}
-          className="btn-primary w-full py-3.5 mt-6 text-lg font-bold shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200"
-        >
-          {loading ? 'Analyzing…' : '✨ Analyze Resume'}
-        </button>
+        {!error && (
+          <button
+            id="analyze-btn"
+            onClick={() => handleAnalyze(0)}
+            disabled={!file || loading}
+            className="btn-primary w-full py-3.5 mt-6 text-lg font-bold shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200"
+          >
+            {loading ? 'Analyzing…' : '✨ Analyze Resume'}
+          </button>
+        )}
 
         {/* GitHub Project Bullet Helper Section */}
         <div className="mt-12 glass-card p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-themed">
