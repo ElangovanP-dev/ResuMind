@@ -6,7 +6,7 @@ import api from '../services/api'
 
 const MAX_SIZE = 5 * 1024 * 1024
 const ANALYSIS_TIMEOUT_MS = 120000 // 120 seconds max for analysis
-const MAX_RETRIES = 2 // auto-retry once on failure
+const MAX_RETRIES = 3 // auto-retry up to 3 times on cold start / network timeout
 
 export default function Upload() {
   const { user } = useAuth()
@@ -24,6 +24,11 @@ export default function Upload() {
   // Github Import State
   const [isGithubOpen, setIsGithubOpen] = useState(false)
   const [importedBullets, setImportedBullets] = useState([])
+
+  // Pre-warm the backend server as soon as the page loads
+  useEffect(() => {
+    api.get('/api/auth/ping', { timeout: 15000 }).catch(() => {})
+  }, [])
 
   // Progressive loading messages during analysis
   useEffect(() => {
@@ -84,12 +89,12 @@ export default function Upload() {
     setRetryCount(0)
   }
 
-  // Warm up the server before sending the actual file (wakes up Render from cold start)
+  // Fast, non-blocking wake-up ping
   const warmUpServer = async () => {
     try {
-      await api.get('/api/auth/ping', { timeout: 60000 }).catch(() => {})
+      await api.get('/api/auth/ping', { timeout: 15000 }).catch(() => {})
     } catch {
-      // Ignore — this is just a wake-up call
+      // Ignore — background wake-up call
     }
   }
 
@@ -99,22 +104,22 @@ export default function Upload() {
     setError('')
     setRetryCount(attempt)
 
-    // On first attempt, try to warm up the server
+    // Trigger non-blocking server wake-up ping if attempt 0
     if (attempt === 0) {
-      setLoadingMsg('Waking up server…')
-      await warmUpServer()
+      setLoadingMsg('Connecting to server…')
+      warmUpServer()
     }
 
     // Create abort controller for this request
     const controller = new AbortController()
     abortControllerRef.current = controller
 
-    // Set a safety timeout
-    timeoutRef.current = setTimeout(() => {
+    // Set safety timeout
+    timeoutRef.current = setTimeout(async () => {
       controller.abort()
-      // Auto-retry on timeout
       if (attempt < MAX_RETRIES - 1) {
-        setLoadingMsg(`Request timed out — retrying automatically… (attempt ${attempt + 2}/${MAX_RETRIES})`)
+        setLoadingMsg(`Request timed out — waking server & retrying automatically… (attempt ${attempt + 2}/${MAX_RETRIES})`)
+        await warmUpServer()
         setTimeout(() => handleAnalyze(attempt + 1), 2000)
         return
       }
@@ -137,10 +142,11 @@ export default function Upload() {
       // Don't show error if user cancelled
       if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') return
 
-      // Auto-retry on timeout or network error (once)
+      // Auto-retry on timeout or network error
       if (attempt < MAX_RETRIES - 1 && (err.isTimeout || err.isNetworkError || !err.response)) {
-        setLoadingMsg(`Connection failed — retrying automatically… (attempt ${attempt + 2}/${MAX_RETRIES})`)
-        setTimeout(() => handleAnalyze(attempt + 1), 3000)
+        setLoadingMsg(`Connection failed — waking server & retrying automatically… (attempt ${attempt + 2}/${MAX_RETRIES})`)
+        await warmUpServer()
+        setTimeout(() => handleAnalyze(attempt + 1), 2000)
         return
       }
 
@@ -149,7 +155,7 @@ export default function Upload() {
       if (err.isTimeout) {
         errorMsg = 'The server took too long to respond. It may be waking up from sleep — please tap "Retry".'
       } else if (err.isNetworkError) {
-        errorMsg = 'Unable to reach the server. Please check your internet connection and try again.'
+        errorMsg = 'Unable to reach the server. Please check your connection and tap "Retry".'
       } else if (err.response?.status === 401) {
         errorMsg = 'Your session has expired. Please log in again.'
       } else if (err.response?.status === 413) {
@@ -162,8 +168,11 @@ export default function Upload() {
     }
   }
 
-  const handleRetry = () => {
+  const handleRetry = async () => {
     setError('')
+    setLoading(true)
+    setLoadingMsg('Waking up server…')
+    await warmUpServer()
     handleAnalyze(0)
   }
 
