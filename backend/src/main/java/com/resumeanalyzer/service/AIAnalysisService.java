@@ -1,5 +1,8 @@
 package com.resumeanalyzer.service;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,12 +57,28 @@ public class AIAnalysisService {
     // ANALYSIS
     // ═══════════════════════════════════════════════════════════════════════════
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class AnalysisResponse {
+        @JsonProperty("ats_score")
+        @JsonAlias({"ats_score", "atsScore", "score"})
         public int ats_score;
+
+        @JsonProperty("skills_found")
+        @JsonAlias({"skills_found", "skillsFound", "skills"})
         public List<String> skills_found;
+
+        @JsonProperty("missing_keywords")
+        @JsonAlias({"missing_keywords", "missingKeywords", "missing_skills"})
         public List<String> missing_keywords;
+
+        @JsonProperty("strengths")
         public List<String> strengths;
+
+        @JsonProperty("improvements")
         public List<String> improvements;
+
+        @JsonProperty("feedback_summary")
+        @JsonAlias({"feedback_summary", "feedbackSummary", "feedback", "summary"})
         public String feedback_summary;
     }
 
@@ -111,16 +130,36 @@ public class AIAnalysisService {
             HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
 
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            if (response.getBody() == null) {
+                return getMockAnalysis(resumeText);
+            }
+
             JsonNode rootNode = objectMapper.readTree(response.getBody());
+            JsonNode candidatesNode = rootNode.path("candidates");
+            if (!candidatesNode.isArray() || candidatesNode.isEmpty()) {
+                return getMockAnalysis(resumeText);
+            }
 
-            String responseText = rootNode
-                    .path("candidates").get(0)
-                    .path("content")
-                    .path("parts").get(0)
-                    .path("text").asText();
+            JsonNode partsNode = candidatesNode.get(0).path("content").path("parts");
+            if (!partsNode.isArray() || partsNode.isEmpty()) {
+                return getMockAnalysis(resumeText);
+            }
 
+            String responseText = partsNode.get(0).path("text").asText();
             String cleanedJson = cleanJsonText(responseText);
-            return objectMapper.readValue(cleanedJson, AnalysisResponse.class);
+
+            AnalysisResponse res = objectMapper.readValue(cleanedJson, AnalysisResponse.class);
+            if (res != null) {
+                if (res.skills_found == null) res.skills_found = new ArrayList<>();
+                if (res.missing_keywords == null) res.missing_keywords = new ArrayList<>();
+                if (res.strengths == null) res.strengths = new ArrayList<>();
+                if (res.improvements == null) res.improvements = new ArrayList<>();
+                if (res.feedback_summary == null || res.feedback_summary.isBlank()) {
+                    res.feedback_summary = "Resume analysis complete. Review your ATS score and feedback above.";
+                }
+                return res;
+            }
+            return getMockAnalysis(resumeText);
 
         } catch (Exception e) {
             e.printStackTrace();
