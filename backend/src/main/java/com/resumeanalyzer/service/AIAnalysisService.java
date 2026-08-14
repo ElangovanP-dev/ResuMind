@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 @Service
 public class AIAnalysisService {
 
+    private static final Logger log = LoggerFactory.getLogger(AIAnalysisService.class);
+
     @Value("${gemini.api.key}")
     private String apiKey;
 
@@ -28,8 +32,8 @@ public class AIAnalysisService {
 
     public AIAnalysisService() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(10000);  // 10 seconds connect timeout
-        factory.setReadTimeout(25000);     // 25 seconds read timeout for fast response / fallback
+        factory.setConnectTimeout(15000);  // 15 seconds connect timeout
+        factory.setReadTimeout(60000);     // 60 seconds read timeout — accommodates Gemini cold starts
         this.restTemplate = new RestTemplate(factory);
     }
 
@@ -83,7 +87,8 @@ public class AIAnalysisService {
     }
 
     public AnalysisResponse analyzeResume(String resumeText) {
-        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_") || apiKey.equals("AIzaSyYourActualKeyHere")) {
+            log.warn("Gemini API key is not configured — falling back to mock analysis");
             return getMockAnalysis(resumeText);
         }
 
@@ -162,7 +167,7 @@ public class AIAnalysisService {
             return getMockAnalysis(resumeText);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Gemini API call failed for analyzeResume, falling back to mock: {}", e.getMessage(), e);
             return getMockAnalysis(resumeText);
         }
     }
@@ -272,7 +277,8 @@ public class AIAnalysisService {
     }
 
     public TailorResponse tailorResume(String resumeText, String jobDescription) {
-        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_") || apiKey.equals("AIzaSyYourActualKeyHere")) {
+            log.warn("Gemini API key is not configured — falling back to mock tailoring");
             return getMockTailoring(resumeText, jobDescription);
         }
 
@@ -339,7 +345,7 @@ public class AIAnalysisService {
             return objectMapper.readValue(cleanedJson, TailorResponse.class);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Gemini API call failed for tailorResume, falling back to mock: {}", e.getMessage(), e);
             return getMockTailoring(resumeText, jobDescription);
         }
     }
@@ -540,7 +546,7 @@ public class AIAnalysisService {
     }
 
     public AtsSimulationResponse simulateAts(String resumeText) {
-        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_") || apiKey.equals("AIzaSyYourActualKeyHere")) {
             return getMockAtsSimulation(resumeText);
         }
 
@@ -604,7 +610,7 @@ public class AIAnalysisService {
     }
 
     public BiasDetectionResponse detectBias(String resumeText) {
-        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_") || apiKey.equals("AIzaSyYourActualKeyHere")) {
             return getMockBiasDetection(resumeText);
         }
 
@@ -651,7 +657,7 @@ public class AIAnalysisService {
     }
 
     public InterviewPredictionResponse predictQuestions(String resumeText, String jobDescription) {
-        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_") || apiKey.equals("AIzaSyYourActualKeyHere")) {
             return getMockInterviewPrediction(resumeText, jobDescription);
         }
 
@@ -706,7 +712,7 @@ public class AIAnalysisService {
     }
 
     public OutreachResponse generateOutreach(String resumeText, String companyName, String recruiterName, String jobRole) {
-        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_") || apiKey.equals("AIzaSyYourActualKeyHere")) {
             return getMockOutreach(resumeText, companyName, recruiterName, jobRole);
         }
 
@@ -751,7 +757,7 @@ public class AIAnalysisService {
     }
 
     public GithubImportResponse importGithubBullets(String repoName, String readmeText) {
-        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_") || apiKey.equals("AIzaSyYourActualKeyHere")) {
             return getMockGithubImport(repoName, readmeText);
         }
 
@@ -796,7 +802,7 @@ public class AIAnalysisService {
     }
 
     public ABTestResponse abTestResumes(String resumeTextA, String resumeTextB, String jobDescription) {
-        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_") || apiKey.equals("AIzaSyYourActualKeyHere")) {
             return getMockABTest(resumeTextA, resumeTextB, jobDescription);
         }
 
@@ -1002,7 +1008,7 @@ public class AIAnalysisService {
     }
 
     public CourseRecommendationResponse recommendCourses(String resumeText, String jobDescription) {
-        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_")) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("MISSING") || apiKey.startsWith("YOUR_") || apiKey.equals("AIzaSyYourActualKeyHere")) {
             return getMockCourseRecommendations(resumeText, jobDescription);
         }
 

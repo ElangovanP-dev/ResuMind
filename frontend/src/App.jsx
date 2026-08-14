@@ -38,6 +38,7 @@ function AppRoutes() {
         <Route path="/history"  element={<ProtectedRoute><History /></ProtectedRoute>} />
         <Route path="/ab-test"  element={<ProtectedRoute><ABTesting /></ProtectedRoute>} />
         <Route path="/public/results/:shareToken" element={<PublicResults />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   )

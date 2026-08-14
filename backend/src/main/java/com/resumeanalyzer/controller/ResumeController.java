@@ -88,8 +88,12 @@ public class ResumeController {
                     .body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             log.error("Resume upload/analysis failed: {}", e.getMessage(), e);
+            String msg = "Resume analysis failed. Please try again.";
+            if (e.getMessage() != null && (e.getMessage().contains("Database") || e.getMessage().contains("attempts"))) {
+                msg = "Database connection timed out during analysis. Please tap 'Retry'.";
+            }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Resume analysis failed. Please try again."));
+                    .body(Map.of("message", msg));
         }
     }
 
