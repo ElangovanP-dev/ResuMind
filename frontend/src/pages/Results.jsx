@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import ScoreGauge from '../components/ScoreGauge'
+import PillarGauges from '../components/PillarGauges'
 import RadarChart from '../components/RadarChart'
 import ATSComparison from '../components/ATSComparison'
 import DnaCard from '../components/DnaCard'
@@ -161,6 +162,11 @@ export default function Results() {
           {/* 📋 SCORE REPORT */}
           {activeTab === 'report' && (
             <>
+              {/* 5-Pillar Score Gauges & Breakdown */}
+              <div className="mb-6">
+                <PillarGauges data={data} />
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="glass-card p-6">
                   <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>

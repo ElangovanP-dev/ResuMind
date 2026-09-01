@@ -3,9 +3,8 @@ import axios from 'axios'
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
   headers: { 'Content-Type': 'application/json' },
-  timeout: 120000, // 120 seconds — accommodates Render cold start + Gemini AI processing
+  timeout: 120000, // 120 seconds — accommodates cold start + deep AI processing
 })
-
 
 api.interceptors.request.use(
   (config) => {
@@ -18,14 +17,17 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    // Check if 401 Unauthorized occurs on protected routes (not during login/register/ping)
+    const isAuthRoute = error.config?.url?.includes('/api/auth/')
+    if (error.response && error.response.status === 401 && !isAuthRoute) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-      window.location.href = '/login'
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
     }
 
     // Provide user-friendly timeout messages

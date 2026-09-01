@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -134,6 +135,27 @@ public class ResumeService {
                     String feedback = (aiResponse != null && aiResponse.feedback_summary != null && !aiResponse.feedback_summary.isBlank())
                             ? aiResponse.feedback_summary : "Resume analysis complete. Review the extracted skills and recommendations above.";
                     result.setFeedback(feedback);
+
+                    // ── Map 5-Pillar Scores ──
+                    if (aiResponse != null) {
+                        if (aiResponse.ats_parseability > 0) result.setAtsParseability(aiResponse.ats_parseability);
+                        if (aiResponse.hard_skills_alignment > 0) result.setHardSkillsScore(aiResponse.hard_skills_alignment);
+                        if (aiResponse.impact_quantification > 0) result.setImpactScore(aiResponse.impact_quantification);
+                        if (aiResponse.structural_balance > 0) result.setStructuralScore(aiResponse.structural_balance);
+                        if (aiResponse.clarity_tone > 0) result.setClarityScore(aiResponse.clarity_tone);
+
+                        try {
+                            ObjectMapper mapper = new ObjectMapper();
+                            if (aiResponse.pillar_details != null && !aiResponse.pillar_details.isEmpty()) {
+                                result.setPillarDetails(mapper.writeValueAsString(aiResponse.pillar_details));
+                            }
+                            if (aiResponse.verb_replacements != null && !aiResponse.verb_replacements.isEmpty()) {
+                                result.setVerbReplacements(mapper.writeValueAsString(aiResponse.verb_replacements));
+                            }
+                        } catch (Exception jsonEx) {
+                            log.warn("Failed to serialize pillar details/verb replacements: {}", jsonEx.getMessage());
+                        }
+                    }
 
                     return analysisResultRepository.save(result);
                 });

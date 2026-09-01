@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import DynamicShowcaseSlider from '../components/DynamicShowcaseSlider'
 import api from '../services/api'
 
 // Wake up the Render backend immediately when the site loads
@@ -378,6 +379,19 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ━━━ INTERACTIVE BEFORE / AFTER SHOWCASE ━━━ */}
+      <section className="landing-section relative">
+        <div className="parallax-blob parallax-blob-1" style={{ top: '20%', right: '-10%' }} />
+        <SectionHeader
+          badge="Live Transformation"
+          title="See how AI elevates your bullet points"
+          subtitle="Swipe or use arrow keys to see how weak, passive phrasing is transformed into measurable STAR accomplishments."
+        />
+        <div className="max-w-3xl mx-auto">
+          <DynamicShowcaseSlider />
+        </div>
+      </section>
+
       {/* ━━━ FEATURES ━━━ */}
       <section id="features" className="landing-section">
         <SectionHeader
@@ -406,41 +420,81 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ━━━ TWO-TIER SYSTEM ━━━ */}
+      {/* ━━━ 5 ORTHOGONAL EVALUATION PILLARS ━━━ */}
       <section className="landing-section relative">
         <div className="parallax-blob parallax-blob-2" style={{ top: '10%', left: '-10%' }} />
         <SectionHeader
-          badge="How Scoring Works"
-          title="A two-tier scoring system"
-          subtitle="ResuMind evaluates your resume from both the machine and human perspective."
+          badge="Scoring Methodology"
+          title="5 Orthogonal Analysis Pillars"
+          subtitle="ResuMind evaluates every resume across five independent, non-redundant dimensions."
         />
 
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
           {[
             {
-              num: '1',
-              title: 'ATS Parse Rate',
-              desc: 'Like an ATS, we analyze and interpret your resume\'s content and structure. We check against signals from hundreds of ATS platforms including Greenhouse, Lever, and Workday. If we can understand your skills, experience, and sections — so can the ATS.',
-              gradient: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+              icon: '📋',
+              pillar: 'ATS Parseability & Layout',
+              weight: '20% Weight',
+              desc: 'Single-column verification, standard section headers (Experience, Education, Skills), font readability, and contact info extraction.',
+              color: '#7c3aed'
             },
             {
-              num: '2',
-              title: 'Content Quality',
-              desc: 'Recruiters look beyond what ATS checks. We evaluate your quantifiable achievements, writing clarity, and impact statements. The AI identifies ambiguous claims, missing context, and suggests improvements to make your resume stand out to human reviewers.',
-              gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+              icon: '🎯',
+              pillar: 'Hard Skills & Alignment',
+              weight: '30% Weight',
+              desc: 'Exact and semantic skill keyword matching against target job profiles without repetitive keyword spamming.',
+              color: '#a855f7'
+            },
+            {
+              icon: '📊',
+              pillar: 'Impact & Quantification',
+              weight: '25% Weight',
+              desc: 'STAR methodology detection (Situation, Task, Action, Result) with measurable metrics (%, $, throughput, scale).',
+              color: '#f59e0b'
+            },
+            {
+              icon: '🏗️',
+              pillar: 'Structural Balance',
+              weight: '15% Weight',
+              desc: 'Bullet point density (ideal 3-5 per role), chronological consistency, page length, and visual white space.',
+              color: '#10b981'
+            },
+            {
+              icon: '✍️',
+              pillar: 'Clarity & Executive Tone',
+              weight: '10% Weight',
+              desc: 'Flags passive voice and weak verbs, providing precise one-click active verb upgrades for senior-level polish.',
+              color: '#06b6d4'
+            },
+            {
+              icon: '⚡',
+              pillar: 'Composite 0-100 Score',
+              weight: '100% Total',
+              desc: 'A weighted aggregate index calibrated against top corporate ATS screening benchmarks (Workday, Greenhouse, Lever).',
+              color: '#8b5cf6'
             }
-          ].map((tier) => {
+          ].map((pillar, idx) => {
             const ref = useReveal()
             return (
-              <div key={tier.num} ref={ref} className="reveal-on-scroll glass-card p-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 rounded-bl-[3rem] opacity-10"
-                  style={{ background: tier.gradient }} />
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 text-white font-extrabold text-xl"
-                  style={{ background: tier.gradient }}>
-                  {tier.num}
+              <div
+                key={pillar.pillar}
+                ref={ref}
+                className={`reveal-on-scroll stagger-${(idx % 3) + 1} glass-card p-6 border-themed flex flex-col justify-between hover:-translate-y-1 transition-all duration-300`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-3xl">{pillar.icon}</span>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-violet-500/10 text-violet-500 border border-violet-500/20">
+                      {pillar.weight}
+                    </span>
+                  </div>
+                  <h3 className="text-base font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+                    {pillar.pillar}
+                  </h3>
+                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                    {pillar.desc}
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{tier.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{tier.desc}</p>
               </div>
             )
           })}

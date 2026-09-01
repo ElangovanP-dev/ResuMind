@@ -75,6 +75,15 @@ public class ResumeController {
             response.put("analyzedAt", result.getAnalyzedAt());
             response.put("shareToken", result.getShareToken());
 
+            // 5-Pillar scores (nullable for legacy compat)
+            response.put("atsParseability", result.getAtsParseability());
+            response.put("hardSkillsScore", result.getHardSkillsScore());
+            response.put("impactScore", result.getImpactScore());
+            response.put("structuralScore", result.getStructuralScore());
+            response.put("clarityScore", result.getClarityScore());
+            response.put("pillarDetails", result.getPillarDetails());
+            response.put("verbReplacements", result.getVerbReplacements());
+
             Map<String, Object> resumeMap = new HashMap<>();
             resumeMap.put("id", result.getResume().getId());
             resumeMap.put("fileName", result.getResume().getFileName());

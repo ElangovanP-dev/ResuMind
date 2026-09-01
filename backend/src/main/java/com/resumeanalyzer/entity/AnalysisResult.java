@@ -49,6 +49,31 @@ public class AnalysisResult {
     @Column(name = "share_token", unique = true, length = 36)
     private String shareToken;
 
+    // ── 5-Pillar Scores (nullable for backward compat with legacy rows) ──
+
+    @Column(name = "ats_parseability")
+    private Integer atsParseability;
+
+    @Column(name = "hard_skills_score")
+    private Integer hardSkillsScore;
+
+    @Column(name = "impact_score")
+    private Integer impactScore;
+
+    @Column(name = "structural_score")
+    private Integer structuralScore;
+
+    @Column(name = "clarity_score")
+    private Integer clarityScore;
+
+    @Lob
+    @Column(name = "pillar_details", columnDefinition = "LONGTEXT")
+    private String pillarDetails;
+
+    @Lob
+    @Column(name = "verb_replacements", columnDefinition = "LONGTEXT")
+    private String verbReplacements;
+
     @PrePersist
     protected void onCreate() {
         this.analyzedAt = LocalDateTime.now();
@@ -58,6 +83,8 @@ public class AnalysisResult {
     }
 
     public AnalysisResult() {}
+
+    // ── Existing Getters/Setters ──
 
     public String getShareToken() {
         return shareToken;
@@ -137,5 +164,63 @@ public class AnalysisResult {
 
     public void setAnalyzedAt(LocalDateTime analyzedAt) {
         this.analyzedAt = analyzedAt;
+    }
+
+    // ── 5-Pillar Getters/Setters ──
+
+    public Integer getAtsParseability() {
+        return atsParseability;
+    }
+
+    public void setAtsParseability(Integer atsParseability) {
+        this.atsParseability = atsParseability;
+    }
+
+    public Integer getHardSkillsScore() {
+        return hardSkillsScore;
+    }
+
+    public void setHardSkillsScore(Integer hardSkillsScore) {
+        this.hardSkillsScore = hardSkillsScore;
+    }
+
+    public Integer getImpactScore() {
+        return impactScore;
+    }
+
+    public void setImpactScore(Integer impactScore) {
+        this.impactScore = impactScore;
+    }
+
+    public Integer getStructuralScore() {
+        return structuralScore;
+    }
+
+    public void setStructuralScore(Integer structuralScore) {
+        this.structuralScore = structuralScore;
+    }
+
+    public Integer getClarityScore() {
+        return clarityScore;
+    }
+
+    public void setClarityScore(Integer clarityScore) {
+        this.clarityScore = clarityScore;
+    }
+
+    public String getPillarDetails() {
+        return pillarDetails;
+    }
+
+    public void setPillarDetails(String pillarDetails) {
+        this.pillarDetails = pillarDetails;
+    }
+
+    public String getVerbReplacements() {
+        return verbReplacements;
+    }
+
+    public void setVerbReplacements(String verbReplacements) {
+        this.verbReplacements = verbReplacements;
     }
 }

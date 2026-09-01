@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import ScoreGauge from '../components/ScoreGauge'
+import PillarGauges from '../components/PillarGauges'
 import api from '../services/api'
 
 export default function PublicResults() {
@@ -60,6 +61,9 @@ export default function PublicResults() {
           </div>
         </div>
 
+
+        {/* 5-Pillar Score Breakdown */}
+        <PillarGauges data={data} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="glass-card p-6">

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
 
@@ -7,7 +8,9 @@ export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
-  const [error, setError] = useState('')
+  const [touched, setTouched] = useState({ email: false, password: false })
+  const [errors, setErrors] = useState({ email: '', password: '' })
+  const [serverError, setServerError] = useState('')
   const [loading, setLoading] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -16,7 +19,7 @@ export default function Login() {
   const googleBtnRef = useRef(null)
   const serverWarmRef = useRef(false)
 
-  // Warm up the Render server on mount (while user types credentials)
+  // Warm up the server on mount
   useEffect(() => {
     if (!serverWarmRef.current) {
       serverWarmRef.current = true
@@ -24,7 +27,28 @@ export default function Login() {
     }
   }, [])
 
-  // Show contextual loading messages for slow connections
+  // 300ms debounced real-time field validation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const newErrors = { email: '', password: '' }
+      if (touched.email && form.email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(form.email)) {
+          newErrors.email = 'Please enter a valid email address.'
+        }
+      }
+      if (touched.password && form.password) {
+        if (form.password.length < 6) {
+          newErrors.password = 'Password must be at least 6 characters.'
+        }
+      }
+      setErrors(newErrors)
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [form.email, form.password, touched])
+
+  // Contextual loading messages for server delays
   useEffect(() => {
     if (!loading) { setLoadingMsg(''); return }
     setLoadingMsg('Signing in…')
@@ -35,15 +59,31 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
+    setServerError('')
+
+    // Validate before submitting
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(form.email)) {
+      setServerError('Please enter a valid email address.')
+      return
+    }
+    if (form.password.length < 6) {
+      setServerError('Password must be at least 6 characters.')
+      return
+    }
+
     setLoading(true)
     try {
       const res = await api.post('/api/auth/login', form)
-      if (!res.data.token) { setError('Invalid email or password.'); setLoading(false); return }
+      if (!res.data.token) {
+        setServerError('Invalid email or password.')
+        setLoading(false)
+        return
+      }
       login(res.data.token, res.data.user)
       navigate('/upload')
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password.')
+      setServerError(err.response?.data?.message || 'Invalid email or password.')
     } finally {
       setLoading(false)
     }
@@ -51,18 +91,18 @@ export default function Login() {
 
   const handleGoogleResponse = useCallback(async (response) => {
     setLoading(true)
-    setError('')
+    setServerError('')
     try {
       const res = await api.post('/api/auth/google', { idToken: response.credential })
       if (!res.data.token) {
-        setError('Google login failed.')
+        setServerError('Google login failed.')
         setLoading(false)
         return
       }
       login(res.data.token, res.data.user)
       navigate('/upload')
     } catch (err) {
-      setError(err.response?.data?.message || 'Google authentication failed.')
+      setServerError(err.response?.data?.message || 'Google authentication failed.')
     } finally {
       setLoading(false)
     }
@@ -86,9 +126,8 @@ export default function Login() {
           callback: handleGoogleResponse
         })
 
-        // Use container's actual width for responsive sizing
         const containerWidth = Math.min(container.offsetWidth, 400)
-        container.innerHTML = '' // Clear before re-render
+        container.innerHTML = ''
         window.google.accounts.id.renderButton(container, {
           theme: 'outline',
           size: 'large',
@@ -103,7 +142,6 @@ export default function Login() {
       }
     }
 
-    // Poll for Google SDK availability (slow mobile networks)
     let attempts = 0
     const maxAttempts = 20
     const interval = setInterval(() => {
@@ -116,7 +154,6 @@ export default function Login() {
       }
     }, 500)
 
-    // Re-render on resize for responsive width
     const resizeObserver = new ResizeObserver(() => {
       if (googleReady && window.google) renderGoogleButton()
     })
@@ -128,13 +165,16 @@ export default function Login() {
     }
   }, [handleGoogleResponse, googleReady])
 
+  const isEmailValid = touched.email && form.email && !errors.email
+  const isPasswordValid = touched.password && form.password && !errors.password
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 pt-24">
       <div className="glass-card w-full max-w-md p-8 fade-in-up">
 
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4"
-               style={{background:'linear-gradient(135deg,#7c3aed,#a855f7)'}}>
+               style={{ background: 'linear-gradient(135deg,#7c3aed,#a855f7)' }}>
             <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -146,15 +186,22 @@ export default function Login() {
 
         <h2 className="text-xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Welcome back</h2>
 
-        {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm">
-            {error}
-          </div>
-        )}
+        <AnimatePresence>
+          {serverError && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, y: -10 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm overflow-hidden"
+            >
+              {serverError}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Google Sign-In — responsive container */}
-        <div className="w-full flex justify-center mb-6 min-h-[44px] relative"
-             style={{ maxWidth: '100%' }}>
+        {/* Google Sign-In */}
+        <div className="w-full flex justify-center mb-6 min-h-[44px] relative" style={{ maxWidth: '100%' }}>
           {!googleReady && !googleFailed && (
             <div className="absolute inset-0 flex items-center justify-center gap-2 text-sm py-2" style={{ color: 'var(--text-secondary)' }}>
               <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -180,21 +227,68 @@ export default function Login() {
           <div className="flex-grow border-t" style={{ borderColor: 'var(--border-color)' }}></div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
-            <label className="block text-sm mb-1.5" style={{ color: 'var(--text-secondary)' }}>Email address</label>
-            <input id="login-email" type="email" required placeholder="you@example.com"
-              className="input-field"
-              value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })} />
-          </div>
-          <div>
-            <label className="block text-sm mb-1.5" style={{ color: 'var(--text-secondary)' }}>Password</label>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-sm" style={{ color: 'var(--text-secondary)' }}>Email address</label>
+              {isEmailValid && (
+                <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
+                  ✓ Valid
+                </span>
+              )}
+            </div>
             <div className="relative">
-              <input id="login-password" type={showPassword ? 'text' : 'password'} required placeholder="••••••••"
-                className="input-field pr-12"
+              <input
+                id="login-email"
+                type="email"
+                required
+                placeholder="you@example.com"
+                className={`input-field ${errors.email ? 'border-red-500/60 focus:border-red-500' : ''}`}
+                value={form.email}
+                onBlur={() => setTouched(t => ({ ...t, email: true }))}
+                onChange={e => {
+                  setForm(f => ({ ...f, email: e.target.value }))
+                  if (!touched.email) setTouched(t => ({ ...t, email: true }))
+                }}
+              />
+            </div>
+            <AnimatePresence>
+              {errors.email && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="text-xs text-red-500 mt-1 pl-1"
+                >
+                  {errors.email}
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-sm" style={{ color: 'var(--text-secondary)' }}>Password</label>
+              {isPasswordValid && (
+                <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
+                  ✓ Good length
+                </span>
+              )}
+            </div>
+            <div className="relative">
+              <input
+                id="login-password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                placeholder="••••••••"
+                className={`input-field pr-12 ${errors.password ? 'border-red-500/60 focus:border-red-500' : ''}`}
                 value={form.password}
-                onChange={e => setForm({ ...form, password: e.target.value })} />
+                onBlur={() => setTouched(t => ({ ...t, password: true }))}
+                onChange={e => {
+                  setForm(f => ({ ...f, password: e.target.value }))
+                  if (!touched.password) setTouched(t => ({ ...t, password: true }))
+                }}
+              />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -214,8 +308,26 @@ export default function Login() {
                 )}
               </button>
             </div>
+            <AnimatePresence>
+              {errors.password && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="text-xs text-red-500 mt-1 pl-1"
+                >
+                  {errors.password}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
-          <button id="login-submit" type="submit" disabled={loading} className="btn-primary w-full py-3.5 mt-4 text-base tracking-wide shadow-md">
+
+          <button
+            id="login-submit"
+            type="submit"
+            disabled={loading}
+            className="btn-primary w-full py-3.5 mt-4 text-base tracking-wide shadow-md"
+          >
             {loading ? loadingMsg : 'Sign in'}
           </button>
         </form>

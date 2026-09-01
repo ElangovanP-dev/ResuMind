@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +17,14 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.resumeanalyzer.evaluator.AtsParseabilityEvaluator;
+import com.resumeanalyzer.evaluator.ClarityExecutiveToneEvaluator;
+import com.resumeanalyzer.evaluator.HardSkillsAlignmentEvaluator;
+import com.resumeanalyzer.evaluator.ImpactQuantificationEvaluator;
+import com.resumeanalyzer.evaluator.StructuralBalanceEvaluator;
+
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +34,21 @@ public class AIAnalysisService {
 
     @Value("${gemini.api.key}")
     private String apiKey;
+
+    @Autowired
+    private AtsParseabilityEvaluator atsParseabilityEvaluator;
+
+    @Autowired
+    private HardSkillsAlignmentEvaluator hardSkillsAlignmentEvaluator;
+
+    @Autowired
+    private ImpactQuantificationEvaluator impactQuantificationEvaluator;
+
+    @Autowired
+    private StructuralBalanceEvaluator structuralBalanceEvaluator;
+
+    @Autowired
+    private ClarityExecutiveToneEvaluator clarityExecutiveToneEvaluator;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestTemplate restTemplate;
@@ -84,6 +107,35 @@ public class AIAnalysisService {
         @JsonProperty("feedback_summary")
         @JsonAlias({"feedback_summary", "feedbackSummary", "feedback", "summary"})
         public String feedback_summary;
+
+        // ── 5-Pillar Sub-Scores ──
+        @JsonProperty("ats_parseability")
+        @JsonAlias({"ats_parseability", "atsParseability"})
+        public int ats_parseability;
+
+        @JsonProperty("hard_skills_alignment")
+        @JsonAlias({"hard_skills_alignment", "hardSkillsAlignment"})
+        public int hard_skills_alignment;
+
+        @JsonProperty("impact_quantification")
+        @JsonAlias({"impact_quantification", "impactQuantification"})
+        public int impact_quantification;
+
+        @JsonProperty("structural_balance")
+        @JsonAlias({"structural_balance", "structuralBalance"})
+        public int structural_balance;
+
+        @JsonProperty("clarity_tone")
+        @JsonAlias({"clarity_tone", "clarityTone"})
+        public int clarity_tone;
+
+        @JsonProperty("pillar_details")
+        @JsonAlias({"pillar_details", "pillarDetails"})
+        public Map<String, Object> pillar_details;
+
+        @JsonProperty("verb_replacements")
+        @JsonAlias({"verb_replacements", "verbReplacements"})
+        public List<Map<String, String>> verb_replacements;
     }
 
     public AnalysisResponse analyzeResume(String resumeText) {
@@ -102,16 +154,37 @@ public class AIAnalysisService {
 
             String prompt =
                 "You are an expert ATS (Applicant Tracking System) analyst and resume coach.\n" +
-                "Analyze the SPECIFIC resume text provided below. Do NOT generate generic advice.\n" +
-                "Base ALL your output strictly on what is written in this resume — the person's actual skills, experience, and background.\n\n" +
-                "Return ONLY a valid JSON object (no markdown, no backticks, no explanation text outside the JSON) with EXACTLY these keys:\n" +
+                "Analyze the SPECIFIC resume text provided below using 5 INDEPENDENT evaluation pillars.\n" +
+                "Do NOT generate generic advice. Base ALL output strictly on this resume's actual content.\n\n" +
+                "EVALUATION PILLARS (each scored 0-100 independently):\n" +
+                "1. ATS Parseability & Layout (20% weight): single-column structure, standard section headers (Experience, Education, Skills, Summary), font readability, contact info extraction, no tables/graphics.\n" +
+                "2. Hard Skills & Semantic Alignment (30% weight): exact and semantic skill keyword matches relevant to the detected role type. No duplicate keywords.\n" +
+                "3. Impact & Accomplishment Quantification (25% weight): STAR methodology (Situation, Task, Action, Result), quantified metrics (%, $, throughput, team size, scale).\n" +
+                "4. Structural Balance & Hierarchy (15% weight): bullet density per role (ideal: 3-5), reverse chronological order, visual white space balance, section proportionality.\n" +
+                "5. Clarity & Executive Tone (10% weight): passive voice detection, filler phrases, weak verbs. Provide active verb replacements.\n\n" +
+                "Return ONLY a valid JSON object (no markdown, no backticks) with EXACTLY these keys:\n" +
                 "{\n" +
-                "  \"ats_score\": <integer 0-100, based on keyword density, formatting completeness, section presence, and quantifiable achievements>,\n" +
-                "  \"skills_found\": [\"<skill1>\", \"<skill2>\", ...],  // ONLY skills explicitly mentioned in the resume\n" +
-                "  \"missing_keywords\": [\"<kw1>\", \"<kw2>\", ...],  // 4-6 keywords commonly expected for this type of role, NOT present in the resume\n" +
-                "  \"strengths\": [\"<str1>\", \"<str2>\", \"<str3>\"],  // EXACTLY 3 specific strengths BASED ON this resume's actual content\n" +
-                "  \"improvements\": [\"<imp1>\", \"<imp2>\", \"<imp3>\"],  // EXACTLY 3 actionable, specific improvements for THIS resume\n" +
-                "  \"feedback_summary\": \"<2-3 sentences specific to THIS person's background and profile>\"\n" +
+                "  \"ats_score\": <integer 0-100, computed as: 0.20*pillar1 + 0.30*pillar2 + 0.25*pillar3 + 0.15*pillar4 + 0.10*pillar5>,\n" +
+                "  \"ats_parseability\": <integer 0-100>,\n" +
+                "  \"hard_skills_alignment\": <integer 0-100>,\n" +
+                "  \"impact_quantification\": <integer 0-100>,\n" +
+                "  \"structural_balance\": <integer 0-100>,\n" +
+                "  \"clarity_tone\": <integer 0-100>,\n" +
+                "  \"skills_found\": [\"<skill1>\", \"<skill2>\", ...],\n" +
+                "  \"missing_keywords\": [\"<kw1>\", \"<kw2>\", ...],\n" +
+                "  \"strengths\": [\"<str1>\", \"<str2>\", \"<str3>\"],\n" +
+                "  \"improvements\": [\"<imp1>\", \"<imp2>\", \"<imp3>\"],\n" +
+                "  \"feedback_summary\": \"<2-3 sentences specific to THIS person>\",\n" +
+                "  \"pillar_details\": {\n" +
+                "    \"ats_parseability\": { \"summary\": \"<1 sentence>\", \"flags\": [\"<issue1>\", ...], \"fixes\": [\"<fix1>\", ...] },\n" +
+                "    \"hard_skills\": { \"summary\": \"<1 sentence>\", \"matched\": [\"<skill>\", ...], \"gaps\": [\"<skill>\", ...] },\n" +
+                "    \"impact\": { \"summary\": \"<1 sentence>\", \"strong_bullets\": [\"<bullet>\", ...], \"weak_bullets\": [\"<bullet>\", ...] },\n" +
+                "    \"structure\": { \"summary\": \"<1 sentence>\", \"flags\": [\"<issue>\", ...] },\n" +
+                "    \"clarity\": { \"summary\": \"<1 sentence>\", \"passive_count\": <int>, \"filler_count\": <int> }\n" +
+                "  },\n" +
+                "  \"verb_replacements\": [\n" +
+                "    { \"original\": \"<weak phrase from resume>\", \"replacement\": \"<strong active verb alternative>\" }\n" +
+                "  ]\n" +
                 "}\n\n" +
                 "RESUME TEXT:\n" +
                 cleanedText;
@@ -127,7 +200,7 @@ public class AIAnalysisService {
 
             Map<String, Object> generationConfig = new HashMap<>();
             generationConfig.put("temperature", 0.3);
-            generationConfig.put("maxOutputTokens", 1500);
+            generationConfig.put("maxOutputTokens", 2500);
             generationConfig.put("responseMimeType", "application/json");
             requestBody.put("generationConfig", generationConfig);
 
@@ -159,8 +232,20 @@ public class AIAnalysisService {
                 if (res.missing_keywords == null) res.missing_keywords = new ArrayList<>();
                 if (res.strengths == null) res.strengths = new ArrayList<>();
                 if (res.improvements == null) res.improvements = new ArrayList<>();
+                if (res.verb_replacements == null) res.verb_replacements = new ArrayList<>();
+                if (res.pillar_details == null) res.pillar_details = new HashMap<>();
                 if (res.feedback_summary == null || res.feedback_summary.isBlank()) {
                     res.feedback_summary = "Resume analysis complete. Review your ATS score and feedback above.";
+                }
+                // Recompute composite score if pillar scores are present but ats_score seems off
+                if (res.ats_parseability > 0 && res.ats_score == 0) {
+                    res.ats_score = (int) Math.round(
+                        0.20 * res.ats_parseability +
+                        0.30 * res.hard_skills_alignment +
+                        0.25 * res.impact_quantification +
+                        0.15 * res.structural_balance +
+                        0.10 * res.clarity_tone
+                    );
                 }
                 return res;
             }
@@ -172,95 +257,128 @@ public class AIAnalysisService {
         }
     }
 
-    // ─── Smart, dynamic mock: scans the resume text to produce varied results ──
+    // ─── Concurrent 5-Pillar Modular Evaluator Orchestrator ──
+    @SuppressWarnings("unchecked")
     private AnalysisResponse getMockAnalysis(String text) {
-        String lowerText = text.toLowerCase();
+        if (text == null) text = "";
 
-        // Detect skills actually present in the resume
-        List<String> skillsFound = TECH_SKILLS.stream()
-                .filter(skill -> lowerText.contains(skill.toLowerCase()))
-                .collect(Collectors.toList());
+        final String resumeText = text;
 
-        // Detect missing common skills (not in resume)
-        List<String> potentialMissing = Arrays.asList(
-            "Docker", "Kubernetes", "AWS", "CI/CD", "Redis", "GraphQL",
-            "Terraform", "TypeScript", "React", "Kafka", "PostgreSQL", "Elasticsearch"
+        // Concurrently execute all 5 independent evaluators using CompletableFuture
+        CompletableFuture<Map<String, Object>> atsFuture =
+                CompletableFuture.supplyAsync(() -> atsParseabilityEvaluator.evaluate(resumeText));
+        CompletableFuture<Map<String, Object>> skillsFuture =
+                CompletableFuture.supplyAsync(() -> hardSkillsAlignmentEvaluator.evaluate(resumeText, null));
+        CompletableFuture<Map<String, Object>> impactFuture =
+                CompletableFuture.supplyAsync(() -> impactQuantificationEvaluator.evaluate(resumeText));
+        CompletableFuture<Map<String, Object>> structFuture =
+                CompletableFuture.supplyAsync(() -> structuralBalanceEvaluator.evaluate(resumeText));
+        CompletableFuture<Map<String, Object>> clarityFuture =
+                CompletableFuture.supplyAsync(() -> clarityExecutiveToneEvaluator.evaluate(resumeText));
+
+        // Block until all 5 concurrent threads complete
+        CompletableFuture.allOf(atsFuture, skillsFuture, impactFuture, structFuture, clarityFuture).join();
+
+        Map<String, Object> atsRes = atsFuture.join();
+        Map<String, Object> skillsRes = skillsFuture.join();
+        Map<String, Object> impactRes = impactFuture.join();
+        Map<String, Object> structRes = structFuture.join();
+        Map<String, Object> clarityRes = clarityFuture.join();
+
+        int p1 = ((Number) atsRes.getOrDefault("score", 70)).intValue();
+        int p2 = ((Number) skillsRes.getOrDefault("score", 70)).intValue();
+        int p3 = ((Number) impactRes.getOrDefault("score", 65)).intValue();
+        int p4 = ((Number) structRes.getOrDefault("score", 70)).intValue();
+        int p5 = ((Number) clarityRes.getOrDefault("score", 75)).intValue();
+
+        // 5-Pillar Weighted Formula: 20% ATS, 30% Hard Skills, 25% Impact, 15% Structure, 10% Clarity
+        int compositeScore = (int) Math.round(
+            0.20 * p1 +
+            0.30 * p2 +
+            0.25 * p3 +
+            0.15 * p4 +
+            0.10 * p5
         );
-        List<String> missingKeywords = potentialMissing.stream()
-                .filter(skill -> !lowerText.contains(skill.toLowerCase()))
-                .limit(5)
-                .collect(Collectors.toList());
+        compositeScore = Math.max(25, Math.min(compositeScore, 98));
 
-        // Count sections present for score calculation
-        long sectionsPresent = SECTION_HEADERS.stream()
-                .filter(h -> lowerText.contains(h))
-                .count();
+        // Aggregate Matched Skills & Missing Gaps
+        List<String> matchedSkills = (List<String>) skillsRes.getOrDefault("matched", Collections.emptyList());
+        if (matchedSkills.isEmpty()) {
+            matchedSkills = List.of("Problem Solving", "Technical Communication", "System Design");
+        }
+        List<String> missingKeywords = (List<String>) skillsRes.getOrDefault("gaps", Collections.emptyList());
 
-        // Compute dynamic ATS score
-        int baseScore = 40;
-        baseScore += (int) Math.min(sectionsPresent * 6, 24);   // up to 24 pts for sections
-        baseScore += Math.min(skillsFound.size() * 2, 20);       // up to 20 pts for skills
-        boolean hasNumbers = text.matches(".*\\d+.*");
-        if (hasNumbers) baseScore += 8;                           // quantified achievements
-        if (text.length() > 1500) baseScore += 5;                // sufficient content
-        if (text.length() > 3000) baseScore -= 3;                // overly long
-        int atsScore = Math.max(30, Math.min(baseScore, 92));
-
-        // Build context-sensitive strengths
+        // Construct Orthogonal Strengths (1 from top-scoring pillars)
         List<String> strengths = new ArrayList<>();
-        if (!skillsFound.isEmpty()) {
-            String topSkills = skillsFound.stream().limit(3).collect(Collectors.joining(", "));
-            strengths.add("Demonstrates hands-on proficiency in " + topSkills + ", which are highly relevant to modern technical roles.");
-        } else {
-            strengths.add("The resume shows a clear professional trajectory with evident domain experience.");
+        if (p1 >= 75) {
+            strengths.add("ATS Layout Integrity: Clean single-column format and standard section structure ensures high parser readability.");
         }
-        if (lowerText.contains("experience") || lowerText.contains("worked")) {
-            strengths.add("Professional experience section provides concrete evidence of real-world contribution and role progression.");
-        } else {
-            strengths.add("The content reflects a clear understanding of the target domain.");
+        if (p2 >= 70) {
+            strengths.add("Hard Skills Coverage: Proven hands-on proficiency in " + matchedSkills.stream().limit(3).collect(Collectors.joining(", ")) + ".");
         }
-        if (hasNumbers) {
-            strengths.add("Use of quantifiable metrics and numbers (e.g., percentages, counts) strengthens credibility and ATS score.");
+        if (p3 >= 70) {
+            strengths.add("Quantified Impact: Effective use of STAR methodology with measurable metrics and result statements.");
         } else {
-            strengths.add("Educational background and certifications demonstrate commitment to continuous professional development.");
+            strengths.add("Professional Trajectory: Clear chronological progression demonstrating sustained domain experience.");
+        }
+        if (p5 >= 75) {
+            strengths.add("Executive Clarity: Strong active action verbs and professional tone with minimal passive phrasing.");
         }
 
-        // Build context-sensitive improvements
+        // Construct Orthogonal Actionable Improvements (1 from areas needing work)
         List<String> improvements = new ArrayList<>();
-        if (missingKeywords.size() >= 1) {
-            improvements.add("Add in-demand technologies like " + missingKeywords.get(0) +
-                    (missingKeywords.size() > 1 ? " and " + missingKeywords.get(1) : "") +
-                    " to your skills section to pass automated ATS filters for senior roles.");
-        } else {
-            improvements.add("Expand your skills section with emerging tools and frameworks relevant to your domain.");
+        List<String> atsFixes = (List<String>) atsRes.getOrDefault("fixes", Collections.emptyList());
+        if (!atsFixes.isEmpty()) {
+            improvements.add("ATS Optimization: " + atsFixes.get(0));
         }
-        if (!hasNumbers) {
-            improvements.add("Quantify your achievements with specific numbers (e.g., 'Reduced load time by 35%', 'Led team of 5 engineers') to make impact measurable.");
-        } else {
-            improvements.add("Ensure every bullet point in your experience section begins with a strong action verb and includes a quantifiable outcome.");
+        if (!missingKeywords.isEmpty()) {
+            improvements.add("Skill Alignment: Add in-demand keywords like " + String.join(", ", missingKeywords.stream().limit(2).collect(Collectors.toList())) + " to strengthen automated filter matching.");
         }
-        if (!lowerText.contains("summary") && !lowerText.contains("objective")) {
-            improvements.add("Add a tailored 2-3 sentence professional summary at the top that speaks directly to your target role and key differentiators.");
+        List<String> impactWeak = (List<String>) impactRes.getOrDefault("weak_bullets", Collections.emptyList());
+        if (!impactWeak.isEmpty()) {
+            improvements.add("Metric Quantification: Upgrade accomplishment bullets with specific metrics (%, $, scale, or team size).");
         } else {
-            improvements.add("Tailor your professional summary specifically to each job description you apply for, incorporating relevant keywords from the JD.");
+            improvements.add("Action Verbs: Start every experience bullet point with an assertive action verb and outcome statement.");
+        }
+        List<String> structFlags = (List<String>) structRes.getOrDefault("flags", Collections.emptyList());
+        if (!structFlags.isEmpty()) {
+            improvements.add("Structural Balance: " + structFlags.get(0));
         }
 
-        // Feedback summary
-        String primarySkills = skillsFound.isEmpty() ? "domain-specific competencies"
-                : skillsFound.stream().limit(2).collect(Collectors.joining(" and "));
-        String feedbackSummary = "This resume demonstrates a solid foundation in " + primarySkills +
-                " with " + (sectionsPresent >= 4 ? "good" : "adequate") + " structural coverage across key sections. " +
-                (missingKeywords.isEmpty() ? "The skills coverage is comprehensive for the target domain." :
-                 "To strengthen ATS pass rates, consider incorporating keywords like " +
-                 missingKeywords.stream().limit(2).collect(Collectors.joining(", ")) + " where applicable.");
+        // Construct Consolidated Feedback Summary
+        String feedbackSummary = String.format(
+            "Overall ATS Compatibility Score is %d/100. %s %s",
+            compositeScore,
+            (String) atsRes.getOrDefault("summary", "Standard section structure detected."),
+            (String) skillsRes.getOrDefault("summary", "Technical skills align with industry standards.")
+        );
+
+        // Build Pillar Details Map
+        Map<String, Object> pillarDetails = new HashMap<>();
+        pillarDetails.put("ats_parseability", atsRes);
+        pillarDetails.put("hard_skills", skillsRes);
+        pillarDetails.put("impact", impactRes);
+        pillarDetails.put("structure", structRes);
+        pillarDetails.put("clarity", clarityRes);
+
+        // Verb Replacements from Clarity Evaluator
+        List<Map<String, String>> verbReplacements =
+                (List<Map<String, String>>) clarityRes.getOrDefault("verb_replacements", Collections.emptyList());
 
         AnalysisResponse response = new AnalysisResponse();
-        response.ats_score = atsScore;
-        response.skills_found = skillsFound.isEmpty() ? List.of("Professional Communication", "Problem Solving") : skillsFound;
+        response.ats_score = compositeScore;
+        response.skills_found = matchedSkills;
         response.missing_keywords = missingKeywords;
         response.strengths = strengths;
         response.improvements = improvements;
         response.feedback_summary = feedbackSummary;
+        response.ats_parseability = p1;
+        response.hard_skills_alignment = p2;
+        response.impact_quantification = p3;
+        response.structural_balance = p4;
+        response.clarity_tone = p5;
+        response.pillar_details = pillarDetails;
+        response.verb_replacements = verbReplacements;
         return response;
     }
 
