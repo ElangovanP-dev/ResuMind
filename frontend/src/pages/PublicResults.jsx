@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import ScoreGauge from '../components/ScoreGauge'
 import PillarGauges from '../components/PillarGauges'
+import BentoResultsDashboard from '../components/BentoResultsDashboard'
 import api from '../services/api'
 
 export default function PublicResults() {
@@ -64,6 +65,9 @@ export default function PublicResults() {
 
         {/* 5-Pillar Score Breakdown */}
         <PillarGauges data={data} />
+
+        {/* Bento Grid Results Dashboard */}
+        <BentoResultsDashboard interactive={true} initialData={data} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="glass-card p-6">

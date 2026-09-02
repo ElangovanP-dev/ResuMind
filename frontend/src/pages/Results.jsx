@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import ScoreGauge from '../components/ScoreGauge'
 import PillarGauges from '../components/PillarGauges'
+import BentoResultsDashboard from '../components/BentoResultsDashboard'
 import RadarChart from '../components/RadarChart'
 import ATSComparison from '../components/ATSComparison'
 import DnaCard from '../components/DnaCard'
@@ -32,8 +33,8 @@ export default function Results() {
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
 
-  // Tabs: 'report', 'simulator', 'radar', 'bias', 'dna'
-  const [activeTab, setActiveTab] = useState('report')
+  // Tabs: 'bento', 'report', 'simulator', 'radar', 'bias', 'dna'
+  const [activeTab, setActiveTab] = useState('bento')
 
   // Bias Detector state
   const [biasData, setBiasData] = useState(null)
@@ -101,6 +102,7 @@ export default function Results() {
   const feedback = data?.feedback ?? ''
 
   const tabs = [
+    { id: 'bento', name: '🍱 Bento Dashboard' },
     { id: 'report', name: '📋 Score Report' },
     { id: 'simulator', name: '☁️ ATS Simulator' },
     { id: 'radar', name: '🎯 Skills Radar' },
@@ -111,7 +113,7 @@ export default function Results() {
   return (
     <div className="min-h-screen pt-24 px-4 pb-4 md:px-8 md:pb-8">
 
-      <div className="max-w-5xl mx-auto space-y-6 fade-in-up">
+      <div className="max-w-6xl mx-auto space-y-6 fade-in-up">
 
         {/* Score & Summary Card */}
         <div className="glass-card p-8 flex flex-col md:flex-row items-center gap-8">
@@ -132,9 +134,9 @@ export default function Results() {
             )}
             <p className="leading-relaxed max-w-xl text-sm" style={{ color: 'var(--text-secondary)' }}>{feedback}</p>
             <div className="mt-4 flex flex-wrap gap-2">
-              {score >= 80 && <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-600 border border-emerald-500/30">🎯 ATS Optimised</span>}
-              {score >= 60 && score < 80 && <span className="text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-600 border border-amber-500/30">⚡ Room to Improve</span>}
-              {score < 60 && <span className="text-xs px-3 py-1 rounded-full bg-red-500/20 text-red-600 border border-red-500/30">🔧 Needs Attention</span>}
+              {score >= 80 && <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">🎯 ATS Optimised</span>}
+              {score >= 60 && score < 80 && <span className="text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">⚡ Room to Improve</span>}
+              {score < 60 && <span className="text-xs px-3 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">🔧 Needs Attention</span>}
             </div>
           </div>
         </div>
@@ -147,8 +149,8 @@ export default function Results() {
               onClick={() => setActiveTab(t.id)}
               className={`px-4 py-2 text-xs md:text-sm font-semibold rounded-xl transition-all duration-200 whitespace-nowrap ${
                 activeTab === t.id
-                  ? 'bg-violet-600/20 text-violet-500 border border-violet-500/30'
-                  : 'text-themed-secondary hover:text-violet-400 border border-transparent'
+                  ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
+                  : 'text-slate-400 hover:text-white border border-transparent'
               }`}
             >
               {t.name}
@@ -158,6 +160,11 @@ export default function Results() {
 
         {/* Tab Body */}
         <div className="space-y-6">
+
+          {/* 🍱 BENTO DASHBOARD */}
+          {activeTab === 'bento' && (
+            <BentoResultsDashboard interactive={true} initialData={data} />
+          )}
 
           {/* 📋 SCORE REPORT */}
           {activeTab === 'report' && (

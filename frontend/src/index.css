@@ -3,64 +3,59 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════
-   RESUMIND — PREMIUM VIOLET + GOLD THEME
+   RESUME MIND — DEEP OBSIDIAN / CARBON THEME
    ═══════════════════════════════════════════ */
 
 :root {
-  /* ── Violet Palette ── */
-  --violet-50: #f5f3ff;
-  --violet-100: #ede9fe;
-  --violet-200: #ddd6fe;
-  --violet-300: #c4b5fd;
-  --violet-400: #a78bfa;
-  --violet-500: #8b5cf6;
-  --violet-600: #7c3aed;
-  --violet-700: #6d28d9;
-  --violet-800: #5b21b6;
-  --violet-900: #4c1d95;
+  /* ── Accent Palette ── */
+  --violet-400: #818cf8;
+  --violet-500: #6366f1;
+  --violet-600: #4f46e5;
+  --violet-700: #4338ca;
+  --violet-800: #3730a3;
+  --violet-900: #312e81;
 
-  /* ── Gold Palette ── */
-  --gold-300: #fcd34d;
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+
+  --cyan-400: #22d3ee;
+  --cyan-500: #06b6d4;
+  --cyan-600: #0891b2;
+
   --gold-400: #fbbf24;
   --gold-500: #f59e0b;
-  --gold-600: #d97706;
 
-  /* ── Theme Colors ── */
-  --color-primary: var(--violet-600);
-  --color-secondary: var(--violet-500);
-  --color-accent: var(--gold-500);
-  --color-success: #10b981;
+  /* ── Deep Obsidian / Carbon Canvas ── */
+  --bg-page: #0A0B0E;
+  --bg-surface: #111318;
+  --bg-surface-hover: #171A22;
+  --bg-glass: rgba(17, 19, 24, 0.75);
+  --bg-glass-scrolled: rgba(10, 11, 14, 0.92);
+  --bg-input: #151820;
+  --bg-input-focus: #1c202b;
 
-  /* ── Semantic Tokens ── */
-  --bg-page: #faf5ff;
-  --bg-surface: rgba(255, 255, 255, 0.85);
-  --bg-surface-hover: rgba(255, 255, 255, 0.95);
-  --bg-glass: rgba(255, 255, 255, 0.75);
-  --bg-glass-scrolled: rgba(255, 255, 255, 0.92);
-  --bg-input: rgba(255, 255, 255, 0.9);
-  --bg-input-focus: #ffffff;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #64748B;
+  --text-gold: var(--cyan-400);
+  --text-on-primary: #FFFFFF;
 
-  --text-primary: #1e1b4b;
-  --text-secondary: #6b7280;
-  --text-tertiary: #9ca3af;
-  --text-gold: var(--gold-500);
-  --text-on-primary: #ffffff;
-
-  --border-color: rgba(139, 92, 246, 0.15);
-  --border-hover: rgba(139, 92, 246, 0.35);
-  --border-input: rgba(203, 213, 225, 0.8);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(99, 102, 241, 0.35);
+  --border-input: rgba(255, 255, 255, 0.12);
   --border-input-focus: var(--violet-500);
 
-  --shadow-glow: rgba(124, 58, 237, 0.15);
-  --shadow-glow-hover: rgba(124, 58, 237, 0.25);
+  --shadow-glow: rgba(99, 102, 241, 0.18);
+  --shadow-glow-hover: rgba(99, 102, 241, 0.32);
 
   /* ── Gradients ── */
-  --gradient-primary: linear-gradient(135deg, var(--violet-600), var(--violet-500));
-  --gradient-accent: linear-gradient(135deg, var(--violet-500), var(--gold-500));
-  --gradient-gold: linear-gradient(135deg, var(--gold-500), var(--gold-400));
-  --gradient-text: linear-gradient(135deg, var(--violet-500), var(--gold-500));
-  --gradient-hero-blob1: radial-gradient(circle, var(--violet-600) 0%, rgba(124, 58, 237, 0) 70%);
-  --gradient-hero-blob2: radial-gradient(circle, var(--violet-400) 0%, rgba(167, 139, 250, 0) 70%);
+  --gradient-primary: linear-gradient(135deg, #6366F1, #8B5CF6);
+  --gradient-accent: linear-gradient(135deg, #6366F1, #06B6D4);
+  --gradient-gold: linear-gradient(135deg, #06B6D4, #10B981);
+  --gradient-text: linear-gradient(135deg, #A5B4FC, #38BDF8);
+  --gradient-hero-blob1: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, rgba(99, 102, 241, 0) 70%);
+  --gradient-hero-blob2: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0) 70%);
 }
 
 /* ═══ DARK MODE ═══ */
@@ -1022,5 +1017,151 @@ nav a {
   padding: 0.5rem 0.75rem;
   background: rgba(139, 92, 246, 0.04);
   border-radius: 0.5rem;
+}
+
+/* ═══════════════════════════════════════════
+   ISOMETRIC 3D EXPLODED RESUME FRAME
+   ═══════════════════════════════════════════ */
+
+.isometric-perspective-stage {
+  perspective: 1600px;
+  transform-style: preserve-3d;
+}
+
+.isometric-exploded-cluster {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 580px;
+  margin: 0 auto;
+  transform-style: preserve-3d;
+  transform: rotateX(54deg) rotateZ(-34deg) rotateY(12deg);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.isometric-exploded-cluster:hover {
+  transform: rotateX(48deg) rotateZ(-28deg) rotateY(8deg);
+}
+
+.isometric-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.25rem;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+  pointer-events: none;
+}
+
+/* Layer 0: Base Resume Document Layer */
+.isometric-layer-base {
+  transform: translateZ(0px);
+  background: rgba(17, 19, 24, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    -20px 20px 40px rgba(0, 0, 0, 0.7),
+    0 0 1px 1px rgba(255, 255, 255, 0.06);
+}
+
+/* Layer 1: ATS Parse Tree Layer */
+.isometric-layer-parse {
+  transform: translateZ(45px);
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px dashed rgba(99, 102, 241, 0.4);
+  backdrop-filter: blur(8px);
+  box-shadow: 
+    0 15px 35px rgba(99, 102, 241, 0.15),
+    inset 0 0 20px rgba(99, 102, 241, 0.05);
+}
+
+/* Layer 2: Skills Radar & Tags Layer */
+.isometric-layer-skills {
+  transform: translateZ(90px);
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 20px 40px rgba(16, 185, 129, 0.15),
+    inset 0 0 20px rgba(16, 185, 129, 0.04);
+}
+
+/* Layer 3: Holographic Metric & Badge Overlays */
+.isometric-layer-metrics {
+  transform: translateZ(140px);
+  background: rgba(6, 182, 212, 0.05);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  backdrop-filter: blur(12px);
+  box-shadow: 
+    0 25px 50px rgba(6, 182, 212, 0.2),
+    0 0 30px rgba(6, 182, 212, 0.1);
+}
+
+/* Floating animation on hover */
+@keyframes isometric-hover-float {
+  0%, 100% { transform: translateY(0) rotateX(54deg) rotateZ(-34deg) rotateY(12deg); }
+  50% { transform: translateY(-12px) rotateX(52deg) rotateZ(-33deg) rotateY(10deg); }
+}
+
+.isometric-animated-float {
+  animation: isometric-hover-float 6s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════
+   BENTO GRID CARDS & MICRO-BARS
+   ═══════════════════════════════════════════ */
+
+.bento-card {
+  background: #111318;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(16px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.bento-card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.15);
+  transform: translateY(-2px);
+}
+
+.bento-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  pointer-events: none;
+}
+
+.micro-bar-bg {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+  overflow: hidden;
+  height: 6px;
+}
+
+.micro-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Pulse indicator */
+.live-pulse {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 0 rgba(16, 185, 129, 0.6);
+  animation: pulse-emerald 2s infinite;
+}
+
+@keyframes pulse-emerald {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
