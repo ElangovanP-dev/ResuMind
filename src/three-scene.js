@@ -100,8 +100,8 @@ export class ThreeScene {
    */
   initLighting() {
     // Soft ambient fill
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    this.scene.add(ambientLight);
+    this.ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    this.scene.add(this.ambientLight);
 
     // Key Light (Cyan)
     const keyLight = new THREE.DirectionalLight(0x00e5ff, 2.4);
@@ -296,6 +296,36 @@ export class ThreeScene {
       this.camera.position.copy(this.defaultCameraPos);
       this.camera.lookAt(0, 0, 0);
       this.controls.reset();
+    }
+  }
+
+  /**
+   * Adapts 3D scene lighting, fog, and materials for Dark vs Light/White theme.
+   * @param {string} theme - 'dark' | 'light'
+   */
+  setTheme(theme) {
+    const isLight = theme === 'light';
+    if (this.scene && this.scene.fog) {
+      this.scene.fog.color.setHex(isLight ? 0xf8fafc : 0x08080a);
+    }
+    if (this.ambientLight) {
+      this.ambientLight.intensity = isLight ? 1.0 : 0.6;
+    }
+    if (this.materials) {
+      if (this.materials.cyanWire) {
+        this.materials.cyanWire.color.setHex(isLight ? 0x0284c7 : 0x00e5ff);
+      }
+      if (this.materials.headerGlass) {
+        this.materials.headerGlass.color.setHex(isLight ? 0xffffff : 0x141419);
+        this.materials.headerGlass.opacity = isLight ? 0.95 : 0.8;
+      }
+      if (this.materials.nodeMat) {
+        this.materials.nodeMat.color.setHex(isLight ? 0x0284c7 : 0x00e5ff);
+        this.materials.nodeMat.emissive.setHex(isLight ? 0x0284c7 : 0x00e5ff);
+      }
+      if (this.materials.chipMat) {
+        this.materials.chipMat.color.setHex(isLight ? 0xe2e8f0 : 0x1e202b);
+      }
     }
   }
 

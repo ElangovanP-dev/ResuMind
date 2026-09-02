@@ -39,7 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── 4. WIRE UP AUTHENTICATION MODAL ──
   initAuthModal();
 
-  // ── 5. INITIALIZE UPLOAD INGESTION MODULE ──
+  // ── 5. WIRE UP DUAL-THEME MANAGER (DARK / LIGHT) ──
+  initThemeManager(threeScene);
+
+  // ── 6. INITIALIZE UPLOAD INGESTION MODULE ──
   initUploadModule({
     onUploadComplete: (mockData) => {
       // Smoothly transition and scroll down to dashboard section
@@ -282,3 +285,50 @@ function initAuthModal() {
     }
   });
 }
+
+/**
+ * Dual-Theme Manager (Dark Obsidian vs Crisp Light White)
+ * Strictly ensures all text in white theme is dark with zero light/washed-out text.
+ * @param {ThreeScene} threeScene - Three.js scene instance
+ */
+function initThemeManager(threeScene) {
+  const navToggle = document.getElementById('nav-theme-toggle');
+  const hudToggle = document.getElementById('hud-theme-toggle');
+
+  // Load saved theme or default to 'dark'
+  const savedTheme = localStorage.getItem('resumind_theme') || 'dark';
+  applyTheme(savedTheme);
+
+  function applyTheme(theme) {
+    const isLight = theme === 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('resumind_theme', theme);
+
+    // Update 3D scene if present
+    if (threeScene && typeof threeScene.setTheme === 'function') {
+      threeScene.setTheme(theme);
+    }
+
+    // Update toggle icons and labels
+    const icon = isLight ? '🌙' : '☀️';
+    const label = isLight ? 'Dark' : 'Light';
+
+    document.querySelectorAll('.theme-icon').forEach((el) => {
+      el.textContent = icon;
+    });
+    document.querySelectorAll('.theme-label').forEach((el) => {
+      el.textContent = label;
+    });
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    applyTheme(newTheme);
+  }
+
+  if (navToggle) navToggle.addEventListener('click', toggleTheme);
+  if (hudToggle) hudToggle.addEventListener('click', toggleTheme);
+}
+

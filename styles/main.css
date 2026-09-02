@@ -1,27 +1,39 @@
 /* ═════════════════════════════════════════════════════════════
-   RESUMIND — LUXURY DARK GLASSMORPHIC DESIGN SYSTEM
-   Palette:
-     obsidian:       #08080a
-     surface:        #141419
-     border-subtle:  #24242e
-     accent-cyan:    #00e5ff
-     accent-mint:    #3cffc4
+   RESUMIND — DUAL-THEME ENGINE (DARK OBSIDIAN & CRISP LIGHT)
    ═════════════════════════════════════════════════════════════ */
 
-/* ── Base Reset & Fluid Typography ── */
+/* ── Base Dark Palette Variables ── */
 :root {
   --obsidian: #08080a;
   --surface: #141419;
   --border-subtle: #24242e;
   --accent-cyan: #00e5ff;
   --accent-mint: #3cffc4;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --gauge-bg: #24242e;
+}
+
+/* ── Light / White Theme Token Overrides ── */
+[data-theme="light"] {
+  --obsidian: #f8fafc;
+  --surface: #ffffff;
+  --border-subtle: #e2e8f0;
+  --accent-cyan: #0284c7;  /* High-contrast electric cyan on light */
+  --accent-mint: #059669;  /* High-contrast emerald on light */
+  --text-primary: #090a0f; /* Deep dark black/charcoal */
+  --text-secondary: #1e293b;
+  --text-muted: #334155;
+  --gauge-bg: #e2e8f0;
 }
 
 html {
   background-color: var(--obsidian);
-  color: #f8fafc;
+  color: var(--text-primary);
   font-family: 'Inter', sans-serif;
   scroll-behavior: smooth;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ── Custom Glassmorphic HUD Panels ── */
@@ -31,7 +43,7 @@ html {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
 }
 
 .glass-panel:hover {
@@ -97,28 +109,209 @@ svg circle {
   background: var(--accent-cyan);
 }
 
-/* ── Micro-Animations ── */
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.75; transform: scale(0.98); }
+/* ═════════════════════════════════════════════════════════════
+   LIGHT / WHITE THEME STRICT TEXT & COLOR OVERRIDES
+   Rule: All text that is white or light MUST be dark.
+   Zero washed-out or low-contrast light text allowed.
+   ═════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
 }
 
-.animate-pulse-subtle {
-  animation: pulse-subtle 3s ease-in-out infinite;
+/* All Headings & Primary Text become deep sharp charcoal/black */
+[data-theme="light"] .text-white,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6 {
+  color: #090a0f !important;
 }
 
-@keyframes laser-sweep {
-  0% { top: 0%; opacity: 0.8; }
-  50% { opacity: 1; }
-  100% { top: 96%; opacity: 0.8; }
+/* Light gray text classes mapped to crisp dark slate */
+[data-theme="light"] .text-slate-100,
+[data-theme="light"] .text-slate-200 {
+  color: #0f172a !important;
 }
 
-.laser-sweep-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-mint), transparent);
-  box-shadow: 0 0 15px 3px rgba(0, 229, 255, 0.7);
-  animation: laser-sweep 3s ease-in-out infinite alternate;
+[data-theme="light"] .text-slate-300,
+[data-theme="light"] .text-slate-400 {
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .text-slate-500,
+[data-theme="light"] .text-slate-600 {
+  color: #334155 !important;
+}
+
+/* Hero Headline Gradient text in Light Mode */
+[data-theme="light"] .bg-clip-text {
+  background-image: linear-gradient(135deg, #0284c7 0%, #059669 50%, #0f172a 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Accents in Light Mode: high-contrast dark-cyan & emerald */
+[data-theme="light"] .text-accent-cyan {
+  color: #0284c7 !important;
+}
+
+[data-theme="light"] .text-accent-mint {
+  color: #059669 !important;
+}
+
+[data-theme="light"] .bg-accent-cyan {
+  background-color: #0284c7 !important;
+}
+
+[data-theme="light"] .bg-accent-mint {
+  background-color: #059669 !important;
+}
+
+[data-theme="light"] .bg-accent-cyan\/10,
+[data-theme="light"] .bg-accent-cyan\/15 {
+  background-color: rgba(2, 132, 199, 0.12) !important;
+  color: #0284c7 !important;
+}
+
+[data-theme="light"] .bg-accent-mint\/10,
+[data-theme="light"] .bg-accent-mint\/15 {
+  background-color: rgba(5, 150, 105, 0.12) !important;
+  color: #059669 !important;
+}
+
+/* Glass Panels in Light Mode */
+[data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"] .glass-panel:hover {
+  border-color: rgba(2, 132, 199, 0.45) !important;
+  box-shadow: 0 15px 35px -5px rgba(2, 132, 199, 0.18) !important;
+}
+
+/* Background surfaces */
+[data-theme="light"] .bg-surface,
+[data-theme="light"] .bg-surface\/80,
+[data-theme="light"] .bg-surface\/60,
+[data-theme="light"] .bg-surface\/40 {
+  background-color: #ffffff !important;
+}
+
+[data-theme="light"] .bg-obsidian,
+[data-theme="light"] .bg-obsidian\/90,
+[data-theme="light"] .bg-obsidian\/80 {
+  background-color: #f8fafc !important;
+}
+
+/* Section backgrounds */
+[data-theme="light"] #upload-section,
+[data-theme="light"] #dashboard-section,
+[data-theme="light"] #features-section,
+[data-theme="light"] footer {
+  background-color: #f8fafc !important;
+}
+
+/* Border styling in Light Mode */
+[data-theme="light"] .border-border-subtle,
+[data-theme="light"] .border-white\/\[0\.08\],
+[data-theme="light"] .border-white\/\[0\.12\],
+[data-theme="light"] .border-white\/10,
+[data-theme="light"] .border-white\/20 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Drop zone in Light Mode */
+[data-theme="light"] #drop-zone {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] #drop-zone.drag-active {
+  border-color: #0284c7 !important;
+  background: rgba(2, 132, 199, 0.06) !important;
+}
+
+/* Form Inputs in Light Mode */
+[data-theme="light"] input {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Progress track in Light Mode */
+[data-theme="light"] #upload-progress-state .bg-surface {
+  background-color: #e2e8f0 !important;
+}
+
+/* Circular Gauges Base Circle in Light Mode */
+[data-theme="light"] svg circle[stroke="#24242e"] {
+  stroke: #e2e8f0 !important;
+}
+
+[data-theme="light"] #gauge-ats {
+  stroke: #0284c7 !important;
+  filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.4)) !important;
+}
+
+[data-theme="light"] #gauge-match {
+  stroke: #059669 !important;
+  filter: drop-shadow(0 0 6px rgba(5, 150, 105, 0.4)) !important;
+}
+
+[data-theme="light"] #gauge-readability {
+  stroke: #0284c7 !important;
+  filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.4)) !important;
+}
+
+/* Skill Gap Background Tracks */
+[data-theme="light"] #skill-gap-container .bg-surface {
+  background-color: #e2e8f0 !important;
+}
+
+/* Auth Modal in Light Mode */
+[data-theme="light"] #auth-modal {
+  background-color: rgba(15, 23, 42, 0.4) !important;
+}
+
+[data-theme="light"] #auth-modal-card {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Hotspot Tooltips in Light Mode */
+[data-theme="light"] .hotspot-tooltip {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Scrollbar in Light Mode */
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #0284c7;
+}
+
+.benchmark-marker {
+  background-color: #ffffff;
+}
+
+[data-theme="light"] .benchmark-marker {
+  background-color: #0f172a !important;
 }

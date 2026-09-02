@@ -167,7 +167,7 @@ function renderFeedbackPillars(strengths, improvements) {
           <p class="text-[11px] text-slate-400 font-sans leading-relaxed">${item.description}</p>
         </div>
         <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider ${
-          item.priority === 'High' ? 'bg-accent-mint/15 text-accent-mint border border-accent-mint/30' : 'bg-white/5 text-slate-400'
+          item.priority === 'High' ? 'bg-accent-mint/15 text-accent-mint border border-accent-mint/30' : 'bg-surface border border-border-subtle text-slate-400'
         }">
           ${item.priority}
         </span>
@@ -185,7 +185,7 @@ function renderFeedbackPillars(strengths, improvements) {
           <p class="text-[11px] text-slate-400 font-sans leading-relaxed">${item.description}</p>
         </div>
         <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider ${
-          item.priority === 'High' ? 'bg-amber-400/15 text-amber-300 border border-amber-400/30' : 'bg-white/5 text-slate-400'
+          item.priority === 'High' ? 'bg-amber-400/15 text-amber-500 border border-amber-400/30' : 'bg-surface border border-border-subtle text-slate-400'
         }">
           ${item.priority}
         </span>
@@ -237,7 +237,7 @@ function renderSkillGaps(skillGaps) {
       </div>
       <div class="w-full h-2 rounded-full bg-surface border border-border-subtle overflow-hidden flex relative">
         <!-- Target Marker Line -->
-        <div class="absolute top-0 bottom-0 w-[2px] bg-white z-10" style="left: ${sg.targetLevel}%" title="Target Benchmark"></div>
+        <div class="absolute top-0 bottom-0 w-[2px] benchmark-marker z-10" style="left: ${sg.targetLevel}%" title="Target Benchmark"></div>
         <!-- Animated Resume Fill Bar -->
         <div class="h-full rounded-full transition-all duration-1000 ${
           sg.resumeLevel >= sg.targetLevel
