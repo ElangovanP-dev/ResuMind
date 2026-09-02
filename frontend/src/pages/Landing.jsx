@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import IsometricResumeVisual from '../components/IsometricResumeVisual'
 import BentoResultsDashboard from '../components/BentoResultsDashboard'
 import DynamicShowcaseSlider from '../components/DynamicShowcaseSlider'
-import ThreeIsometricInterior from '../components/ThreeIsometricInterior'
+import Luxury3DShowcase from '../components/Luxury3DShowcase'
 import api from '../services/api'
 
 // Wake up backend service on load
@@ -309,18 +309,18 @@ export default function Landing() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          4. 3D ISOMETRIC INTERIOR EXPLODED VIEW & SCROLL MARIO
+          4. LUXURY 3D PRODUCT SHOWCASE & EXPLODED VIEW (BMW/PUMA STYLE)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section id="3d-architecture" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] relative bg-[#090A0D]">
-        <div className="max-w-7xl mx-auto">
+      <section id="3d-showcase" className="py-12 border-t border-white/[0.06] relative bg-[#0a0a0c]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
           <SectionHeader
-            badge="GPU WebGL Interactive Experience"
-            title="3D Isometric Interior Plan & Mario Navigator"
-            subtitle="Scroll down to unfold the interior plan into an exploded 3D architectural diagram. Watch Mario dynamically sprint, jump, and switch between modern iterations."
+            badge="Interactive 3D WebGL Showcase"
+            title="Next-Generation 3D Exploded Architecture"
+            subtitle="Scroll down to initiate GSAP-driven exploded view separation of components. Toggle 360° orbit control, switch color finishes, and inspect interactive telemetry hotspots."
           />
-
-          <ThreeIsometricInterior />
         </div>
+
+        <Luxury3DShowcase />
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
