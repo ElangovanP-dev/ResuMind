@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-export default function Navbar({ onUploadClick }) {
+export default function Navbar() {
   const { token, logout } = useAuth()
   const location = useLocation()
   const isLanding = location.pathname === '/'
@@ -20,35 +20,41 @@ export default function Navbar({ onUploadClick }) {
   }, [location.pathname])
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-[#0A0B0E]/90 backdrop-blur-md border-b border-white/[0.08] shadow-lg shadow-black/40'
-          : 'bg-[#0A0B0E]/60 backdrop-blur-sm border-b border-white/[0.04]'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-18 py-3">
-
+    <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 pointer-events-none">
+      <div
+        className={`max-w-6xl mx-auto px-5 sm:px-7 py-2.5 sm:py-3 rounded-2xl sm:rounded-full transition-all duration-300 pointer-events-auto border flex items-center justify-between shadow-2xl ${
+          scrolled
+            ? 'bg-[#0E121E]/90 border-white/[0.12] backdrop-blur-2xl shadow-indigo-950/40'
+            : 'bg-[#0B0E17]/75 border-white/[0.08] backdrop-blur-xl shadow-black/60'
+        }`}
+        style={{
+          boxShadow: scrolled
+            ? '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 25px -5px rgba(99, 102, 241, 0.15)'
+            : '0 15px 30px -10px rgba(0, 0, 0, 0.6)',
+        }}
+      >
         {/* ── Brand Logo ── */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-105 bg-gradient-to-br from-indigo-500 via-indigo-600 to-cyan-500 p-[1px]">
-            <div className="w-full h-full bg-[#0A0B0E] rounded-[11px] flex items-center justify-center">
-              <svg className="w-5 h-5 text-cyan-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-cyan-400 to-emerald-400 p-[1px] shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
+            <div className="w-full h-full bg-[#08090D] rounded-[11px] flex items-center justify-center">
+              <svg className="w-4 h-4 text-cyan-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2}
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
           </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5">
-              Resume <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400">Mind</span>
-              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">AI</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-lg font-black tracking-tight text-white">
+              Resu<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400">Mind</span>
+            </span>
+            <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 tracking-wider">
+              2.0
             </span>
           </div>
         </Link>
 
-        {/* ── Desktop Nav Links ── */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* ── Desktop Navigation Links ── */}
+        <nav className="hidden md:flex items-center gap-7">
           <NavLink to="/" current={location.pathname}>Home</NavLink>
           {token ? (
             <>
@@ -59,63 +65,63 @@ export default function Navbar({ onUploadClick }) {
             </>
           ) : isLanding ? (
             <>
-              <a href="#demo-dashboard" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
-                Bento Dashboard
+              <a href="#interactive-scanner" className="text-xs font-semibold text-slate-400 hover:text-white transition-colors">
+                Live Scanner
               </a>
-              <a href="#features" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
-                Features
+              <a href="#bento-metrics" className="text-xs font-semibold text-slate-400 hover:text-white transition-colors">
+                5 Pillars
               </a>
-              <a href="#how-it-works" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
-                Methodology
+              <a href="#features" className="text-xs font-semibold text-slate-400 hover:text-white transition-colors">
+                Capabilities
               </a>
-              <a href="#faq" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
+              <a href="#faq" className="text-xs font-semibold text-slate-400 hover:text-white transition-colors">
                 FAQ
               </a>
             </>
           ) : null}
-        </div>
+        </nav>
 
-        {/* ── Right Action CTAs ── */}
-        <div className="flex items-center gap-3">
+        {/* ── Right Action CTA Buttons ── */}
+        <div className="flex items-center gap-2.5">
           {token ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <Link
                 to="/upload"
-                className="hidden sm:inline-flex items-center gap-2 text-xs md:text-sm font-bold text-white px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/35 transition-all active:scale-[0.98]"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-white px-4 py-2 rounded-xl glow-btn-primary"
               >
                 <span>✨</span> New Scan
               </Link>
               <button
                 onClick={logout}
-                className="text-xs md:text-sm font-medium text-slate-400 hover:text-white px-3 py-2 rounded-lg border border-white/10 hover:border-white/20 transition-all"
+                className="text-xs font-semibold text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
               >
                 Sign Out
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <Link
                 to="/login"
-                className="text-xs md:text-sm font-medium text-slate-300 hover:text-white px-3.5 py-2 rounded-xl transition-colors"
+                className="text-xs font-semibold text-slate-300 hover:text-white px-3 py-1.5 rounded-lg transition-colors"
               >
                 Sign In
               </Link>
               <Link
-                to="/register"
-                className="text-xs md:text-sm font-bold text-white px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:opacity-95 shadow-md shadow-indigo-600/25 hover:shadow-indigo-600/40 transition-all active:scale-[0.98] border border-indigo-400/30"
+                to="/upload"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-white px-4 py-2 rounded-xl sm:rounded-full glow-btn-primary"
               >
-                Get Started Free
+                <span>✨</span> Scan Resume Free
               </Link>
             </div>
           )}
 
-          {/* Mobile Hamburger Toggle */}
+          {/* Mobile Menu Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden w-10 h-10 rounded-xl flex items-center justify-center bg-white/[0.04] border border-white/10 text-slate-300 hover:text-white transition-all"
-            aria-label="Toggle Navigation Menu"
+            className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center bg-white/[0.05] border border-white/10 text-slate-300 hover:text-white"
+            aria-label="Toggle navigation menu"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {mobileMenuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
@@ -126,44 +132,44 @@ export default function Navbar({ onUploadClick }) {
         </div>
       </div>
 
-      {/* ── Responsive Mobile Menu Drawer ── */}
+      {/* ── Mobile Menu Dropdown ── */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#0D0F14] border-t border-white/[0.08] px-5 py-5 space-y-3 shadow-2xl">
+        <div className="md:hidden max-w-6xl mx-auto mt-2 bg-[#0E121E]/95 border border-white/[0.12] rounded-2xl p-5 backdrop-blur-2xl shadow-2xl space-y-3 pointer-events-auto animate-in fade-in duration-200">
           <MobileLink to="/" onClick={() => setMobileMenuOpen(false)}>Home</MobileLink>
           {token ? (
             <>
               <MobileLink to="/upload" onClick={() => setMobileMenuOpen(false)}>Upload Resume</MobileLink>
               <MobileLink to="/tailor" onClick={() => setMobileMenuOpen(false)}>Job Description Tailor</MobileLink>
               <MobileLink to="/ab-test" onClick={() => setMobileMenuOpen(false)}>A/B Version Test</MobileLink>
-              <MobileLink to="/history" onClick={() => setMobileMenuOpen(false)}>Analysis History</MobileLink>
+              <MobileLink to="/history" onClick={() => setMobileMenuOpen(false)}>History</MobileLink>
             </>
           ) : isLanding ? (
             <>
               <a
-                href="#demo-dashboard"
+                href="#interactive-scanner"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-sm font-medium text-slate-300 hover:text-white"
+                className="block py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400"
               >
-                Bento Dashboard
+                Live Scanner
+              </a>
+              <a
+                href="#bento-metrics"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400"
+              >
+                5 Pillars
               </a>
               <a
                 href="#features"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-sm font-medium text-slate-300 hover:text-white"
+                className="block py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400"
               >
-                Features
-              </a>
-              <a
-                href="#how-it-works"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-sm font-medium text-slate-300 hover:text-white"
-              >
-                Methodology
+                Capabilities
               </a>
               <a
                 href="#faq"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-sm font-medium text-slate-300 hover:text-white"
+                className="block py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400"
               >
                 FAQ
               </a>
@@ -174,16 +180,16 @@ export default function Navbar({ onUploadClick }) {
             {!token ? (
               <>
                 <Link
-                  to="/register"
+                  to="/upload"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-lg"
+                  className="w-full text-center py-2.5 rounded-xl font-bold text-xs glow-btn-primary"
                 >
-                  Analyze My Resume Free
+                  Scan Resume Free
                 </Link>
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2.5 rounded-xl text-sm text-slate-300 border border-white/10"
+                  className="w-full text-center py-2 rounded-xl text-xs font-semibold text-slate-300 border border-white/10"
                 >
                   Sign In
                 </Link>
@@ -191,7 +197,7 @@ export default function Navbar({ onUploadClick }) {
             ) : (
               <button
                 onClick={() => { setMobileMenuOpen(false); logout(); }}
-                className="w-full text-center py-2.5 rounded-xl text-sm text-rose-400 border border-rose-500/20"
+                className="w-full text-center py-2 rounded-xl text-xs font-semibold text-rose-400 border border-rose-500/20"
               >
                 Sign Out
               </button>
@@ -199,7 +205,7 @@ export default function Navbar({ onUploadClick }) {
           </div>
         </div>
       )}
-    </nav>
+    </header>
   )
 }
 
@@ -208,8 +214,8 @@ function NavLink({ to, current, children }) {
   return (
     <Link
       to={to}
-      className={`text-sm font-medium transition-colors ${
-        isActive ? 'text-cyan-400 font-semibold' : 'text-slate-300 hover:text-white'
+      className={`text-xs font-semibold transition-colors ${
+        isActive ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-white'
       }`}
     >
       {children}
@@ -222,7 +228,7 @@ function MobileLink({ to, onClick, children }) {
     <Link
       to={to}
       onClick={onClick}
-      className="block py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+      className="block py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors"
     >
       {children}
     </Link>

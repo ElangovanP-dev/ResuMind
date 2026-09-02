@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import IsometricResumeVisual from '../components/IsometricResumeVisual'
 import BentoResultsDashboard from '../components/BentoResultsDashboard'
 import DynamicShowcaseSlider from '../components/DynamicShowcaseSlider'
-import Luxury3DShowcase from '../components/Luxury3DShowcase'
+import TrendingATSScanner from '../components/TrendingATSScanner'
 import api from '../services/api'
 
 // Wake up backend service on load
@@ -193,69 +193,80 @@ export default function Landing() {
           {/* Left Column: Value Proposition & High-Impact Copy */}
           <div className="lg:col-span-7 text-center lg:text-left space-y-6">
 
-            {/* Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono font-semibold">
-              <span className="live-pulse" />
-              <span>NEXT-GEN NEURAL ATS PARSER</span>
+            {/* Trending Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 text-xs font-mono font-bold shadow-lg shadow-indigo-500/10">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>✨ RESUMIND 2.0 · NEURAL ATS ENGINE · 98.4% MATCH RATE</span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.12]">
-              Beat the ATS.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400">
-                Land the Interview.
+            {/* Main Trending Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.1]">
+              Land 8.4x More Interviews.<br />
+              <span className="text-gradient-trendy">
+                Zero ATS Rejections.
               </span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-base sm:text-lg lg:text-xl text-slate-400 max-w-2xl leading-relaxed mx-auto lg:mx-0">
-              An elite resume analysis platform engineered for tech professionals. Benchmark your resume against enterprise screening algorithms with our non-redundant 5-pillar evaluation engine.
+            <p className="text-base sm:text-lg lg:text-xl text-slate-300 max-w-2xl leading-relaxed mx-auto lg:mx-0">
+              The high-performance neural resume analyzer engineered for modern tech professionals. Dissect your resume across 5 orthogonal pillars with instant STAR metric quantification and zero duplicate feedback.
             </p>
 
             {/* Primary Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
               <Link
                 to="/upload"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-base text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:opacity-95 shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] border border-indigo-400/30 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold text-base text-white glow-btn-primary flex items-center justify-center gap-2"
               >
-                <span>✨</span> Analyze My Resume Free
+                <span>🚀</span> Scan My Resume Free →
               </Link>
               <a
-                href="#demo-dashboard"
-                className="w-full sm:w-auto px-6 py-4 rounded-xl font-semibold text-sm text-slate-300 hover:text-white bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-white/20 transition-all flex items-center justify-center gap-2"
+                href="#interactive-scanner"
+                className="w-full sm:w-auto px-6 py-4 rounded-2xl font-semibold text-sm text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] hover:border-cyan-400/40 transition-all flex items-center justify-center gap-2 backdrop-blur-md"
               >
-                Explore Bento Dashboard
-                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <span>⚡</span> Watch Live Scanner Demo
               </a>
             </div>
 
-            {/* Social Proof Metric Badges */}
-            <div className="pt-8 border-t border-white/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-xl mx-auto lg:mx-0">
-              <div className="text-center lg:text-left">
-                <p className="text-2xl font-black text-white">
+            {/* Tech Leaders Social Proof Bar */}
+            <div className="pt-8 border-t border-white/[0.08]">
+              <p className="text-[11px] font-mono uppercase tracking-widest text-slate-400 mb-3 text-center lg:text-left">
+                Trusted by engineers interviewing at
+              </p>
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs font-mono font-bold text-slate-400">
+                {['GOOGLE', 'META', 'STRIPE', 'AMAZON', 'APPLE', 'NETFLIX', 'OPENAI'].map((comp) => (
+                  <span key={comp} className="hover:text-white transition-colors">
+                    {comp}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Animated Counter Badges */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-xl mx-auto lg:mx-0 pt-2">
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-center lg:text-left">
+                <p className="text-xl font-black text-white">
                   <Counter target={50000} suffix="+" />
                 </p>
-                <p className="text-xs text-slate-400 mt-0.5">Resumes Analyzed</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Resumes Dissected</p>
               </div>
-              <div className="text-center lg:text-left">
-                <p className="text-2xl font-black text-emerald-400">
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-center lg:text-left">
+                <p className="text-xl font-black text-emerald-400">
                   <Counter target={98} suffix=".4%" />
                 </p>
-                <p className="text-xs text-slate-400 mt-0.5">ATS Parse Accuracy</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">ATS Parse Rate</p>
               </div>
-              <div className="text-center lg:text-left">
-                <p className="text-2xl font-black text-cyan-400">
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-center lg:text-left">
+                <p className="text-xl font-black text-cyan-400">
                   <Counter target={5} suffix=" Pillars" />
                 </p>
-                <p className="text-xs text-slate-400 mt-0.5">Zero Redundancy</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Zero Redundancy</p>
               </div>
-              <div className="text-center lg:text-left">
-                <p className="text-2xl font-black text-indigo-400">
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-center lg:text-left">
+                <p className="text-xl font-black text-indigo-400">
                   <Counter target={8} suffix=".4x" />
                 </p>
-                <p className="text-xs text-slate-400 mt-0.5">Interview Multiplier</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Interview Multiplier</p>
               </div>
             </div>
           </div>
@@ -309,18 +320,18 @@ export default function Landing() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          4. LUXURY 3D PRODUCT SHOWCASE & EXPLODED VIEW (BMW/PUMA STYLE)
+          4. TRENDING INTERACTIVE NEURAL ATS SCANNER TERMINAL
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section id="3d-showcase" className="py-12 border-t border-white/[0.06] relative bg-[#0a0a0c]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+      <section id="interactive-scanner" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/[0.08] relative">
+        <div className="max-w-7xl mx-auto">
           <SectionHeader
-            badge="Interactive 3D WebGL Showcase"
-            title="Next-Generation 3D Exploded Architecture"
-            subtitle="Scroll down to initiate GSAP-driven exploded view separation of components. Toggle 360° orbit control, switch color finishes, and inspect interactive telemetry hotspots."
+            badge="Live Interactive Terminal"
+            title="Real-Time Neural ATS Scanner in Action"
+            subtitle="Watch how enterprise ATS algorithms parse structure, extract entity syntax trees, detect semantic hard skills, and quantify STAR metrics in milliseconds."
           />
-        </div>
 
-        <Luxury3DShowcase />
+          <TrendingATSScanner />
+        </div>
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
