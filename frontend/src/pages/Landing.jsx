@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import IsometricResumeVisual from '../components/IsometricResumeVisual'
 import BentoResultsDashboard from '../components/BentoResultsDashboard'
 import DynamicShowcaseSlider from '../components/DynamicShowcaseSlider'
+import ThreeIsometricInterior from '../components/ThreeIsometricInterior'
 import api from '../services/api'
 
 // Wake up backend service on load
@@ -304,6 +305,21 @@ export default function Landing() {
           />
 
           <DynamicShowcaseSlider />
+        </div>
+      </section>
+
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          4. 3D ISOMETRIC INTERIOR EXPLODED VIEW & SCROLL MARIO
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <section id="3d-architecture" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] relative bg-[#090A0D]">
+        <div className="max-w-7xl mx-auto">
+          <SectionHeader
+            badge="GPU WebGL Interactive Experience"
+            title="3D Isometric Interior Plan & Mario Navigator"
+            subtitle="Scroll down to unfold the interior plan into an exploded 3D architectural diagram. Watch Mario dynamically sprint, jump, and switch between modern iterations."
+          />
+
+          <ThreeIsometricInterior />
         </div>
       </section>
 
