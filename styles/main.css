@@ -1,0 +1,124 @@
+/* ═════════════════════════════════════════════════════════════
+   RESUMIND — LUXURY DARK GLASSMORPHIC DESIGN SYSTEM
+   Palette:
+     obsidian:       #08080a
+     surface:        #141419
+     border-subtle:  #24242e
+     accent-cyan:    #00e5ff
+     accent-mint:    #3cffc4
+   ═════════════════════════════════════════════════════════════ */
+
+/* ── Base Reset & Fluid Typography ── */
+:root {
+  --obsidian: #08080a;
+  --surface: #141419;
+  --border-subtle: #24242e;
+  --accent-cyan: #00e5ff;
+  --accent-mint: #3cffc4;
+}
+
+html {
+  background-color: var(--obsidian);
+  color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+  scroll-behavior: smooth;
+}
+
+/* ── Custom Glassmorphic HUD Panels ── */
+.glass-panel {
+  background: rgba(20, 20, 25, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.glass-panel:hover {
+  border-color: rgba(0, 229, 255, 0.3);
+  box-shadow: 0 25px 60px -12px rgba(0, 229, 255, 0.15);
+}
+
+/* ── 3D Hotspot Screen-Space Pins & Tooltips ── */
+.hotspot-pill {
+  will-change: transform, opacity;
+  z-index: 15;
+}
+
+.hotspot-pill::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--accent-cyan), transparent);
+  transform: translateY(12px);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* ── Circular SVG Progress Gauge Styling ── */
+svg circle {
+  transition: stroke-dashoffset 1.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease;
+}
+
+#gauge-ats {
+  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.6));
+}
+
+#gauge-match {
+  filter: drop-shadow(0 0 8px rgba(60, 255, 196, 0.6));
+}
+
+#gauge-readability {
+  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));
+}
+
+/* ── Ingestion Drop Zone Hover & Drag States ── */
+#drop-zone.drag-active {
+  border-color: var(--accent-cyan) !important;
+  background: rgba(0, 229, 255, 0.05) !important;
+  box-shadow: 0 0 40px -5px rgba(0, 229, 255, 0.25) !important;
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--obsidian);
+}
+::-webkit-scrollbar-thumb {
+  background: #1f1f28;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan);
+}
+
+/* ── Micro-Animations ── */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(0.98); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+@keyframes laser-sweep {
+  0% { top: 0%; opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { top: 96%; opacity: 0.8; }
+}
+
+.laser-sweep-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-mint), transparent);
+  box-shadow: 0 0 15px 3px rgba(0, 229, 255, 0.7);
+  animation: laser-sweep 3s ease-in-out infinite alternate;
+}
