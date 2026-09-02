@@ -26,10 +26,10 @@ export default function TrendingATSScanner() {
   ]
 
   return (
-    <div className="w-full relative select-none rounded-3xl overflow-hidden border border-white/[0.1] bg-[#0A0D15]/90 backdrop-blur-2xl shadow-2xl shadow-indigo-950/40">
+    <div className="w-full relative select-none rounded-3xl overflow-hidden border border-white/[0.1] scanner-terminal-shell bg-[#0A0D15]/90 backdrop-blur-2xl shadow-2xl shadow-indigo-950/40">
 
       {/* ── TOP TERMINAL HUD HEADER ── */}
-      <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] bg-[#0E121E]/80 backdrop-blur-md">
+      <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] scanner-terminal-header bg-[#0E121E]/80 backdrop-blur-md">
         <div className="flex items-center gap-3">
           {/* macOS Style Traffic Dots */}
           <div className="flex items-center gap-1.5">
@@ -52,7 +52,7 @@ export default function TrendingATSScanner() {
         </div>
 
         {/* Tab Switcher Pills */}
-        <div className="flex items-center gap-1 bg-[#141824]/90 p-1 rounded-xl border border-white/10">
+        <div className="flex items-center gap-1 scanner-tab-bar bg-[#141824]/90 p-1 rounded-xl border border-white/10">
           {[
             { id: 'scanner', label: 'Laser ATS Scan' },
             { id: 'star', label: 'STAR Bullets' },
@@ -78,7 +78,7 @@ export default function TrendingATSScanner() {
 
         {/* ── LEFT COLUMN: INTERACTIVE RESUME DOCUMENT WITH LASER SCANLINE ── */}
         <div className="lg:col-span-7 relative">
-          <div className="relative rounded-2xl p-6 sm:p-7 bg-[#0C0F17]/95 border border-white/[0.12] shadow-2xl overflow-hidden font-mono text-xs">
+          <div className="relative rounded-2xl p-6 sm:p-7 scanner-resume-card bg-[#0C0F17]/95 border border-white/[0.12] shadow-2xl overflow-hidden font-mono text-xs">
 
             {/* Glowing Laser Scanline */}
             {isScanning && <div className="laser-scanline" />}
@@ -187,7 +187,7 @@ export default function TrendingATSScanner() {
         <div className="lg:col-span-5 space-y-5">
 
           {/* Primary Score KPI Card */}
-          <div className="p-6 rounded-2xl bg-gradient-to-b from-[#121624] to-[#0D1019] border border-white/[0.12] shadow-xl relative overflow-hidden">
+          <div className="p-6 rounded-2xl scanner-kpi-card bg-gradient-to-b from-[#121624] to-[#0D1019] border border-white/[0.12] shadow-xl relative overflow-hidden">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 font-bold block">
@@ -250,7 +250,7 @@ export default function TrendingATSScanner() {
           </div>
 
           {/* 5-Pillar Micro Bars */}
-          <div className="p-5 rounded-2xl bg-[#0E121E]/80 border border-white/[0.08] space-y-3">
+          <div className="p-5 rounded-2xl scanner-telemetry-card bg-[#0E121E]/80 border border-white/[0.08] space-y-3">
             <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold block">
               5 ORTHOGONAL ANALYSIS PILLARS
             </span>

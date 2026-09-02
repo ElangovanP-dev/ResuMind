@@ -1297,28 +1297,37 @@ nav a {
   transform: scale(0.98);
 }
 
+
 /* ═════════════════════════════════════════════════════════════
-   LIGHT / WHITE THEME: STRICT HIGH-CONTRAST DARK TEXT RULES
+   LIGHT / WHITE THEME: STRICT HIGH-CONTRAST DARK TEXT & PURE LIGHT SURFACES
    Rule: Every piece of text that was white or light MUST be dark.
    Zero washed-out, invisible, or faint text allowed.
+   Zero dark/black backgrounds in light mode.
    ═════════════════════════════════════════════════════════════ */
+
+/* ── 1. GLOBAL ROOT & BODY IN LIGHT MODE ── */
+[data-theme="light"],
+html[data-theme="light"],
+body[data-theme="light"] {
+  background-color: #f8fafc !important;
+  color: #090a0f !important;
+}
 
 [data-theme="light"] body {
   background-color: #f8fafc !important;
   color: #090a0f !important;
   background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -15%, rgba(99, 102, 241, 0.07), transparent 75%),
-    radial-gradient(ellipse 60% 40% at 90% 25%, rgba(6, 182, 212, 0.05), transparent 60%),
-    radial-gradient(ellipse 50% 30% at 10% 35%, rgba(16, 185, 129, 0.04), transparent 55%),
-    radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px) !important;
+    radial-gradient(ellipse 80% 50% at 50% -15%, rgba(99, 102, 241, 0.06), transparent 75%),
+    radial-gradient(ellipse 60% 40% at 90% 25%, rgba(6, 182, 212, 0.04), transparent 60%),
+    radial-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px) !important;
 }
 
 [data-theme="light"] body::before,
 [data-theme="light"] body::after {
-  opacity: 0.1 !important;
+  opacity: 0.05 !important;
 }
 
-/* ── STRICT DARK TEXT ENFORCEMENT ── */
+/* ── 2. STRICT DARK TEXT ENFORCEMENT ── */
 [data-theme="light"] .text-white,
 [data-theme="light"] h1,
 [data-theme="light"] h2,
@@ -1344,14 +1353,16 @@ nav a {
   color: #334155 !important;
 }
 
-/* Gradient text on light theme: deep punchy dark-to-violet gradient */
+/* Gradient text on light theme: deep punchy dark-to-indigo gradient */
 [data-theme="light"] .gradient-text,
-[data-theme="light"] .bg-clip-text:not(.glow-btn-primary *) {
+[data-theme="light"] .text-gradient-trendy,
+[data-theme="light"] .bg-clip-text:not(.glow-btn-primary *):not(.badge *) {
   background-image: linear-gradient(135deg, #090a0f 0%, #4338ca 45%, #0284c7 85%, #059669 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
 
+/* ── 3. BUTTONS & CTA TYPOGRAPHY ── */
 /* Buttons that HAVE colored backgrounds keep white text */
 [data-theme="light"] .glow-btn-primary,
 [data-theme="light"] .glow-btn-primary *,
@@ -1360,27 +1371,37 @@ nav a {
 [data-theme="light"] .bg-indigo-600,
 [data-theme="light"] .bg-indigo-600 *,
 [data-theme="light"] .bg-indigo-500,
-[data-theme="light"] .bg-indigo-500 * {
+[data-theme="light"] .bg-indigo-500 *,
+[data-theme="light"] .bg-gradient-to-r,
+[data-theme="light"] .bg-gradient-to-r * {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
 
-/* Specific button: Sign Out in navbar */
-[data-theme="light"] header button:not(.theme-toggle-btn) {
-  color: #1e293b !important;
+/* Secondary outline buttons in Light Mode */
+[data-theme="light"] a.bg-white\/\[0\.04\],
+[data-theme="light"] button.bg-white\/\[0\.04\],
+[data-theme="light"] .border-white\/10 {
+  background-color: #ffffff !important;
+  color: #090a0f !important;
   border-color: #cbd5e1 !important;
 }
-[data-theme="light"] header button:not(.theme-toggle-btn):hover {
+[data-theme="light"] a.bg-white\/\[0\.04\]:hover,
+[data-theme="light"] button.bg-white\/\[0\.04\]:hover {
+  background-color: #f1f5f9 !important;
   color: #090a0f !important;
   border-color: #94a3b8 !important;
-  background-color: #f1f5f9 !important;
 }
 
-/* Navbar glass container */
+/* ── 4. NAVBAR IN LIGHT MODE ── */
 [data-theme="light"] header div.max-w-6xl {
-  background-color: rgba(255, 255, 255, 0.92) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
   border-color: #e2e8f0 !important;
   box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] header div.max-w-6xl div.bg-\[\#08090D\] {
+  background-color: #f1f5f9 !important;
 }
 
 [data-theme="light"] header nav a {
@@ -1390,64 +1411,164 @@ nav a {
   color: #4f46e5 !important;
 }
 
-/* Card surfaces that had dark hex backgrounds */
-[data-theme="light"] .bg-\[\#08090D\],
-[data-theme="light"] .bg-\[\#0B0E17\],
-[data-theme="light"] .bg-\[\#0B0E17\]\/75,
-[data-theme="light"] .bg-\[\#0E111A\],
-[data-theme="light"] .bg-\[\#0E121E\],
-[data-theme="light"] .bg-\[\#0E121E\]\/80,
-[data-theme="light"] .bg-\[\#0E121E\]\/90,
-[data-theme="light"] .bg-\[\#0E121E\]\/95,
-[data-theme="light"] .bg-\[\#121520\],
-[data-theme="light"] .bg-\[\#151926\],
-[data-theme="light"] .bg-\[\#0A0D15\],
-[data-theme="light"] .bg-\[\#0A0D15\]\/90,
-[data-theme="light"] .bg-\[\#141824\],
-[data-theme="light"] .bg-\[\#141824\]\/90,
-[data-theme="light"] .bg-\[\#161B29\],
-[data-theme="light"] .bg-\[\#161B29\]\/90,
-[data-theme="light"] .bg-\[\#1A2035\],
-[data-theme="light"] .bg-\[\#0B0F19\],
-[data-theme="light"] .bg-\[\#0c0815\],
-[data-theme="light"] .bg-\[\#0A0B0E\],
-[data-theme="light"] .bg-\[\#111318\],
-[data-theme="light"] .bg-black,
-[data-theme="light"] .bg-black\/60,
-[data-theme="light"] .bg-black\/40 {
+[data-theme="light"] header button:not(.theme-toggle-btn):not(.glow-btn-primary) {
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+  background-color: transparent !important;
+}
+[data-theme="light"] header button:not(.theme-toggle-btn):not(.glow-btn-primary):hover {
+  color: #090a0f !important;
+  border-color: #94a3b8 !important;
+  background-color: #f1f5f9 !important;
+}
+
+/* ── 5. ALL SECTION & PAGE WRAPPERS IN LIGHT MODE (ELIMINATES ALL BLACK SECTIONS) ── */
+[data-theme="light"] .landing-page-wrapper,
+[data-theme="light"] section,
+[data-theme="light"] .landing-section-alt {
+  background-color: #f8fafc !important;
+  color: #090a0f !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Alternating section background for visual rhythm */
+[data-theme="light"] .landing-section-alt {
   background-color: #ffffff !important;
 }
 
-/* Translucent cards & bento boxes */
+/* Universal attribute override: FORCE ANY hardcoded dark hex class to white in light mode! */
+[data-theme="light"] [class*="bg-[#0"],
+[data-theme="light"] [class*="bg-[#1"],
+[data-theme="light"] [class*="bg-black"] {
+  background-color: #ffffff !important;
+}
+
+/* Override borders with white alpha */
+[data-theme="light"] [class*="border-white"] {
+  border-color: #e2e8f0 !important;
+}
+
+/* ── 6. CARDS, BENTO PANELS, AND FAQ ACCORDIONS ── */
+[data-theme="light"] .bento-card,
 [data-theme="light"] .glass-card,
 [data-theme="light"] .glass-panel,
 [data-theme="light"] .glass-card-trendy,
-[data-theme="light"] .bento-card {
+[data-theme="light"] .faq-card {
   background-color: #ffffff !important;
   border-color: #e2e8f0 !important;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.03) !important;
 }
 
-/* Hover cards */
+[data-theme="light"] .bento-card:hover,
 [data-theme="light"] .glass-card:hover,
-[data-theme="light"] .glass-panel:hover,
-[data-theme="light"] .glass-card-trendy:hover {
+[data-theme="light"] .faq-card:hover {
   border-color: #cbd5e1 !important;
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Border overrides */
-[data-theme="light"] .border-white\/\[0\.08\],
-[data-theme="light"] .border-white\/\[0\.12\],
-[data-theme="light"] .border-white\/\[0\.1\],
-[data-theme="light"] .border-white\/10,
-[data-theme="light"] .border-white\/5,
-[data-theme="light"] .border-white\/20,
-[data-theme="light"] .border-white\/\[0\.05\] {
+/* FAQ Items */
+[data-theme="light"] .faq-card button {
+  color: #090a0f !important;
+}
+[data-theme="light"] .faq-card button span.text-white {
+  color: #090a0f !important;
+}
+[data-theme="light"] .faq-card button:hover {
+  background-color: #f8fafc !important;
+}
+[data-theme="light"] .faq-card > div {
+  color: #334155 !important;
+  border-top-color: #e2e8f0 !important;
+}
+
+/* Micro bar background in Bento cards */
+[data-theme="light"] .micro-bar-bg {
+  background-color: #e2e8f0 !important;
+}
+
+/* ── 7. TRENDING ATS SCANNER TERMINAL IN LIGHT MODE ── */
+[data-theme="light"] .scanner-terminal-shell {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.09) !important;
+}
+
+[data-theme="light"] .scanner-terminal-header {
+  background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;
 }
 
-/* Inputs & textareas */
+[data-theme="light"] .scanner-tab-bar {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .scanner-tab-bar button:not([class*="bg-gradient"]) {
+  color: #475569 !important;
+}
+[data-theme="light"] .scanner-tab-bar button:not([class*="bg-gradient"]):hover {
+  color: #090a0f !important;
+}
+
+[data-theme="light"] .scanner-resume-card {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .scanner-resume-card div[class*="bg-white"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .scanner-kpi-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .scanner-telemetry-card {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] svg circle[stroke="rgba(255,255,255,0.08)"] {
+  stroke: #e2e8f0 !important;
+}
+
+/* ── 8. 3D ISOMETRIC VISUAL CARD IN LIGHT MODE ── */
+[data-theme="light"] .isometric-layer-base {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: -15px 15px 35px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="light"] .isometric-layer-base * {
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .isometric-layer-base h4 {
+  color: #090a0f !important;
+}
+
+/* ── 9. FOOTER IN LIGHT MODE ── */
+[data-theme="light"] .site-footer,
+[data-theme="light"] footer {
+  background-color: #f8fafc !important;
+  border-top-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+[data-theme="light"] footer p,
+[data-theme="light"] footer span,
+[data-theme="light"] footer a {
+  color: #475569 !important;
+}
+[data-theme="light"] footer a:hover {
+  color: #090a0f !important;
+}
+
+/* ── 10. INPUTS, TEXTAREAS & SELECTS ── */
 [data-theme="light"] input,
 [data-theme="light"] textarea,
 [data-theme="light"] select {
@@ -1461,7 +1582,8 @@ nav a {
   color: #94a3b8 !important;
 }
 
-/* Badges & subtle chip pills */
+/* ── 11. BADGES & PILL TOKENS ── */
+[data-theme="light"] .bg-white\/\[0\.02\],
 [data-theme="light"] .bg-white\/\[0\.05\],
 [data-theme="light"] .bg-white\/\[0\.08\],
 [data-theme="light"] .bg-white\/5,
@@ -1471,14 +1593,7 @@ nav a {
   color: #1e293b !important;
 }
 
-/* Mobile dropdown menu */
-[data-theme="light"] .md\:hidden.max-w-6xl {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Small square theme toggle button styling in light mode */
+/* ── 12. SMALL SQUARE THEME TOGGLE BUTTON ── */
 [data-theme="light"] .theme-toggle-btn {
   background-color: #f1f5f9 !important;
   border-color: #cbd5e1 !important;
@@ -1490,8 +1605,7 @@ nav a {
   border-color: #94a3b8 !important;
 }
 
-/* Custom scrollbar in light mode */
+/* ── 13. CUSTOM SCROLLBAR ── */
 [data-theme="light"] ::-webkit-scrollbar-track { background: #f8fafc; }
 [data-theme="light"] ::-webkit-scrollbar-thumb { background: #cbd5e1; }
 [data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-

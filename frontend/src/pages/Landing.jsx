@@ -67,7 +67,7 @@ function SectionHeader({ badge, title, subtitle }) {
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="border border-white/[0.08] rounded-2xl overflow-hidden bg-[#111318]/70 backdrop-blur-md transition-all">
+    <div className="border border-white/[0.08] rounded-2xl overflow-hidden faq-card bg-[#111318]/70 backdrop-blur-md transition-all">
       <button
         onClick={() => setOpen(!open)}
         className="w-full text-left p-6 flex items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors"
@@ -178,7 +178,7 @@ export default function Landing() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#0A0B0E] text-slate-100 overflow-x-hidden pt-20">
+    <div className="min-h-screen landing-page-wrapper bg-[#0A0B0E] text-slate-100 overflow-x-hidden pt-20">
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           1. HERO SECTION
@@ -281,7 +281,7 @@ export default function Landing() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           2. INTERACTIVE BENTO RESULTS DASHBOARD SECTION
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section id="demo-dashboard" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] relative bg-[#0D0E13]">
+      <section id="demo-dashboard" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] relative landing-section-alt bg-[#0D0E13]">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             badge="Live Interactive Architecture"
@@ -337,7 +337,7 @@ export default function Landing() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           4. CORE FEATURE SHOWCASE (BENTO GRID)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] bg-[#0D0E13]">
+      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] landing-section-alt bg-[#0D0E13]">
         <div className="max-w-7xl mx-auto">
           <SectionHeader
             badge="Enterprise Capabilities"
@@ -459,7 +459,7 @@ export default function Landing() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           6. FREQUENTLY ASKED QUESTIONS
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section id="faq" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] bg-[#0D0E13]">
+      <section id="faq" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] landing-section-alt bg-[#0D0E13]">
         <div className="max-w-4xl mx-auto">
           <SectionHeader
             badge="Clarity & Trust"
@@ -514,7 +514,7 @@ export default function Landing() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           8. FOOTER
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <footer className="border-t border-white/[0.08] py-12 px-4 sm:px-6 lg:px-8 bg-[#07080A] text-xs text-slate-500">
+      <footer className="border-t border-white/[0.08] py-12 px-4 sm:px-6 lg:px-8 site-footer bg-[#07080A] text-xs text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2.5">
             <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white text-[10px] font-bold">
